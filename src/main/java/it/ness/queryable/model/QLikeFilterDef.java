@@ -24,8 +24,6 @@ public class QLikeFilterDef extends FilterDefBase {
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
-
-        filterName = prefix + "." + name;
         AnnotationSource<JavaClassSource> filterDefAnnotation = javaClass.addAnnotation();
         filterDefAnnotation.setName("FilterDef");
         filterDefAnnotation.setStringValue("name", filterName);
