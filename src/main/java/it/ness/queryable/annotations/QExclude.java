@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE}) //on class field
-public @interface QExcludeClass {
+public @interface QExclude {
 }

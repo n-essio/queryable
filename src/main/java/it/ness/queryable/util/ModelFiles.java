@@ -98,7 +98,7 @@ public class ModelFiles {
             // override if annotation is present
             try {
                 JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, fileName));
-                AnnotationSource<JavaClassSource> a = javaClass.getAnnotation("QExcludeClass");
+                AnnotationSource<JavaClassSource> a = javaClass.getAnnotation("QExclude");
                 if (null != a) {
                     excludeClass = true;
                 }
