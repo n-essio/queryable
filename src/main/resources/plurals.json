@@ -1,0 +1,22 @@
+{
+  "schedule" : "schedules",
+  "data" : "data",
+  "operation" : "operations",
+  "label" : "labels",
+  "uuid" : "uuids",
+  "class" : "classes",
+  "template" : "templates",
+  "tracking" : "trackings",
+  "site" : "sites",
+  "customer" : "customers",
+  "company" : "companies",
+  "supplier" : "suppliers",
+  "type" : "types",
+  "user" : "users",
+  "center" : "centers",
+  "parameter" : "parameters",
+  "rule" : "rules",
+  "group" : "groups",
+  "tag" : "tags",
+  "level" : "levels"
+}
