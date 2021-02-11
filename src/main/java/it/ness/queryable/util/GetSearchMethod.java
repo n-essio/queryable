@@ -1,26 +1,25 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.model.FilterDefBase;
-import it.ness.queryable.model.enums.FilterType;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class GetSearchMethod {
     protected Log log;
-    protected Collection<FilterDefBase> fd;
-    protected String modelName;
+    protected Collection<FilterDefBase> preQueryFilters;
+    protected Collection<FilterDefBase> postQueryFilters;
+    protected String className;
 
-    public GetSearchMethod(Log log, Collection<FilterDefBase> fd, String modelName) {
+    public GetSearchMethod(Log log, Collection<FilterDefBase> preQueryFilters, Collection<FilterDefBase> postQueryFilters, String className) {
         this.log = log;
-        this.fd = fd;
-        this.modelName = modelName;
+        this.preQueryFilters = preQueryFilters;
+        this.postQueryFilters = postQueryFilters;
+        this.className = className;
     }
 
 
-    private String getQuery(String modelName, boolean existsPreQueryFilters) {
+    private String getQuery(String className, boolean existsPreQueryFilters) {
         if (!existsPreQueryFilters) {
             // using null,  Panache will generate query in Hibernate way (ie : " from com.flower.User ")
             String formatBody = "PanacheQuery<%s> search; Sort sort = sort(orderBy);" +
@@ -30,7 +29,7 @@ public class GetSearchMethod {
                     "search = %s.find(null);" +
                     "}";
 
-            return String.format(formatBody, modelName, modelName, modelName);
+            return String.format(formatBody, className, className, className);
         }
         String formatBody = "PanacheQuery<%s> search; Sort sort = sort(orderBy);" +
                 "if (sort != null) {" +
@@ -39,7 +38,7 @@ public class GetSearchMethod {
                 "search = %s.find(query, params);" +
                 "}";
 
-        return String.format(formatBody, modelName, modelName, modelName);
+        return String.format(formatBody, className, className, className);
     }
 
     private String getPreQuery(boolean existsPreQueryFilters) {
@@ -50,38 +49,21 @@ public class GetSearchMethod {
         return "";
     }
 
-    private Set<FilterDefBase> getPreQueryFilters() {
-        Set<FilterDefBase> preQueryFilters = new LinkedHashSet<>();
-        for (FilterDefBase f : fd) {
-            if (f.getFilterType() == FilterType.PREQUERY) {
-                preQueryFilters.add(f);
-            }
-        }
-        return preQueryFilters;
-    }
-
-    private Set<FilterDefBase> getPostQueryFilters() {
-        Set<FilterDefBase> postQueryFilters = new LinkedHashSet<>();
-        for (FilterDefBase f : fd) {
-            if (f.getFilterType() == FilterType.POSTQUERY) {
-                postQueryFilters.add(f);
-            }
-        }
-        return postQueryFilters;
-    }
-
     public String create() {
         StringBuilder sb = new StringBuilder();
-        Set<FilterDefBase> preQueryFilters = getPreQueryFilters();
-        boolean existsPreQueryFilters = preQueryFilters.size() > 0;
-        Set<FilterDefBase> postQueryFilters = getPostQueryFilters();
+        boolean existsPreQueryFilters = preQueryFilters != null && preQueryFilters.size() > 0;
+        boolean existsPostQueryFilters = postQueryFilters != null && postQueryFilters.size() > 0;
         sb.append(getPreQuery(existsPreQueryFilters));
-        for (FilterDefBase f : preQueryFilters) {
-            sb.append(f.getSearchMethod());
+        if (existsPreQueryFilters) {
+            for (FilterDefBase f : preQueryFilters) {
+                sb.append(f.getSearchMethod());
+            }
         }
-        sb.append(getQuery(modelName, existsPreQueryFilters));
-        for (FilterDefBase f : postQueryFilters) {
-            sb.append(f.getSearchMethod());
+        sb.append(getQuery(className, existsPreQueryFilters));
+        if (existsPostQueryFilters) {
+            for (FilterDefBase f : postQueryFilters) {
+                sb.append(f.getSearchMethod());
+            }
         }
         sb.append("return search;");
         return sb.toString();

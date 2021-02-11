@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
 import ${apiPackageName}.api.service.RsRepositoryServiceV3;
-import ${packageName}.model.${modelName};
+import ${packageName}.model.${className};
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -19,11 +19,11 @@ import static ${packageName}.management.AppConstants.${rsPath};
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
-public class ${modelName}ServiceRs extends RsRepositoryServiceV3<${modelName}, String> {
+public class ${className}ServiceRs extends RsRepositoryServiceV3<${className}, String> {
 
 
-    public ${modelName}ServiceRs() {
-        super(${modelName}.class);
+    public ${className}ServiceRs() {
+        super(${className}.class);
     }
 
     @Override
@@ -32,8 +32,8 @@ public class ${modelName}ServiceRs extends RsRepositoryServiceV3<${modelName}, S
     }
 
     @Override
-    public PanacheQuery<${modelName}> getSearch(String orderBy) throws Exception {
-        PanacheQuery<${modelName}> search;
+    public PanacheQuery<${className}> getSearch(String orderBy) throws Exception {
+        PanacheQuery<${className}> search;
         return search;
     }
 }
