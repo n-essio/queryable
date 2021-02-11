@@ -10,12 +10,11 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-
 
 public abstract class FilterDefBase implements Comparable<FilterDefBase> {
 
     protected Log log;
+    protected StringUtil stringUtil;
 
     public String prefix;
     public String name;
@@ -31,8 +30,9 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     public abstract FilterType getFilterType();
     public abstract boolean overrideOnSameFilterName();
 
-    public FilterDefBase(final Log log) {
+    public FilterDefBase(final Log log, StringUtil stringUtil) {
         this.log = log;
+        this.stringUtil = stringUtil;
     }
 
     public boolean containsOption(QOption qOption) {
@@ -101,14 +101,5 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
             value = StringUtil.removeQuotes(value);
         }
         return value;
-    }
-
-    protected boolean supportedType(final String fieldType, Set<String> supportedTypes) {
-        for (String type : supportedTypes) {
-            if (type.equals(fieldType)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

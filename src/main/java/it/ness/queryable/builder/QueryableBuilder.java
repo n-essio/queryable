@@ -1,7 +1,13 @@
 package it.ness.queryable.builder;
 
+import it.ness.queryable.annotations.QLikeList;
+import it.ness.queryable.annotations.QList;
 import it.ness.queryable.model.FilterDefBase;
+import it.ness.queryable.model.QLikeListFilterDef;
+import it.ness.queryable.model.QListFilterDef;
 import it.ness.queryable.model.enums.FilterType;
+import it.ness.queryable.templates.FreeMarkerTemplates;
+import it.ness.queryable.util.GetSearchMethod;
 import it.ness.queryable.util.ModelFiles;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
@@ -36,7 +42,7 @@ public class QueryableBuilder {
                     createModel(mf, modelFileName);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    //createRsService(filterDefSet, className, groupId, orderBy, rsPath, outputDirectory.getAbsolutePath());
+                    createRsService(mf, className, groupId, orderBy, rsPath);
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -73,7 +79,6 @@ public class QueryableBuilder {
             fd.addAnnotationToModelClass(javaClass);
         }
 
-
         // remove imports if has org.hibernate.annotations.*
         if (javaClass.hasImport("org.hibernate.annotations")) {
             javaClass.removeImport("org.hibernate.annotations.Filter");
@@ -93,31 +98,36 @@ public class QueryableBuilder {
             out.close();
         }
     }
-/*
-    private void createRsService(Collection<FilterDefBase> fd, String modelName, String groupId, String
-            orderBy, String rsPath, String outputDirectory) throws Exception {
+
+    private void createRsService(ModelFiles mf, String className, String groupId, String
+            orderBy, String rsPath) throws Exception {
 
         final Map<String, Object> data = new LinkedHashMap<String, Object>();
         data.put("packageName", groupId);
         data.put("apiPackageName", groupId.substring(0, groupId.lastIndexOf('.')));
-        data.put("modelName", modelName);
+        data.put("className", className);
         data.put("rsPath", rsPath);
         data.put("defaultSort", orderBy);
 
         String serviceRsClass = FreeMarkerTemplates.processTemplate("servicers", data);
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
-        GetSearchMethod getSearchMethod = new GetSearchMethod(log, fd, modelName);
-        addImportsToClass(javaClassTemplate, fd);
+        Collection<FilterDefBase> preQueryFilters = mf.getFilterDef(className, FilterType.PREQUERY);
+        Collection<FilterDefBase> postQueryFilters = mf.getFilterDef(className, FilterType.POSTQUERY);
+
+        GetSearchMethod getSearchMethod = new GetSearchMethod(log, preQueryFilters, postQueryFilters, className);
+        addImportsToClass(javaClassTemplate, preQueryFilters);
+        addImportsToClass(javaClassTemplate, postQueryFilters);
         MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "getSearch");
         templateMethod.setBody(getSearchMethod.create());
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
         File pd = new File(outputDirectory, packagePath);
-        File filePath = new File(pd, modelName + "ServiceRs.java");
+        File filePath = new File(pd, className + "ServiceRs.java");
         if (filePath.exists()) {
             JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);;
             // add imports to original
-            addImportsToClass(javaClassOriginal, fd);
+            addImportsToClass(javaClassOriginal, preQueryFilters);
+            addImportsToClass(javaClassOriginal, postQueryFilters);
             MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "getSearch");
             if (method != null) {
                 method.setBody(templateMethod.getBody());
@@ -136,24 +146,27 @@ public class QueryableBuilder {
     }
 
     private void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd) {
+        if (fd == null) return;
         for (FilterDefBase f : fd) {
-            if (f instanceof LocalDateTimeFilterDef) {
+            if ("LocalDateTime".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDateTime");
             }
-            if (f instanceof ListFilterDef) {
+            if ("LocalDate".equals(f.fieldType)) {
+                javaClassSource.addImport("java.time.LocalDate");
+            }
+            if (f instanceof QListFilterDef) {
                 javaClassSource.addImport("org.hibernate.Session");
             }
-            if (f.getOrder() == 0) {
+            if (f instanceof QLikeListFilterDef) {
                 javaClassSource.addImport("java.util.HashMap");
                 javaClassSource.addImport("java.util.Map");
             }
         }
     }
-*/
+
     private String getPathFromPackage(String packageName) {
         return packageName.replace(".", "/");
     }
-
 
     private MethodSource<JavaClassSource> getMethodByName(JavaClassSource javaClassSource, String name) {
         for (MethodSource<JavaClassSource> method : javaClassSource.getMethods()) {

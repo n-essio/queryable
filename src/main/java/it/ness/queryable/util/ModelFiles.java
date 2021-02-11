@@ -1,7 +1,7 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.model.FilterDefBase;
-import it.ness.queryable.model.QFilterDef;
+import it.ness.queryable.model.*;
 import it.ness.queryable.model.enums.FilterType;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -16,6 +16,7 @@ import java.util.*;
 public class ModelFiles {
 
     protected Log log;
+    protected StringUtil stringUtil;
     private String[] modelFileNames;
     private String path;
     public boolean isParsingSuccessful;
@@ -25,8 +26,9 @@ public class ModelFiles {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
 
-    public ModelFiles(Log log, String groupId) {
+    public ModelFiles(Log log, StringUtil stringUtil, String groupId) {
         this.log = log;
+        this.stringUtil = stringUtil;
         isParsingSuccessful = false;
 
         path = "src/main/java/";
@@ -119,13 +121,9 @@ public class ModelFiles {
             if (!excludeClass) {
                 if (defaultOrderBy.equals(orderBy)) {
                     log.warn(String.format("orderBy for class %s : %s", className, orderBy));
-                } else {
-                    log.info(String.format("orderBy for class %s : %s", className, orderBy));
                 }
                 if (defaultRsPath.equals(rsPath)) {
                     log.warn(String.format("rsPath for class %s : %s", className, rsPath));
-                } else {
-                    log.info(String.format("rsPath for class %s : %s", className, rsPath));
                 }
             }
         }
@@ -137,7 +135,13 @@ public class ModelFiles {
         Set<FilterDefBase> filterDefBases = new HashSet<>();
 
         // add all supported filterdef bases to parse
-        filterDefBases.add(new QFilterDef(log));
+        filterDefBases.add(new QFilterDef(log, stringUtil));
+        filterDefBases.add(new QLikeFilterDef(log, stringUtil));
+        filterDefBases.add(new QNilFilterDef(log, stringUtil));
+        filterDefBases.add(new QNotNilFilterDef(log, stringUtil));
+        filterDefBases.add(new QLogicalDeleteFilterDef(log, stringUtil));
+        filterDefBases.add(new QListFilterDef(log, stringUtil));
+        filterDefBases.add(new QLikeListFilterDef(log, stringUtil));
 
         // loop while in the resolvedModels all modelFile are resolved
         int i = 1;
@@ -168,6 +172,7 @@ public class ModelFiles {
                     // if the superclass is PanacheEntityBase or is resolved, continue with parsing filterdef
                     Map<FilterType, LinkedHashSet<FilterDefBase>> allFilterDefs = new LinkedHashMap<>();
                     if (resolvedModels.contains(superClassName)) {
+                        log.info("Inheriting ALL FilterDefs for class " + modelName + " from " + superClassName);
                         // inherit all filterdefs
                         Map<FilterType, LinkedHashSet<FilterDefBase>> allInheritedFilterDefs = filterDefMap.get(superClassName);
                         for (FilterType filterType : allInheritedFilterDefs.keySet()) {
@@ -176,6 +181,7 @@ public class ModelFiles {
                                 filterTypeSet = new LinkedHashSet<>();
                             }
                             filterTypeSet.addAll(allInheritedFilterDefs.get(filterType));
+                            allFilterDefs.put(filterType, filterTypeSet);
                         }
                     }
                     List<FieldSource<JavaClassSource>> fields = javaClass.getFields();

@@ -38,6 +38,10 @@ public class StringUtil {
             }
             if (pluralsJsonFile != null) {
                 log.info("Parsing json plurals file : " + pluralsJsonFile.getName());
+                if (!pluralsJsonFile.exists()) {
+                    log.error("Not found json plurals file: " + pluralsJsonFile.getPath());
+                    return;
+                }
                 FileInputStream fis = new FileInputStream(pluralsJsonFile);
                 jsonObject = (JSONObject) jsonParser.parse(
                         new InputStreamReader(fis, "UTF-8"));
@@ -50,9 +54,12 @@ public class StringUtil {
                     }
                 }
             }
+            else {
+                log.info("No additional json plurals file configured.");
+            }
             isParsingSuccessful = true;
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.toString());
             return;
         }
     }

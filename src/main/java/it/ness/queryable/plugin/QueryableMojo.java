@@ -28,25 +28,21 @@ public class QueryableMojo extends AbstractMojo
     MavenProject project;
 
     /**
-     * Location of the file.
+     * @parameter default-value="null"
      */
-    @Parameter( defaultValue = "null", property = "pluralsJsonFile", required = false )
-    private File pluralsJsonFile;
-
-
-    private StringUtil stringUtil;
+    File pluralsJsonFile;
 
     public void execute() throws MojoExecutionException
     {
         final String groupId = project.getGroupId();
 
         Log log = getLog();
-        stringUtil = new StringUtil(log, pluralsJsonFile);
+        StringUtil stringUtil = new StringUtil(log, pluralsJsonFile);
         if (!stringUtil.isParsingSuccessful) return;
 
         log.info(String.format("Begin generating sources for groupId {%s}", groupId));
 
-        ModelFiles mf = new ModelFiles(log, groupId);
+        ModelFiles mf = new ModelFiles(log, stringUtil, groupId);
         if (!mf.isParsingSuccessful) return;
 
         QueryableBuilder queryableBuilder = new QueryableBuilder(log, stringUtil);
