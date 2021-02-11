@@ -1,7 +1,5 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.annotations.QLikeList;
-import it.ness.queryable.annotations.QList;
 import it.ness.queryable.model.FilterDefBase;
 import it.ness.queryable.model.QLikeListFilterDef;
 import it.ness.queryable.model.QListFilterDef;
@@ -153,6 +151,9 @@ public class QueryableBuilder {
             }
             if ("LocalDate".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDate");
+            }
+            if ("BigDecimal".equals(f.fieldType)) {
+                javaClassSource.addImport("java.math.BigDecimal");
             }
             if (f instanceof QListFilterDef) {
                 javaClassSource.addImport("org.hibernate.Session");

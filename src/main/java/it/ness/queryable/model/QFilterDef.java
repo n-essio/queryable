@@ -210,7 +210,6 @@ public class QFilterDef extends FilterDefBase {
     public String getSearchMethod() {
         if (containsOption(QOption.EXECUTE_ALWAYS)) {
             switch (fieldType) {
-                case "Boolean":
                 case "boolean":
                     return getBooleanEqualsAlways();
             }
@@ -218,15 +217,13 @@ public class QFilterDef extends FilterDefBase {
         }
         if (containsOption(QOption.WITHOUT_PARAMETERS)) {
             switch (fieldType) {
-                case "Boolean":
                 case "boolean":
                     return getBooleanEqualsWithoutParameters();
             }
             return getStringEqualsWithoutParameters();
         }
         switch (fieldType) {
-            case "String":
-            case "string": // enums case
+            case "string":
                 return getStringSearchMethod();
             case "LocalDateTime":
                 return getLocalDateTimeSearchMethod();
@@ -234,14 +231,13 @@ public class QFilterDef extends FilterDefBase {
                 return getLocalDateSearchMethod();
             case "Date":
                 return getDateSearchMethod();
-            case "Boolean":
             case "boolean":
                 return getBooleanSearchMethod();
-            case "BigDecimal":
+            case "big_decimal":
                 return getBigDecimalSearchMethod();
-            case "Integer":
+            case "int":
                 return getIntegerSearchMethod();
-            case "Long":
+            case "long":
                 return getLongSearchMethod();
         }
         log.error("not handled getSearchMethod for fieldType: " + fieldType + " name: " + name);
