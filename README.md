@@ -6,7 +6,7 @@
 
  Normally we use the following paradigm to developing quarkus rest app.
  
-1 - writing entities with some hibernate filters:
+1 - Let's start writing our entities with some hibernate filters:
 ```
 @Entity
 @Table(name = "customers")
@@ -34,7 +34,7 @@ public class Customer extends PanacheEntityBase {
     public String mail;
 }
 ```
-2 - generating one rest controller for each entity, as: 
+2 - We continue by writing one rest controller for each entity, as: 
 
 ```
 @Path("/api/v1/customers")
@@ -84,7 +84,6 @@ The boring process is:
 - the writing of hibernate filters
 - the writing of search conditions using query parameters.
 With our annotation set, we will generate at request using maven goal! 
-
 
 
 ## Core Configuration
