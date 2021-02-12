@@ -33,7 +33,7 @@ public class Customer extends PanacheEntityBase {
 - we will generating one rest controller for each entity, as: 
 
 ```
-@Path(CUSTOMERS_PATH)
+@Path("/api/v1/customers")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
@@ -55,17 +55,15 @@ public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
         Sort sort = sort(orderBy);
 
         if (sort != null) {
-            search = Customer.find("select a from Customer a", sort);
+            search = Customer.find(null, sort);
         } else {
-            search = Customer.find("select a from Customer a");
+            search = Customer.find(null);
         }
         if (nn("obj.code")) {
-            search
-                    .filter("obj.code", Parameters.with("code", get("obj.code")));
+            search.filter("obj.code", Parameters.with("code", get("obj.code")));
         }
         if (nn("like.name")) {
-            search
-                    .filter("like.name", Parameters.with("name", likeParamToLowerCase("like.name")));
+            search.filter("like.name", Parameters.with("name", likeParamToLowerCase("like.name")));
         }
         search.filter("obj.active", Parameters.with("active", true));
         return search;
@@ -76,12 +74,14 @@ public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
 
 And the customer api, will be querable using:
 ```
-https://prj.n-ess.it/api/v1/customers?obj.code=xxxx
+https://prj.n-ess.it/api/v1/customers?obj.code=xxxx&like.name=yyyy
 ```
 The boring process is:
 - the writing of hibernate filters
 - the writing of search conditions using query parameters.
 With our annotation set, we will generate at request using maven goal! 
+
+
 
 ## Core Configuration
 #### pom.xml
