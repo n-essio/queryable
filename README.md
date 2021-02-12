@@ -1,4 +1,4 @@
-# queryable
+# @Queryable
 
  It's a maven plugin to generate quickly java classes for rest controllers using with Quarkus and Hibernate Panache, with Hibernate @Filters on @Entity classes annotated.
  Normally we use this paradigm to developing quarkus rest app:
