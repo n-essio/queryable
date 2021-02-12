@@ -2,6 +2,8 @@
 
  It's a maven plugin to generate quickly java classes for rest controllers using with Quarkus and Hibernate Panache, with Hibernate @Filters on @Entity classes annotated.
  
+# Scenario 
+
  Normally we use the following paradigm to developing quarkus rest app.
  
 1 - writing entities with some hibernate filters:
