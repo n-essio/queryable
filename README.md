@@ -42,27 +42,28 @@
 </build>
 ```
 
-## Model classes location (JPA @Entity classes that extends io.quarkus.hibernate.orm.panache.PanacheEntityBase) 
+## JPA @Entity classes location
 
-The plugins searches for java classes that extend PanacheEntityBase in specified folder location {groupId}\model
+The plugins searches for java JPA @Entity classes that extends io.quarkus.hibernate.orm.panache.PanacheEntityBase in specified folder location {groupId}\model
 
-## Rest classes location (JAX-RS @Path @Singleton classes) 
+## JAX-RS classes location 
 
-The plugins searches for java classes in specified folder location {groupId}\service/rs with naming convention...
+The plugins searches for java classes (JAX-RS @Path @Singleton classes) in specified folder location {groupId}\service/rs with naming convention...
 
 ## Q annotations
 
-- Q
-- QExclude
-- QLike
-- QLikeList
-- QList
-- QLogicalDelete
-- QNil
-- QNotNil
-- QOption
-- QOrderBy
-- QRs
+We can attach them to classes or fields, annotations by themselves have no effect on the execution of a program.
+
+- Q (class or field level)
+- QExclude (class level)
+- QLike (field level)
+- QLikeList (field level)
+- QList (field level)
+- QLogicalDelete (field level)
+- QNil (field level)
+- QNotNil (field level)
+- QOrderBy (class level)
+- QRs (class level)
 
 
 ## Q annotation
