@@ -86,8 +86,9 @@ The boring process is:
 With our annotation set, we will generate at request using maven goal! 
 
 
-## Core Configuration
-#### pom.xml
+## Setup
+
+#### pom.xml configuration
 
 ```xml
 <dependency>
