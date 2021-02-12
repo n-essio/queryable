@@ -317,7 +317,7 @@ if (nn("not.default_template")) {
 }
 ```
 
-## Qnil, QNotNil annotations
+## QNil, QNotNil annotations
 
 ```
 @QNil
