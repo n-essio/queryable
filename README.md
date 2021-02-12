@@ -1,5 +1,87 @@
 # queryable
- Maven plugin for FilterDefs
+
+ It's a maven plugin to generate quickly java classes for rest controllers using with Quarkus and Hibernate Panache, with Hibernate @Filters on @Entity classes annotated.
+ Normally we use this paradigm to developing quarkus rest app:
+- entities with some hibernate filters:
+```
+@Entity
+@Table(name = "customers")
+
+@FilterDef(name = "obj.code", parameters = @ParamDef(name = "code", type = "string"))
+@Filter(name = "obj.code", condition = "code = :code")
+
+@FilterDef(name = "like.name", parameters = @ParamDef(name = "name", type = "string"))
+@Filter(name = "like.name", condition = "lower(name) LIKE :name")
+
+@FilterDef(name = "obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
+@Filter(name = "obj.active", condition = "active = :active")
+
+public class Customer extends PanacheEntityBase {
+
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true)
+    @Id
+    public String uuid;
+    public String code;
+    public String name;
+    public boolean active;
+    public String ldap_group;
+    public String mail;
+}
+```
+- we will generating one rest controller for each entity, as: 
+
+```
+@Path(CUSTOMERS_PATH)
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Singleton
+public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
+
+
+    public CustomerServiceRs() {
+        super(Customer.class);
+    }
+
+    @Override
+    protected String getDefaultOrderBy() {
+        return "name asc";
+    }
+
+    @Override
+    public PanacheQuery<Customer> getSearch(String orderBy) throws Exception {
+        PanacheQuery<Customer> search;
+        Sort sort = sort(orderBy);
+
+        if (sort != null) {
+            search = Customer.find("select a from Customer a", sort);
+        } else {
+            search = Customer.find("select a from Customer a");
+        }
+        if (nn("obj.code")) {
+            search
+                    .filter("obj.code", Parameters.with("code", get("obj.code")));
+        }
+        if (nn("like.name")) {
+            search
+                    .filter("like.name", Parameters.with("name", likeParamToLowerCase("like.name")));
+        }
+        search.filter("obj.active", Parameters.with("active", true));
+        return search;
+    }
+
+}
+```
+
+And the customer api, will be querable using:
+```
+https://prj.n-ess.it/api/v1/customers?obj.code=xxxx
+```
+The boring process is:
+- the writing of hibernate filters
+- the writing of search conditions using query parameters.
+With our annotation set, we will generate at request using maven goal! 
 
 ## Core Configuration
 #### pom.xml
