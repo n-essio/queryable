@@ -52,6 +52,21 @@ The plugins searches for java classes in specified folder location {groupId}\ser
 
 ## Q annotations
 
+- Q
+- QExclude
+- QLike
+- QLikeList
+- QList
+- QLogicalDelete
+- QNil
+- QNotNil
+- QOption
+- QOrderBy
+- QRs
+
+
+## Q annotation
+
 Q can be used on class fields: String, enums, LocalDateTime, LocalDate, Date, Boolean, boolean, BigDecimal, Integer, Long
 
 String usage case:
