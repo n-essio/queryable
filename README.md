@@ -141,7 +141,8 @@ The plugins searches for java JPA @Entity classes that extends io.quarkus.hibern
 
 The plugins searches for java classes (JAX-RS @Path @Singleton classes) in specified folder location {groupId}\service/rs with naming convention...
 
-## Q annotations
+## Usage
+### Q annotations
 
 We can attach them to classes or fields, annotations by themselves have no effect on the execution of a program.
 
@@ -157,7 +158,7 @@ We can attach them to classes or fields, annotations by themselves have no effec
 - QRs (class level)
 
 
-## Q annotation
+### Q annotation
 
 Q can be used on class fields: String, enums, LocalDateTime, LocalDate, Date, Boolean, boolean, BigDecimal, Integer, Long
 
@@ -319,7 +320,7 @@ if (nn("not.default_template")) {
 }
 ```
 
-## QNil, QNotNil annotations
+### QNil, QNotNil annotations
 
 ```
 @QNil
@@ -342,7 +343,7 @@ if (nn("notNil.executor")) {
 	search.filter("notNil.executor");
 }
 ```
-## QList annotation
+### QList annotation
 ```
 @QList
 public String operation_uuid;
@@ -361,7 +362,7 @@ if (nn("obj.operation_uuids")) {
 }
 ```
 
-## QLogicalDelete annotation
+### QLogicalDelete annotation
 ```
 @QLogicalDelete
 public boolean active = true;
