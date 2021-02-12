@@ -1,8 +1,10 @@
 # @Queryable
 
  It's a maven plugin to generate quickly java classes for rest controllers using with Quarkus and Hibernate Panache, with Hibernate @Filters on @Entity classes annotated.
- Normally we use this paradigm to developing quarkus rest app:
-- entities with some hibernate filters:
+ 
+ Normally we use the following paradigm to developing quarkus rest app.
+ 
+1 - writing entities with some hibernate filters:
 ```
 @Entity
 @Table(name = "customers")
@@ -30,7 +32,7 @@ public class Customer extends PanacheEntityBase {
     public String mail;
 }
 ```
-- we will generating one rest controller for each entity, as: 
+2 - generating one rest controller for each entity, as: 
 
 ```
 @Path("/api/v1/customers")
@@ -71,11 +73,11 @@ public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
 
 }
 ```
-
-And the customer api, will be querable using:
+3 - the customer api, will be querable using:
 ```
 https://prj.n-ess.it/api/v1/customers?obj.code=xxxx&like.name=yyyy
 ```
+
 The boring process is:
 - the writing of hibernate filters
 - the writing of search conditions using query parameters.
@@ -122,6 +124,11 @@ With our annotation set, we will generate at request using maven goal!
         </plugin>
     </plugins>
 </build>
+```
+
+After creating your annotated entities, run the following maven command:
+```
+mvn queryable:source
 ```
 
 ## JPA @Entity classes location
