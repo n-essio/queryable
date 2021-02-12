@@ -6,7 +6,7 @@
 
 ```xml
 <dependency>
-    <groupId>it.ness.queryable.plugin</groupId>
+    <groupId>it.ness.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -20,23 +20,39 @@
             <artifactId>queryable-maven-plugin</artifactId>
             <version>1.0-SNAPSHOT</version>
             <configuration>
-                <!-- optional set json file for conversion to plural -->
-                <pluralsJsonFile>src/main/resources/plurals.json</pluralsJsonFile>
-            </configuration>
+		<!-- optional set json file for conversion to plural -->
+		<pluralsJsonFile>src/main/resources/plurals.json</pluralsJsonFile>
+		<!-- default is false -->
+		<removeAnnotations>false</removeAnnotations>         
+		<!-- default is {groupId}/service/rs -->    
+		<sourceModelDirectory>service/rs</sourceModelDirectory> 
+		<!-- default is {groupId}/model -->    
+		<sourceRestDirectory>model</sourceRestDirectory> 		
+		<!-- default is src/main/java-->   
+		<outputDirectory>src/main/java</outputDirectory> 	
+			<!-- default is true -->    
+		<logging>true|false</logging> 							
+		<!-- default is true -->    
+		<ovverideAnnotations>true|false</ovverideAnnotations> 	
+		<!-- default is true -->    
+		<ovverideSearchMethod>true|false</ovverideSearchMethod> 
+	    </configuration>
         </plugin>
     </plugins>
 </build>
 ```
 
-## Model location
+## Model classes location (JPA @Entity classes that extends io.quarkus.hibernate.orm.panache.PanacheEntityBase) 
 
-The plugins searches for java classes that extend PanacheEntityBase in 
-specified folder location groupId\model
+The plugins searches for java classes that extend PanacheEntityBase in specified folder location {groupId}\model
+
+## Rest classes location (JAX-RS @Path @Singleton classes) 
+
+The plugins searches for java classes in specified folder location {groupId}\service/rs with naming convention...
 
 ## Q annotations
 
-Q can be used on class fields: String, enums, LocalDateTime, LocalDate, Date, Boolean, boolean, 
-BigDecimal, Integer, Long
+Q can be used on class fields: String, enums, LocalDateTime, LocalDate, Date, Boolean, boolean, BigDecimal, Integer, Long
 
 String usage case:
 
