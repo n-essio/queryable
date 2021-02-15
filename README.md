@@ -109,11 +109,11 @@ With our annotation set, we will generate at request using maven goal!
 		<!-- optional set json file for conversion to plural -->
 		<pluralsJsonFile>src/main/resources/plurals.json</pluralsJsonFile>
 		<!-- default is false -->
-		<removeAnnotations>false</removeAnnotations>         
-		<!-- default is {groupId}/service/rs -->    
-		<sourceModelDirectory>service/rs</sourceModelDirectory> 
-		<!-- default is {groupId}/model -->    
-		<sourceRestDirectory>model</sourceRestDirectory> 		
+		<removeAnnotations>false</removeAnnotations>
+		!-- default is {groupId}/model -->
+		<sourceModelDirectory>model</sourceModelDirectory> 
+		<!-- default is {groupId}/service/rs -->
+		<sourceRestDirectory>service/rs</sourceRestDirectory> 		
 		<!-- default is src/main/java-->   
 		<outputDirectory>src/main/java</outputDirectory> 	
 			<!-- default is true -->    
@@ -359,6 +359,49 @@ if (nn("obj.operation_uuids")) {
 	String[] operation_uuids = get("obj.operation_uuids").split(",");
 	getEntityManager().unwrap(Session.class).enableFilter("obj.operation_uuids")
 			.setParameterList("operation_uuids", operation_uuids);
+}
+```
+
+### QLikeList annotation
+```
+@QLikeList
+public String tags;
+```
+will create FilterDef in model class
+```
+@FilterDef(name = "like.tags", parameters = @ParamDef(name = "tags", type = "string"))
+@Filter(name = "like.tags", condition = "lower(tags) LIKE :tags")
+```
+and in rest service class will add to getSearch method
+```
+String query = null;
+Map<String, Object> params = null;
+if (nn("like.tags")) {
+	String[] tags = get("like.tags").split(",");
+	StringBuilder sb = new StringBuilder();
+	if (null == params) {
+		params = new HashMap<>();
+	}
+	for (int i = 0; i < tags.length; i++) {
+		final String paramName = String.format("tags%d", i);
+		sb.append(String.format("tags LIKE :%s", paramName));
+		params.put(paramName, tags[i]);
+		if (i < tags.length - 1) {
+			sb.append(" OR ");
+		}
+	}
+	if (null == query) {
+		query = sb.toString();
+	} else {
+		query = query + " OR " + sb.toString();
+	}
+}
+PanacheQuery<CostCenter> search;
+Sort sort = sort(orderBy);
+if (sort != null) {
+	search = CostCenter.find(query, sort, params);
+} else {
+	search = CostCenter.find(query, params);
 }
 ```
 

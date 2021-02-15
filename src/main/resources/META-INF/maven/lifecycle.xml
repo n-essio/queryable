@@ -29,6 +29,11 @@
                             <goal>source</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <goals>
+                            <goal>add-api</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </phase>
         </phases>

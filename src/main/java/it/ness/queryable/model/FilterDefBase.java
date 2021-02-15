@@ -25,7 +25,7 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     public QOption[] options;
 
     public abstract void addAnnotationToModelClass(JavaClassSource javaClass);
-    public abstract FilterDefBase parseQFilterDef(FieldSource<JavaClassSource> f);
+    public abstract FilterDefBase parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation);
     public abstract String getSearchMethod();
     public abstract FilterType getFilterType();
     public abstract boolean overrideOnSameFilterName();
@@ -93,6 +93,9 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     }
 
     protected String getQAnnotationValue(final AnnotationSource<JavaClassSource> a, final String fieldName, final String defaultValue) {
+        if (a == null || fieldName == null) {
+            return defaultValue;
+        }
         String value = a.getLiteralValue(fieldName);
         if (null == value) {
             value = defaultValue;

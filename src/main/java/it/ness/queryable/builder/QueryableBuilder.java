@@ -10,6 +10,7 @@ import it.ness.queryable.util.ModelFiles;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 
@@ -20,11 +21,13 @@ import java.util.*;
 public class QueryableBuilder {
 
     protected Log log;
+    protected boolean logging;
     protected StringUtil stringUtil;
     protected File outputDirectory;
 
-    public QueryableBuilder(Log log, StringUtil stringUtil) {
+    public QueryableBuilder(Log log, boolean logging, String sourceModelDirectory, StringUtil stringUtil) {
         this.log = log;
+        this.logging = logging;
         this.stringUtil = stringUtil;
         this.outputDirectory = new File("src/main/java");
     }
@@ -64,10 +67,10 @@ public class QueryableBuilder {
         }
 
         if (allFilderDefs.size() == 0) {
-            log.debug("Not defined Q filterdefs for class : " + className);
+            if (logging) log.debug("Not defined Q filterdefs for class : " + className);
             return;
         }
-        log.debug("Creating model for class : " + className);
+        if (logging) log.debug("Creating model for class : " + className);
 
         javaClass.addImport("org.hibernate.annotations.Filter");
         javaClass.addImport("org.hibernate.annotations.FilterDef");
@@ -122,13 +125,18 @@ public class QueryableBuilder {
         File pd = new File(outputDirectory, packagePath);
         File filePath = new File(pd, className + "ServiceRs.java");
         if (filePath.exists()) {
-            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);;
+            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
             // add imports to original
             addImportsToClass(javaClassOriginal, preQueryFilters);
             addImportsToClass(javaClassOriginal, postQueryFilters);
             MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "getSearch");
             if (method != null) {
-                method.setBody(templateMethod.getBody());
+                if (!excludeMethodByName(javaClassOriginal, "getSearch")) {
+                    method.setBody(templateMethod.getBody());
+                }
+                else {
+                    log.info(String.format("getSearch in class %s is excluded from queryable plugin", className));
+                }
             } else {
                 javaClassOriginal.addMethod(templateMethod);
             }
@@ -177,4 +185,19 @@ public class QueryableBuilder {
         }
         return null;
     }
+
+    private boolean excludeMethodByName(JavaClassSource javaClassSource, String name) {
+        for (MethodSource<JavaClassSource> method : javaClassSource.getMethods()) {
+            if (name.equals(method.getName())) {
+                List<AnnotationSource<JavaClassSource>> classAn = method.getAnnotations();
+                for (AnnotationSource<JavaClassSource> f : classAn) {
+                    if (f.getName().startsWith("QExclude")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }

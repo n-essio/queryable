@@ -13,12 +13,14 @@ import java.util.*;
 public class StringUtil {
 
     protected Log log;
+    protected boolean logging;
     private Map<String, String> pluralMap = null;
     private Set<String> plurals = null;
     public boolean isParsingSuccessful;
 
-    public StringUtil(Log log, File pluralsJsonFile) {
+    public StringUtil(Log log, boolean logging, File pluralsJsonFile) {
         this.log = log;
+        this.logging = logging;
         isParsingSuccessful = false;
 
         JSONParser jsonParser = new JSONParser();
@@ -37,7 +39,7 @@ public class StringUtil {
                 }
             }
             if (pluralsJsonFile != null) {
-                log.info("Parsing json plurals file : " + pluralsJsonFile.getName());
+                if (logging) log.info("Parsing json plurals file : " + pluralsJsonFile.getName());
                 if (!pluralsJsonFile.exists()) {
                     log.error("Not found json plurals file: " + pluralsJsonFile.getPath());
                     return;
@@ -55,7 +57,7 @@ public class StringUtil {
                 }
             }
             else {
-                log.info("No additional json plurals file configured.");
+                if (logging) log.info("No additional json plurals file configured.");
             }
             isParsingSuccessful = true;
         } catch (Exception e) {
@@ -75,12 +77,12 @@ public class StringUtil {
 
     public String getPlural(String str) {
         if (plurals.contains(str)) {
-            log.warn(str + " is already in plural. Returning the same value.");
+            if (logging) log.warn(str + " is already in plural. Returning the same value.");
             return str;
         }
 
         if (!pluralMap.containsKey(str)) {
-            log.warn("plural for " + str + " not found. Adding s to make the plural.");
+            if (logging) log.warn("plural for " + str + " not found. Adding s to make the plural.");
             return str + "s";
         }
         return pluralMap.get(str);

@@ -6,7 +6,6 @@ import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -14,7 +13,7 @@ import java.io.File;
 /**
 * Queryable is maven plugin for filter defs.
 * @goal source
-* @execute lifecycle="queryable" phase="process-sources"
+ * @execute goal="source"
  *
 */
 public class QueryableMojo extends AbstractMojo
@@ -32,20 +31,55 @@ public class QueryableMojo extends AbstractMojo
      */
     File pluralsJsonFile;
 
+    /**
+     * @parameter default-value="false"
+     */
+    boolean removeAnnotations;
+
+    /**
+     * @parameter default-value="model"
+     */
+    String sourceModelDirectory;
+
+    /**
+     * @parameter default-value="service/rs"
+     */
+    String sourceRestDirectory;
+
+    /**
+     * @parameter default-value="src/main/java"
+     */
+    String outputDirectory;
+
+    /**
+     * @parameter default-value="true"
+     */
+    boolean logging;
+
+    /**
+     * @parameter default-value="true"
+     */
+    boolean overideAnnotations;
+
+    /**
+     * @parameter default-value="true"
+     */
+    boolean overideSearchMethod;
+
     public void execute() throws MojoExecutionException
     {
         final String groupId = project.getGroupId();
 
         Log log = getLog();
-        StringUtil stringUtil = new StringUtil(log, pluralsJsonFile);
+        StringUtil stringUtil = new StringUtil(log, logging, pluralsJsonFile);
         if (!stringUtil.isParsingSuccessful) return;
 
-        log.info(String.format("Begin generating sources for groupId {%s}", groupId));
+        if (logging) log.info(String.format("Begin generating sources for groupId {%s}", groupId));
 
-        ModelFiles mf = new ModelFiles(log, stringUtil, groupId);
+        ModelFiles mf = new ModelFiles(log, logging, stringUtil, groupId, sourceModelDirectory);
         if (!mf.isParsingSuccessful) return;
 
-        QueryableBuilder queryableBuilder = new QueryableBuilder(log, stringUtil);
+        QueryableBuilder queryableBuilder = new QueryableBuilder(log, logging, sourceModelDirectory, stringUtil);
         try {
             queryableBuilder.generateSources(mf, groupId);
         } catch (Exception e) {
@@ -53,6 +87,6 @@ public class QueryableMojo extends AbstractMojo
             return;
         }
 
-        log.info("Done generating sources");
+        if (logging) log.info("Done generating sources");
     }
 }

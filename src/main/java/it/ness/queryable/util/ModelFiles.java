@@ -16,6 +16,7 @@ import java.util.*;
 public class ModelFiles {
 
     protected Log log;
+    protected boolean logging;
     protected StringUtil stringUtil;
     private String[] modelFileNames;
     private String path;
@@ -26,16 +27,17 @@ public class ModelFiles {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
 
-    public ModelFiles(Log log, StringUtil stringUtil, String groupId) {
+    public ModelFiles(Log log, boolean logging, StringUtil stringUtil, String groupId, String sourceModelDirectory) {
         this.log = log;
+        this.logging = logging;
         this.stringUtil = stringUtil;
         isParsingSuccessful = false;
 
         path = "src/main/java/";
         path += groupId.replaceAll("\\.", "/");
-        path += "/model/";
+        path += String.format("/%s/", sourceModelDirectory);
 
-        log.info("path = " + path);
+        if (logging) log.info("path = " + path);
 
         File f = new File(path);
         if (!f.exists()) {
@@ -50,8 +52,8 @@ public class ModelFiles {
             }
         });
         if (modelFileNames != null && modelFileNames.length > 0) {
-            log.info("Total model classes found : " + modelFileNames.length);
-            log.info("model class file names : " + Arrays.toString(modelFileNames));
+            if (logging) log.info("Total model classes found : " + modelFileNames.length);
+            if (logging) log.info("model class file names : " + Arrays.toString(modelFileNames));
             resolveConstant();
             isParsingSuccessful = resolveFilterDefs();
         }
@@ -120,10 +122,10 @@ public class ModelFiles {
             excludeClassMap.put(className, excludeClass);
             if (!excludeClass) {
                 if (defaultOrderBy.equals(orderBy)) {
-                    log.warn(String.format("orderBy for class %s : %s", className, orderBy));
+                    if (logging) log.warn(String.format("orderBy for class %s : %s", className, orderBy));
                 }
                 if (defaultRsPath.equals(rsPath)) {
-                    log.warn(String.format("rsPath for class %s : %s", className, rsPath));
+                    if (logging) log.warn(String.format("rsPath for class %s : %s", className, rsPath));
                 }
             }
         }
@@ -147,20 +149,20 @@ public class ModelFiles {
         int i = 1;
         final int maxInterations = 5;
         while (resolvedModels.size() < modelFileNames.length && i<=maxInterations) {
-            log.info("parsing iteration : " + i);
+            if (logging) log.info("parsing iteration : " + i);
             for (String fileName : modelFileNames) {
                 final String modelName = StringUtil.getClassNameFromFileName(fileName);
                 if (resolvedModels.contains(modelName)) {
                     continue;
                 }
                 if (excludeClass(modelName)) {
-                    log.info(String.format("Class %s is excluded from parsing", modelName));
+                    if (logging) log.info(String.format("Class %s is excluded from parsing", modelName));
                     resolvedModels.add(modelName);
                     continue;
                 }
                 // if this class is not resolved, parse it
                 try {
-                    log.info("Parsing : " + fileName);
+                    if (logging) log.info("Parsing : " + fileName);
                     JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, fileName));
                     String superClassName = javaClass.getSuperType();
                     if (superClassName.contains(".")) {
@@ -172,7 +174,7 @@ public class ModelFiles {
                     // if the superclass is PanacheEntityBase or is resolved, continue with parsing filterdef
                     Map<FilterType, LinkedHashSet<FilterDefBase>> allFilterDefs = new LinkedHashMap<>();
                     if (resolvedModels.contains(superClassName)) {
-                        log.info("Inheriting ALL FilterDefs for class " + modelName + " from " + superClassName);
+                        if (logging) log.info("Inheriting ALL FilterDefs for class " + modelName + " from " + superClassName);
                         // inherit all filterdefs
                         Map<FilterType, LinkedHashSet<FilterDefBase>> allInheritedFilterDefs = filterDefMap.get(superClassName);
                         for (FilterType filterType : allInheritedFilterDefs.keySet()) {
@@ -184,10 +186,18 @@ public class ModelFiles {
                             allFilterDefs.put(filterType, filterTypeSet);
                         }
                     }
+                    // add, if any, Q class level annotation
+                    boolean qClassLevelAnnotation = false;
+                    for (AnnotationSource<JavaClassSource> a : javaClass.getAnnotations()) {
+                        if (a.getName().equals("Q")) {
+                            if (logging) log.info(String.format("Class %s has Q annotation at class level", modelName));
+                            qClassLevelAnnotation = true;
+                        }
+                    }
                     List<FieldSource<JavaClassSource>> fields = javaClass.getFields();
                     for (FieldSource<JavaClassSource> f : fields) {
                         for (FilterDefBase fdbase : filterDefBases) {
-                            FilterDefBase fd = fdbase.parseQFilterDef(f);
+                            FilterDefBase fd = fdbase.parseQFilterDef(f, qClassLevelAnnotation);
                             if (null != fd) {
                                 final FilterType filterType = fd.getFilterType();
                                 LinkedHashSet<FilterDefBase> filterTypeSet = allFilterDefs.get(filterType);
@@ -197,7 +207,7 @@ public class ModelFiles {
 
                                 if (fd.overrideOnSameFilterName()) {
                                     if (filterTypeSet.contains(fd)) {
-                                        log.info("Override of filterdef " + fd.toString());
+                                        if (logging) log.info("Override of filterdef " + fd.toString());
                                         filterTypeSet.remove(fd);
                                     }
                                 }
@@ -210,7 +220,7 @@ public class ModelFiles {
                     for (FilterType filterType : allFilterDefs.keySet()) {
                         LinkedHashSet<FilterDefBase> filterTypeSet = allFilterDefs.get(filterType);
                         for (FilterDefBase fd : filterTypeSet) {
-                            log.info(String.format("class %s extends %s: %s", modelName, superClassName, fd.toString()));
+                            if (logging) log.info(String.format("class %s extends %s: %s", modelName, superClassName, fd.toString()));
                         }
                     }
                     filterDefMap.put(modelName, allFilterDefs);
@@ -225,7 +235,7 @@ public class ModelFiles {
             log.error("Parsing failed : Not all model files parsed. ALL Model classes must extend PanacheEntityBase.");
             return false;
         }
-        log.info("All model files parsed.");
+        if (logging) log.info("All model files parsed.");
         return true;
     }
 }
