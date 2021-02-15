@@ -6,6 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE}) //on class field
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD}) //on class field
 public @interface QExclude {
 }

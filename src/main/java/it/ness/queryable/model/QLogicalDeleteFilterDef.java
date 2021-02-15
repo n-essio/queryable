@@ -40,7 +40,7 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QLogicalDeleteFilterDef parseQFilterDef(FieldSource<JavaClassSource> f) {
+    public QLogicalDeleteFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;

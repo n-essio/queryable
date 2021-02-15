@@ -36,7 +36,7 @@ public class QNilFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QNilFilterDef parseQFilterDef(FieldSource<JavaClassSource> f) {
+    public QNilFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;

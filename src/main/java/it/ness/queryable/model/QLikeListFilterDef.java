@@ -53,7 +53,7 @@ public class QLikeListFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QLikeListFilterDef parseQFilterDef(FieldSource<JavaClassSource> f) {
+    public QLikeListFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;

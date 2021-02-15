@@ -81,10 +81,12 @@ public class QFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QFilterDef parseQFilterDef(FieldSource<JavaClassSource> f) {
+    public QFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
-            return null;
+            if (!qClassLevelAnnotation) {
+                return null;
+            }
         }
         String prefix = getQAnnotationValue(a, "prefix", PREFIX);
         String name = getQAnnotationValue(a, "name", f.getName());
