@@ -132,7 +132,7 @@ Before start to edit the entities, run this maven command:
 ```
 mvn queryable:add-api
 ```
-That command will add some classes thatmake you to generate all rest api controllers.
+That command will add some classes thatcmake you to generate all rest api controllers.
 After creating your annotated entities, run the following maven command:
 ```
 mvn queryable:source
