@@ -12,9 +12,6 @@ import java.io.File;
 
 /**
  * Queryable is maven plugin for filter defs.
- *
- * @goal source
- * @execute goal="source"
  */
 public class QueryableMojo extends AbstractMojo {
     /**
