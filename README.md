@@ -166,13 +166,28 @@ In build section add plugin:
 </build>
 ```
 
+#### And then?! maven cmd:
+
+
 Before start to edit the entities, run this maven command:
 
 ```
 mvn queryable:add-api
 ```
+This command will add our minimal api.
+Our convention is:
+ - the package for the api will be: {groupId}.api (ie it.queryable.api)
+ - the package for model classes will be:  {groupId}.{artifactId}.model (ie it.queryable.awesomeproj.model)
 
-That command will add some classes thatcmake you to generate all rest api controllers. After creating your annotated
+And after:
+```
+mvn queryable:create
+```
+That command will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting):
+
+#### And then?! start to write your entities!
+
+That command will add some classes that make you to generate all rest api controllers. After creating your annotated
 entities, run the following maven command:
 
 ```
