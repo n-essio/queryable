@@ -203,12 +203,12 @@ mvn queryable:source
 ## JPA @Entity classes location
 
 The plugins searches for java JPA @Entity classes that extends io.quarkus.hibernate.orm.panache.PanacheEntityBase in
-specified folder location {groupId}\model
+specified folder location {groupId}.{artifactId}.model
 
 ## JAX-RS classes location
 
 The plugins searches for java classes (JAX-RS @Path @Singleton classes) in specified folder location
-{groupId}\service/rs with naming convention...
+{groupId}.{artifactId}.service.rs with naming convention...
 
 ## Usage
 
