@@ -12,9 +12,10 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 
+import static it.ness.queryable.builder.Constants.JAVA_FOLDER;
+
 /**
  * Queryable is maven plugin for filter defs.
- *
  */
 @Mojo(name = "source",
         defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
@@ -23,9 +24,6 @@ public class QueryableMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     MavenProject project;
-
-    @Parameter(property = "pluralsJsonFile", defaultValue = "null")
-    File pluralsJsonFile;
 
     @Parameter(property = "removeAnnotations", defaultValue = "false")
     boolean removeAnnotations;
@@ -36,24 +34,25 @@ public class QueryableMojo extends AbstractMojo {
     @Parameter(property = "sourceRestDirectory", defaultValue = "service/rs")
     String sourceRestDirectory;
 
-    @Parameter(property = "outputDirectory", defaultValue = "src/main/java")
+    @Parameter(property = "outputDirectory", defaultValue = JAVA_FOLDER)
     String outputDirectory;
 
     @Parameter(property = "logging", defaultValue = "true")
     boolean logging;
 
-    @Parameter(property = "overideAnnotations", defaultValue = "true")
-    boolean overideAnnotations;
+    @Parameter(property = "overrideAnnotations", defaultValue = "true")
+    boolean overrideAnnotations;
 
-    @Parameter(property = "overideSearchMethod", defaultValue = "true")
-    boolean overideSearchMethod;
+    @Parameter(property = "overrideSearchMethod", defaultValue = "true")
+    boolean overrideSearchMethod;
 
     public void execute() throws MojoExecutionException {
         final String groupId = project.getGroupId();
         final String artefactId = project.getArtifactId();
 
         Log log = getLog();
-        if (logging) log.info(String.format("Begin generating sources for groupId {%s}, artefactId {%s}", groupId, artefactId));
+        if (logging)
+            log.info(String.format("Begin generating sources for groupId {%s}, artefactId {%s}", groupId, artefactId));
 
         ModelFiles mf = new ModelFiles(log, logging, groupId, artefactId, sourceModelDirectory);
         if (!mf.isParsingSuccessful) return;

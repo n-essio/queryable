@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static it.ness.queryable.builder.Constants.JAVA_FOLDER;
+
 /**
  * Queryable is maven plugin for filter defs.
  *
@@ -31,7 +33,7 @@ public class AddApiMojo extends AbstractMojo
     @Parameter(property = "logging", defaultValue = "true")
     boolean logging;
 
-    @Parameter(property = "outputDirectory", defaultValue = "src/main/java")
+    @Parameter(property = "outputDirectory", defaultValue = JAVA_FOLDER)
     String outputDirectory;
 
     public void execute() throws MojoExecutionException

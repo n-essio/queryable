@@ -152,8 +152,6 @@ In build section add plugin:
             <artifactId>queryable-maven-plugin</artifactId>
             <version>1.0.1-SNAPSHOT</version>
             <configuration>
-                <!-- optional set json file for conversion to plural -->
-                <pluralsJsonFile>src/main/resources/plurals.json</pluralsJsonFile>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
                 !-- default is {groupId}/model -->
@@ -165,9 +163,9 @@ In build section add plugin:
                 <!-- default is true -->
                 <logging>true|false</logging>
                 <!-- default is true -->
-                <ovverideAnnotations>true|false</ovverideAnnotations>
+                <overrideAnnotations>true|false</overrideAnnotations>
                 <!-- default is true -->
-                <ovverideSearchMethod>true|false</ovverideSearchMethod>
+                <overrideSearchMethod>true|false</overrideSearchMethod>
             </configuration>
         </plugin>
     </plugins>

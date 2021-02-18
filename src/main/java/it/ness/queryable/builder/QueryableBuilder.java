@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
 
+import static it.ness.queryable.builder.Constants.*;
+
 public class QueryableBuilder {
 
     protected Log log;
@@ -27,7 +29,7 @@ public class QueryableBuilder {
     public QueryableBuilder(Log log, boolean logging, String sourceModelDirectory) {
         this.log = log;
         this.logging = logging;
-        this.outputDirectory = new File("src/main/java");
+        this.outputDirectory = new File(JAVA_FOLDER);
     }
 
     public void generateSources(ModelFiles mf, String groupId, String artefactId) throws Exception {
@@ -70,19 +72,19 @@ public class QueryableBuilder {
         }
         if (logging) log.debug("Creating model for class : " + className);
 
-        javaClass.addImport("org.hibernate.annotations.Filter");
-        javaClass.addImport("org.hibernate.annotations.FilterDef");
-        javaClass.addImport("org.hibernate.annotations.ParamDef");
+        javaClass.addImport(H_FILTER);
+        javaClass.addImport(H_FILTERDEF);
+        javaClass.addImport(H_PARAMDEF);
 
         for (FilterDefBase fd : allFilderDefs) {
             fd.addAnnotationToModelClass(javaClass);
         }
 
         // remove imports if has org.hibernate.annotations.*
-        if (javaClass.hasImport("org.hibernate.annotations")) {
-            javaClass.removeImport("org.hibernate.annotations.Filter");
-            javaClass.removeImport("org.hibernate.annotations.FilterDef");
-            javaClass.removeImport("org.hibernate.annotations.ParamDef");
+        if (javaClass.hasImport(H_ANNOTATIONS)) {
+            javaClass.removeImport(H_FILTER);
+            javaClass.removeImport(H_FILTERDEF);
+            javaClass.removeImport(H_PARAMDEF);
         }
 
         String packagePath = getPathFromPackage(javaClass.getPackage());
