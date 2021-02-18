@@ -26,6 +26,14 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>fiorenzino</id>
+            <name>Fiorenzo Pizza</name>
+            <email>fiorenzino@gmail.com</email>
+        </developer>
+    </developers>
+
     <scm>
         <url>https://github.com/n-essio/queryable</url>
         <connection>scm:git:git@github.com:n-essio/queryable.git</connection>
