@@ -11,15 +11,14 @@ import org.apache.maven.project.MavenProject;
 import java.io.File;
 
 /**
-* Queryable is maven plugin for filter defs.
-* @goal source
- * @execute goal="source"
+ * Queryable is maven plugin for filter defs.
  *
-*/
-public class QueryableMojo extends AbstractMojo
-{
+ * @goal source
+ * @execute goal="source"
+ */
+public class QueryableMojo extends AbstractMojo {
     /**
-     * @parameter expression="${project}"
+     * @parameter property=="${project}"
      * @required
      * @readonly
      * @since 1.0
@@ -66,20 +65,16 @@ public class QueryableMojo extends AbstractMojo
      */
     boolean overideSearchMethod;
 
-    public void execute() throws MojoExecutionException
-    {
+    public void execute() throws MojoExecutionException {
         final String groupId = project.getGroupId();
 
         Log log = getLog();
-        StringUtil stringUtil = new StringUtil(log, logging, pluralsJsonFile);
-        if (!stringUtil.isParsingSuccessful) return;
-
         if (logging) log.info(String.format("Begin generating sources for groupId {%s}", groupId));
 
-        ModelFiles mf = new ModelFiles(log, logging, stringUtil, groupId, sourceModelDirectory);
+        ModelFiles mf = new ModelFiles(log, logging, groupId, sourceModelDirectory);
         if (!mf.isParsingSuccessful) return;
 
-        QueryableBuilder queryableBuilder = new QueryableBuilder(log, logging, sourceModelDirectory, stringUtil);
+        QueryableBuilder queryableBuilder = new QueryableBuilder(log, logging, sourceModelDirectory);
         try {
             queryableBuilder.generateSources(mf, groupId);
         } catch (Exception e) {

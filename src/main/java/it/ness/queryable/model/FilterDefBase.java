@@ -30,9 +30,8 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     public abstract FilterType getFilterType();
     public abstract boolean overrideOnSameFilterName();
 
-    public FilterDefBase(final Log log, StringUtil stringUtil) {
+    public FilterDefBase(final Log log) {
         this.log = log;
-        this.stringUtil = stringUtil;
     }
 
     public boolean containsOption(QOption qOption) {

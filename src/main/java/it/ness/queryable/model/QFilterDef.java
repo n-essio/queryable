@@ -16,8 +16,8 @@ public class QFilterDef extends FilterDefBase {
     protected static String ANNOTATION_NAME = "Q";
     protected static String PREFIX = "obj";
 
-    public QFilterDef(final Log log, final StringUtil stringUtil) {
-        super(log, stringUtil);
+    public QFilterDef(final Log log) {
+        super(log);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class QFilterDef extends FilterDefBase {
             return null;
         }
 
-        QFilterDef fd = new QFilterDef(log, stringUtil);
+        QFilterDef fd = new QFilterDef(log);
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);

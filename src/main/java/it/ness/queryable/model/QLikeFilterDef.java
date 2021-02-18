@@ -2,7 +2,6 @@ package it.ness.queryable.model;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
-import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -16,8 +15,8 @@ public class QLikeFilterDef extends FilterDefBase {
     protected static String ANNOTATION_NAME = "QLike";
     protected static String PREFIX = "like";
 
-    public QLikeFilterDef(final Log log, final StringUtil stringUtil) {
-        super(log, stringUtil);
+    public QLikeFilterDef(final Log log) {
+        super(log);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class QLikeFilterDef extends FilterDefBase {
             return null;
         }
 
-        QLikeFilterDef fd = new QLikeFilterDef(log, stringUtil);
+        QLikeFilterDef fd = new QLikeFilterDef(log);
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);

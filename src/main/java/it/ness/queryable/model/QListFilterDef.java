@@ -2,7 +2,6 @@ package it.ness.queryable.model;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
-import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -17,8 +16,8 @@ public class QListFilterDef extends FilterDefBase {
     protected static String PREFIX = "obj";
     protected String nameInPlural;
 
-    public QListFilterDef(final Log log, final StringUtil stringUtil) {
-        super(log, stringUtil);
+    public QListFilterDef(final Log log) {
+        super(log);
     }
 
     @Override
@@ -71,7 +70,7 @@ public class QListFilterDef extends FilterDefBase {
             return null;
         }
 
-        QListFilterDef fd = new QListFilterDef(log, stringUtil);
+        QListFilterDef fd = new QListFilterDef(log);
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);

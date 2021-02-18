@@ -22,13 +22,11 @@ public class QueryableBuilder {
 
     protected Log log;
     protected boolean logging;
-    protected StringUtil stringUtil;
     protected File outputDirectory;
 
-    public QueryableBuilder(Log log, boolean logging, String sourceModelDirectory, StringUtil stringUtil) {
+    public QueryableBuilder(Log log, boolean logging, String sourceModelDirectory) {
         this.log = log;
         this.logging = logging;
-        this.stringUtil = stringUtil;
         this.outputDirectory = new File("src/main/java");
     }
 
@@ -37,7 +35,7 @@ public class QueryableBuilder {
         final String path = mf.getPath();
 
         for (String modelFileName : modelFiles) {
-            String className = stringUtil.getClassNameFromFileName(modelFileName);
+            String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
                     createModel(mf, modelFileName);
@@ -52,7 +50,7 @@ public class QueryableBuilder {
     }
 
     private void createModel(ModelFiles mf, String modelFileName) throws Exception {
-        String className = stringUtil.getClassNameFromFileName(modelFileName);
+        String className = StringUtil.getClassNameFromFileName(modelFileName);
         final String path = mf.getPath();
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
 
@@ -133,8 +131,7 @@ public class QueryableBuilder {
             if (method != null) {
                 if (!excludeMethodByName(javaClassOriginal, "getSearch")) {
                     method.setBody(templateMethod.getBody());
-                }
-                else {
+                } else {
                     log.info(String.format("getSearch in class %s is excluded from queryable plugin", className));
                 }
             } else {

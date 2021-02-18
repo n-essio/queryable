@@ -1,6 +1,5 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.model.FilterDefBase;
 import it.ness.queryable.model.*;
 import it.ness.queryable.model.enums.FilterType;
 import org.apache.maven.plugin.logging.Log;
@@ -17,7 +16,6 @@ public class ModelFiles {
 
     protected Log log;
     protected boolean logging;
-    protected StringUtil stringUtil;
     private String[] modelFileNames;
     private String path;
     public boolean isParsingSuccessful;
@@ -27,10 +25,9 @@ public class ModelFiles {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
 
-    public ModelFiles(Log log, boolean logging, StringUtil stringUtil, String groupId, String sourceModelDirectory) {
+    public ModelFiles(Log log, boolean logging, String groupId, String sourceModelDirectory) {
         this.log = log;
         this.logging = logging;
-        this.stringUtil = stringUtil;
         isParsingSuccessful = false;
 
         path = "src/main/java/";
@@ -56,8 +53,7 @@ public class ModelFiles {
             if (logging) log.info("model class file names : " + Arrays.toString(modelFileNames));
             resolveConstant();
             isParsingSuccessful = resolveFilterDefs();
-        }
-        else {
+        } else {
             log.error("No model classes found in path :" + path);
         }
     }
@@ -137,18 +133,18 @@ public class ModelFiles {
         Set<FilterDefBase> filterDefBases = new HashSet<>();
 
         // add all supported filterdef bases to parse
-        filterDefBases.add(new QFilterDef(log, stringUtil));
-        filterDefBases.add(new QLikeFilterDef(log, stringUtil));
-        filterDefBases.add(new QNilFilterDef(log, stringUtil));
-        filterDefBases.add(new QNotNilFilterDef(log, stringUtil));
-        filterDefBases.add(new QLogicalDeleteFilterDef(log, stringUtil));
-        filterDefBases.add(new QListFilterDef(log, stringUtil));
-        filterDefBases.add(new QLikeListFilterDef(log, stringUtil));
+        filterDefBases.add(new QFilterDef(log));
+        filterDefBases.add(new QLikeFilterDef(log));
+        filterDefBases.add(new QNilFilterDef(log));
+        filterDefBases.add(new QNotNilFilterDef(log));
+        filterDefBases.add(new QLogicalDeleteFilterDef(log));
+        filterDefBases.add(new QListFilterDef(log));
+        filterDefBases.add(new QLikeListFilterDef(log));
 
         // loop while in the resolvedModels all modelFile are resolved
         int i = 1;
         final int maxInterations = 5;
-        while (resolvedModels.size() < modelFileNames.length && i<=maxInterations) {
+        while (resolvedModels.size() < modelFileNames.length && i <= maxInterations) {
             if (logging) log.info("parsing iteration : " + i);
             for (String fileName : modelFileNames) {
                 final String modelName = StringUtil.getClassNameFromFileName(fileName);
@@ -174,7 +170,8 @@ public class ModelFiles {
                     // if the superclass is PanacheEntityBase or is resolved, continue with parsing filterdef
                     Map<FilterType, LinkedHashSet<FilterDefBase>> allFilterDefs = new LinkedHashMap<>();
                     if (resolvedModels.contains(superClassName)) {
-                        if (logging) log.info("Inheriting ALL FilterDefs for class " + modelName + " from " + superClassName);
+                        if (logging)
+                            log.info("Inheriting ALL FilterDefs for class " + modelName + " from " + superClassName);
                         // inherit all filterdefs
                         Map<FilterType, LinkedHashSet<FilterDefBase>> allInheritedFilterDefs = filterDefMap.get(superClassName);
                         for (FilterType filterType : allInheritedFilterDefs.keySet()) {
@@ -220,7 +217,8 @@ public class ModelFiles {
                     for (FilterType filterType : allFilterDefs.keySet()) {
                         LinkedHashSet<FilterDefBase> filterTypeSet = allFilterDefs.get(filterType);
                         for (FilterDefBase fd : filterTypeSet) {
-                            if (logging) log.info(String.format("class %s extends %s: %s", modelName, superClassName, fd.toString()));
+                            if (logging)
+                                log.info(String.format("class %s extends %s: %s", modelName, superClassName, fd.toString()));
                         }
                     }
                     filterDefMap.put(modelName, allFilterDefs);
@@ -231,7 +229,7 @@ public class ModelFiles {
             }
             i++;
         }
-        if (i>maxInterations) {
+        if (i > maxInterations) {
             log.error("Parsing failed : Not all model files parsed. ALL Model classes must extend PanacheEntityBase.");
             return false;
         }
