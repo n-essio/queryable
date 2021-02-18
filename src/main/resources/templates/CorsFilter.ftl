@@ -1,4 +1,4 @@
-package it.coopservice.api.filter;
+package ${groupId}.api.filter;
 
 import org.jboss.logging.Logger;
 

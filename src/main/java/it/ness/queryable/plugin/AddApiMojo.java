@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -42,22 +43,28 @@ public class AddApiMojo extends AbstractMojo
         if (logging) log.info(String.format("Begin generating api sources for groupId {%s}", groupId));
         File outputDir = new File(outputDirectory);
 
-        File apiPath = createPath(outputDir, "/it/coopservice/api/");
+        String path = groupId.replaceAll("\\.", "/");
+        path += String.format("/%s/", "api");
+
+        File apiPath = createPath(outputDir, path);
         File exceptionPath = createPath(apiPath, "/exception/");
         File filterPath = createPath(apiPath, "/filter/");
         File managementPath = createPath(apiPath, "/management/");
         File servicePath = createPath(apiPath, "/service/");
         File utilPath = createPath(apiPath, "/util/");
 
-        copyTemplate(exceptionPath, "AccessDeniedException");
-        copyTemplate(filterPath, "CorsFilter");
-        copyTemplate(managementPath, "AppConstants");
-        copyTemplate(servicePath, "RsRepositoryServiceV3");
-        copyTemplate(servicePath, "RsResponseService");
-        copyTemplate(utilPath, "Base64");
-        copyTemplate(utilPath, "DateUtils");
-        copyTemplate(utilPath, "FileUtils");
-        copyTemplate(utilPath, "HttpUtils");
+        final Map<String, Object> data = new HashMap<>();
+        data.put("groupId", groupId);
+
+        copyTemplate(exceptionPath, "AccessDeniedException", data);
+        copyTemplate(filterPath, "CorsFilter", data);
+        copyTemplate(managementPath, "AppConstants", data);
+        copyTemplate(servicePath, "RsRepositoryServiceV3", data);
+        copyTemplate(servicePath, "RsResponseService", data);
+        copyTemplate(utilPath, "Base64", data);
+        copyTemplate(utilPath, "DateUtils", data);
+        copyTemplate(utilPath, "FileUtils", data);
+        copyTemplate(utilPath, "HttpUtils", data);
 
         if (logging) log.info("Done generating api sources");
     }
@@ -74,9 +81,9 @@ public class AddApiMojo extends AbstractMojo
         return path;
     }
 
-    private void copyTemplate(File dir, final String file) {
+    private void copyTemplate(File dir, final String file, final Map<String, Object> data) {
         Log log = getLog();
-        final Map<String, Object> data = new HashMap<>();
+
         String apiClass = FreeMarkerTemplates.processTemplate(file, data);
 
         File filePath = new File(dir, file + ".java");

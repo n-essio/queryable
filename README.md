@@ -99,11 +99,11 @@ Well!, we will try to start a maven project: https://quarkus.io/guides/getting-s
 
 ```
 mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
-        -DprojectGroupId=it.n-ess.queryable.test \
-        -DprojectArtifactId=qtest \
-        -DclassName="it.ness.queryable.test.GreetingResource" \
-        -Dpath="/queryable"
-cd qtest
+        -DprojectGroupId=it.queryable \
+        -DprojectArtifactId=awesomeproj \
+        -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
+        -Dpath="/awesomeproj"
+cd awesomeproj
 ```
 
 Following the guide: https://quarkus.io/guides/hibernate-orm-panache
@@ -111,6 +111,12 @@ Following the guide: https://quarkus.io/guides/hibernate-orm-panache
 we will add to the pom.xml configuration the hibernate/panache dependencies:
 
 ```
+    <!-- Jackson Mapper -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+    
     <!-- Hibernate ORM specific dependencies -->
     <dependency>
         <groupId>io.quarkus</groupId>
@@ -168,13 +174,28 @@ In build section add plugin:
 </build>
 ```
 
+#### And then?! maven cmd:
+
+
 Before start to edit the entities, run this maven command:
 
 ```
 mvn queryable:add-api
 ```
+This command will add our minimal api.
+Our convention is:
+ - the package for the api will be: {groupId}.api (ie it.queryable.api)
+ - the package for model classes will be:  {groupId}.{artifactId}.model (ie it.queryable.awesomeproj.model)
 
-That command will add some classes thatcmake you to generate all rest api controllers. After creating your annotated
+And after:
+```
+mvn queryable:create
+```
+That command will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting):
+
+#### And then?! start to write your entities!
+
+That command will add some classes that make you to generate all rest api controllers. After creating your annotated
 entities, run the following maven command:
 
 ```
@@ -184,12 +205,12 @@ mvn queryable:source
 ## JPA @Entity classes location
 
 The plugins searches for java JPA @Entity classes that extends io.quarkus.hibernate.orm.panache.PanacheEntityBase in
-specified folder location {groupId}\model
+specified folder location {groupId}.{artifactId}.model
 
 ## JAX-RS classes location
 
 The plugins searches for java classes (JAX-RS @Path @Singleton classes) in specified folder location
-{groupId}\service/rs with naming convention...
+{groupId}.{artifactId}.service.rs with naming convention...
 
 ## Usage
 
