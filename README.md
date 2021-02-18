@@ -93,9 +93,7 @@ The boring process is:
 
 ## Quarkus Project Setup
 
-Well!, we will try to start a maven project:
-https://quarkus.io/guides/getting-started
-
+Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 ```
 mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
 	-DprojectGroupId=it.n-ess.queryable.test \
@@ -105,8 +103,8 @@ mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
 cd queryable
 ```
 
-Following the guide:
-https://quarkus.io/guides/hibernate-orm-panache
+Following the guide: https://quarkus.io/guides/hibernate-orm-panache
+
 we will add to the pom.xml configuration the hibernate/panache dependencies:
 
 ```
@@ -125,7 +123,7 @@ we will add to the pom.xml configuration the hibernate/panache dependencies:
 </dependencies>
 ```
 
-#### And then? you should to add to pom.xml our plugin:
+#### And then?! you should start to in our pom.xml our plugin:
 
 ```xml
 
