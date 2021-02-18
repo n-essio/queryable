@@ -28,6 +28,10 @@
 
     <developers>
         <developer>
+            <id>aleksandar-mojanchevski</id>
+            <name>Aleksandar Mojanchevski</name>
+        </developer>
+        <developer>
             <id>fiorenzino</id>
             <name>Fiorenzo Pizza</name>
             <email>fiorenzino@gmail.com</email>
