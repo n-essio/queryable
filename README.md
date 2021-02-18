@@ -97,11 +97,11 @@ Well!, we will try to start a maven project: https://quarkus.io/guides/getting-s
 
 ```
 mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
-        -DprojectGroupId=it.n-ess.queryable.test \
-        -DprojectArtifactId=qtest \
-        -DclassName="it.ness.queryable.test.GreetingResource" \
-        -Dpath="/queryable"
-cd qtest
+        -DprojectGroupId=it.queryable \
+        -DprojectArtifactId=awesomeproj \
+        -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
+        -Dpath="/awesomeproj"
+cd awesomeproj
 ```
 
 Following the guide: https://quarkus.io/guides/hibernate-orm-panache
@@ -109,6 +109,12 @@ Following the guide: https://quarkus.io/guides/hibernate-orm-panache
 we will add to the pom.xml configuration the hibernate/panache dependencies:
 
 ```
+    <!-- Jackson Mapper -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-jackson</artifactId>
+    </dependency>
+    
     <!-- Hibernate ORM specific dependencies -->
     <dependency>
         <groupId>io.quarkus</groupId>
