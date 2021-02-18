@@ -94,13 +94,14 @@ The boring process is:
 ## Quarkus Project Setup
 
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
+
 ```
 mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
-	-DprojectGroupId=it.n-ess.queryable.test \
-	-DprojectArtifactId=test \
-	-DclassName="it.n-ess.queryable.test.GreetingResource" \
-	-Dpath="/queryable"
-cd queryable
+        -DprojectGroupId=it.n-ess.queryable.test \
+        -DprojectArtifactId=qtest \
+        -DclassName="it.ness.queryable.test.GreetingResource" \
+        -Dpath="/queryable"
+cd qtest
 ```
 
 Following the guide: https://quarkus.io/guides/hibernate-orm-panache
@@ -108,7 +109,6 @@ Following the guide: https://quarkus.io/guides/hibernate-orm-panache
 we will add to the pom.xml configuration the hibernate/panache dependencies:
 
 ```
-<dependencies>
     <!-- Hibernate ORM specific dependencies -->
     <dependency>
         <groupId>io.quarkus</groupId>
@@ -120,7 +120,6 @@ we will add to the pom.xml configuration the hibernate/panache dependencies:
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-jdbc-postgresql</artifactId>
     </dependency>
-</dependencies>
 ```
 
 #### And then?! you should start to in our pom.xml our plugin:
@@ -130,7 +129,7 @@ we will add to the pom.xml configuration the hibernate/panache dependencies:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -141,9 +140,9 @@ In build section add plugin:
 <build>
     <plugins>
         <plugin>
-            <groupId>it.ness.queryable.plugin</groupId>
+            <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
             <configuration>
                 <!-- optional set json file for conversion to plural -->
                 <pluralsJsonFile>src/main/resources/plurals.json</pluralsJsonFile>
