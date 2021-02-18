@@ -1,11 +1,13 @@
 # @Queryable
 
+<img src="docs/queryable.png"><br/>
+
 **Queryable** is a Maven plugin to generate quickly Java classes for **JAX-RS** controllers using with **Quarkus**
 and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annotated.
 
 # Scenario
 
-<img src="docs/queryable.png"><br/>
+
 
 Normally we use the following paradigm to developing quarkus rest app.
 
