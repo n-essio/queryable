@@ -157,7 +157,7 @@ public class QueryableBuilder {
             if ("LocalDate".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDate");
             }
-            if ("BigDecimal".equals(f.fieldType)) {
+            if ("BigDecimal".equals(f.fieldType) || "big_decimal".equals(f.fieldType)) {
                 javaClassSource.addImport("java.math.BigDecimal");
             }
             if (f instanceof QListFilterDef) {

@@ -13,9 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-* Queryable is maven plugin for filter defs.
+ * Queryable is maven plugin for filter defs.
+ * @goal add-api
+ * @execute lifecycle="queryable" phase="process-sources"
+ * @execute goal="add-api"
  *
-*/
+ */
 public class AddApiMojo extends AbstractMojo
 {
     /**

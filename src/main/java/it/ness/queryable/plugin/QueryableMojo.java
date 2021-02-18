@@ -2,7 +2,6 @@ package it.ness.queryable.plugin;
 
 import it.ness.queryable.builder.QueryableBuilder;
 import it.ness.queryable.util.ModelFiles;
-import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -12,6 +11,10 @@ import java.io.File;
 
 /**
  * Queryable is maven plugin for filter defs.
+ * @goal source
+ * @execute lifecycle="queryable" phase="process-sources"
+ * @execute goal="source"
+ *
  */
 public class QueryableMojo extends AbstractMojo {
     /**
