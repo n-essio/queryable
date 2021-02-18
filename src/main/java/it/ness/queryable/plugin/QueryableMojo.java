@@ -7,6 +7,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -19,52 +20,32 @@ import java.io.File;
         defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
         threadSafe = true)
 public class QueryableMojo extends AbstractMojo {
-    /**
-     * @parameter property=="${project}"
-     * @required
-     * @readonly
-     * @since 1.0
-     */
+
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
     MavenProject project;
 
-    /**
-     * @parameter default-value="null"
-     */
+    @Parameter(property = "pluralsJsonFile", defaultValue = "null")
     File pluralsJsonFile;
 
-    /**
-     * @parameter default-value="false"
-     */
+    @Parameter(property = "removeAnnotations", defaultValue = "false")
     boolean removeAnnotations;
 
-    /**
-     * @parameter default-value="model"
-     */
+    @Parameter(property = "sourceModelDirectory", defaultValue = "model")
     String sourceModelDirectory;
 
-    /**
-     * @parameter default-value="service/rs"
-     */
+    @Parameter(property = "sourceRestDirectory", defaultValue = "service/rs")
     String sourceRestDirectory;
 
-    /**
-     * @parameter default-value="src/main/java"
-     */
+    @Parameter(property = "outputDirectory", defaultValue = "src/main/java")
     String outputDirectory;
 
-    /**
-     * @parameter default-value="true"
-     */
+    @Parameter(property = "logging", defaultValue = "true")
     boolean logging;
 
-    /**
-     * @parameter default-value="true"
-     */
+    @Parameter(property = "overideAnnotations", defaultValue = "true")
     boolean overideAnnotations;
 
-    /**
-     * @parameter default-value="true"
-     */
+    @Parameter(property = "overideSearchMethod", defaultValue = "true")
     boolean overideSearchMethod;
 
     public void execute() throws MojoExecutionException {
