@@ -5,6 +5,8 @@ and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annot
 
 # Scenario
 
+<img src="docs/queryable.png"><br/>
+
 Normally we use the following paradigm to developing quarkus rest app.
 
 1 - Let's start writing our entities with some hibernate filters:
