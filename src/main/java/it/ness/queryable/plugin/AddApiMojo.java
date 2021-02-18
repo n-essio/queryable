@@ -4,6 +4,8 @@ import it.ness.queryable.templates.FreeMarkerTemplates;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -14,11 +16,11 @@ import java.util.Map;
 
 /**
  * Queryable is maven plugin for filter defs.
- * @goal add-api
- * @execute lifecycle="queryable" phase="process-sources"
- * @execute goal="add-api"
  *
  */
+@Mojo(name = "add-api",
+        defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
+        threadSafe = true)
 public class AddApiMojo extends AbstractMojo
 {
     /**

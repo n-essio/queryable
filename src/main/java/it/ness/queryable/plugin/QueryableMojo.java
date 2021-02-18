@@ -5,17 +5,19 @@ import it.ness.queryable.util.ModelFiles;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 
 /**
  * Queryable is maven plugin for filter defs.
- * @goal source
- * @execute lifecycle="queryable" phase="process-sources"
- * @execute goal="source"
  *
  */
+@Mojo(name = "source",
+        defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
+        threadSafe = true)
 public class QueryableMojo extends AbstractMojo {
     /**
      * @parameter property=="${project}"
