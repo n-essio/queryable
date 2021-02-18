@@ -50,16 +50,17 @@ public class QueryableMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
         final String groupId = project.getGroupId();
+        final String artefactId = project.getArtifactId();
 
         Log log = getLog();
-        if (logging) log.info(String.format("Begin generating sources for groupId {%s}", groupId));
+        if (logging) log.info(String.format("Begin generating sources for groupId {%s}, artefactId {%s}", groupId, artefactId));
 
-        ModelFiles mf = new ModelFiles(log, logging, groupId, sourceModelDirectory);
+        ModelFiles mf = new ModelFiles(log, logging, groupId, artefactId, sourceModelDirectory);
         if (!mf.isParsingSuccessful) return;
 
         QueryableBuilder queryableBuilder = new QueryableBuilder(log, logging, sourceModelDirectory);
         try {
-            queryableBuilder.generateSources(mf, groupId);
+            queryableBuilder.generateSources(mf, groupId, artefactId);
         } catch (Exception e) {
             e.printStackTrace();
             return;

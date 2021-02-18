@@ -1,4 +1,4 @@
-package it.coopservice.api.util;
+package ${groupId}.api.util;
 
 import org.jboss.logging.Logger;
 

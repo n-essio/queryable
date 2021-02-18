@@ -1,4 +1,4 @@
-package it.coopservice.api.exception;
+package ${groupId}.api.exception;
 
 public class AccessDeniedException extends RuntimeException
 {

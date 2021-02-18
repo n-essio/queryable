@@ -1,4 +1,4 @@
-package it.coopservice.api.service;
+package ${groupId}.api.service;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;

@@ -30,7 +30,7 @@ public class QueryableBuilder {
         this.outputDirectory = new File("src/main/java");
     }
 
-    public void generateSources(ModelFiles mf, String groupId) throws Exception {
+    public void generateSources(ModelFiles mf, String groupId, String artefactId) throws Exception {
         final String[] modelFiles = mf.getModelFileNames();
         final String path = mf.getPath();
 
@@ -41,7 +41,7 @@ public class QueryableBuilder {
                     createModel(mf, modelFileName);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    createRsService(mf, className, groupId, orderBy, rsPath);
+                    createRsService(mf, className, groupId, artefactId, orderBy, rsPath);
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -98,12 +98,12 @@ public class QueryableBuilder {
         }
     }
 
-    private void createRsService(ModelFiles mf, String className, String groupId, String
+    private void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath) throws Exception {
 
         final Map<String, Object> data = new LinkedHashMap<String, Object>();
-        data.put("packageName", groupId);
-        data.put("apiPackageName", groupId.substring(0, groupId.lastIndexOf('.')));
+        data.put("packageName", groupId + "." + artefactId);
+        data.put("groupId", groupId);
         data.put("className", className);
         data.put("rsPath", rsPath);
         data.put("defaultSort", orderBy);
