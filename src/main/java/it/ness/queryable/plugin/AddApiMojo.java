@@ -1,31 +1,19 @@
 package it.ness.queryable.plugin;
 
-import it.ness.queryable.builder.QueryableBuilder;
-import it.ness.queryable.model.FilterDefBase;
-import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.templates.FreeMarkerTemplates;
-import it.ness.queryable.util.GetSearchMethod;
-import it.ness.queryable.util.ModelFiles;
-import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.source.JavaClassSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
 * Queryable is maven plugin for filter defs.
-* @goal add-api
-* @execute goal="add-api"
  *
 */
 public class AddApiMojo extends AbstractMojo
