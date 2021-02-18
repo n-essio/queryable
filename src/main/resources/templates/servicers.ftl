@@ -3,7 +3,7 @@ package ${packageName}.service.rs;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Parameters;
 import io.quarkus.panache.common.Sort;
-import ${apiPackageName}.api.service.RsRepositoryServiceV3;
+import ${groupId}.api.service.RsRepositoryServiceV3;
 import ${packageName}.model.${className};
 
 import javax.inject.Singleton;
@@ -12,10 +12,16 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import static ${packageName}.management.AppConstants.${rsPath};
+<#if rsPath=="NOT_SET">
+<#else>
+import static ${groupId}.api.management.AppConstants.${rsPath};
+</#if>
 
-
+<#if rsPath=="NOT_SET">
+@Path("NOT_SET")
+<#else>
 @Path(${rsPath})
+</#if>
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton

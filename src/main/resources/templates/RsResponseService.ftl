@@ -1,8 +1,8 @@
-package it.coopservice.api.service;
+package ${groupId}.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.coopservice.api.management.AppConstants;
+import ${groupId}.api.management.AppConstants;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;

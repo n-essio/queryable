@@ -25,13 +25,14 @@ public class ModelFiles {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
 
-    public ModelFiles(Log log, boolean logging, String groupId, String sourceModelDirectory) {
+    public ModelFiles(Log log, boolean logging, String groupId, String artefactId, String sourceModelDirectory) {
         this.log = log;
         this.logging = logging;
         isParsingSuccessful = false;
 
         path = "src/main/java/";
         path += groupId.replaceAll("\\.", "/");
+        path += String.format("/%s/", artefactId);
         path += String.format("/%s/", sourceModelDirectory);
 
         if (logging) log.info("path = " + path);

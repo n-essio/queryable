@@ -1,4 +1,4 @@
-package it.coopservice.api.management;
+package ${groupId}.api.management;
 
 public class AppConstants {
 
@@ -17,4 +17,5 @@ public class AppConstants {
     public static final String AND_CLAUSE = " and ";
     public static final String OR_CLAUSE = " or ";
     public static final String ORDER_BY_CLAUSE = " order by ";
+
 }
