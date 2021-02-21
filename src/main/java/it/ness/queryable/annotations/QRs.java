@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE) //on class level
 public @interface QRs {
-	String path();
+    String value() default "";
 }

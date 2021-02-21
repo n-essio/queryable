@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 <#if rsPath=="NOT_SET">
 <#else>
-import static ${groupId}.api.management.AppConstants.${rsPath};
+import static ${packageName}.management.AppConstants.${rsPath};
 </#if>
 
 <#if rsPath=="NOT_SET">

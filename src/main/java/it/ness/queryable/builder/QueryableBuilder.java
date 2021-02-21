@@ -4,6 +4,8 @@ import it.ness.queryable.model.FilterDefBase;
 import it.ness.queryable.model.QLikeListFilterDef;
 import it.ness.queryable.model.QListFilterDef;
 import it.ness.queryable.model.enums.FilterType;
+import it.ness.queryable.model.pojo.Data;
+import it.ness.queryable.model.pojo.Parameters;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.GetSearchMethod;
 import it.ness.queryable.util.ModelFiles;
@@ -22,38 +24,28 @@ import static it.ness.queryable.builder.Constants.*;
 
 public class QueryableBuilder {
 
-    protected Log log;
-    protected boolean logging;
-    protected File outputDirectory;
 
-    public QueryableBuilder(Log log, boolean logging, String sourceModelDirectory) {
-        this.log = log;
-        this.logging = logging;
-        this.outputDirectory = new File(JAVA_FOLDER);
-    }
-
-    public void generateSources(ModelFiles mf, String groupId, String artefactId) throws Exception {
-        final String[] modelFiles = mf.getModelFileNames();
-        final String path = mf.getPath();
-
+    public static void generateSources(ModelFiles mf, Log log, Parameters parameters) throws Exception {
+        String[] modelFiles = mf.getModelFileNames();
         for (String modelFileName : modelFiles) {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
-                    createModel(mf, modelFileName);
+                    createModel(log, mf, modelFileName, parameters);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    createRsService(mf, className, groupId, artefactId, orderBy, rsPath);
+                    createRsService(mf, className, parameters.groupId, parameters.artifactId, orderBy, rsPath, parameters, log);
                 } catch (Exception e) {
                     log.error(e);
                 }
             }
         }
+        if (log != null) log.info("Done generating sources");
     }
 
-    private void createModel(ModelFiles mf, String modelFileName) throws Exception {
+    private static void createModel(Log log, ModelFiles mf, String modelFileName, Parameters parameters) throws Exception {
         String className = StringUtil.getClassNameFromFileName(modelFileName);
-        final String path = mf.getPath();
+        String path = parameters.modelPath;
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
 
         Set<FilterDefBase> allFilderDefs = new LinkedHashSet<>();
@@ -67,10 +59,10 @@ public class QueryableBuilder {
         }
 
         if (allFilderDefs.size() == 0) {
-            if (logging) log.debug("Not defined Q filterdefs for class : " + className);
+            if (log != null) log.debug("Not defined Q filterdefs for class : " + className);
             return;
         }
-        if (logging) log.debug("Creating model for class : " + className);
+        if (log != null) log.debug("Creating model for class : " + className);
 
         javaClass.addImport(H_FILTER);
         javaClass.addImport(H_FILTERDEF);
@@ -88,7 +80,7 @@ public class QueryableBuilder {
         }
 
         String packagePath = getPathFromPackage(javaClass.getPackage());
-        File pd = new File(outputDirectory, packagePath);
+        File pd = new File(parameters.outputDirectory, packagePath);
         pd.mkdirs();
 
         FileWriter out = new FileWriter(new File(pd, modelFileName));
@@ -100,15 +92,14 @@ public class QueryableBuilder {
         }
     }
 
-    private void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
-            orderBy, String rsPath) throws Exception {
+    private static void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
+            orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
-        final Map<String, Object> data = new LinkedHashMap<String, Object>();
-        data.put("packageName", groupId + "." + artefactId);
-        data.put("groupId", groupId);
-        data.put("className", className);
-        data.put("rsPath", rsPath);
-        data.put("defaultSort", orderBy);
+        Map<String, Object> data = Data.with("packageName", groupId + "." + artefactId)
+                .and("groupId", groupId)
+                .and("className", className)
+                .and("rsPath", rsPath)
+                .and("defaultSort", orderBy).map();
 
         String serviceRsClass = FreeMarkerTemplates.processTemplate("servicers", data);
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
@@ -122,7 +113,7 @@ public class QueryableBuilder {
         templateMethod.setBody(getSearchMethod.create());
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
-        File pd = new File(outputDirectory, packagePath);
+        File pd = new File(parameters.outputDirectory, packagePath);
         File filePath = new File(pd, className + "ServiceRs.java");
         if (filePath.exists()) {
             JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
@@ -150,7 +141,7 @@ public class QueryableBuilder {
         }
     }
 
-    private void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd) {
+    private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd) {
         if (fd == null) return;
         for (FilterDefBase f : fd) {
             if ("LocalDateTime".equals(f.fieldType)) {
@@ -172,11 +163,11 @@ public class QueryableBuilder {
         }
     }
 
-    private String getPathFromPackage(String packageName) {
+    private static String getPathFromPackage(String packageName) {
         return packageName.replace(".", "/");
     }
 
-    private MethodSource<JavaClassSource> getMethodByName(JavaClassSource javaClassSource, String name) {
+    private static MethodSource<JavaClassSource> getMethodByName(JavaClassSource javaClassSource, String name) {
         for (MethodSource<JavaClassSource> method : javaClassSource.getMethods()) {
             if (name.equals(method.getName())) {
                 return method;
@@ -185,7 +176,7 @@ public class QueryableBuilder {
         return null;
     }
 
-    private boolean excludeMethodByName(JavaClassSource javaClassSource, String name) {
+    private static boolean excludeMethodByName(JavaClassSource javaClassSource, String name) {
         for (MethodSource<JavaClassSource> method : javaClassSource.getMethods()) {
             if (name.equals(method.getName())) {
                 List<AnnotationSource<JavaClassSource>> classAn = method.getAnnotations();

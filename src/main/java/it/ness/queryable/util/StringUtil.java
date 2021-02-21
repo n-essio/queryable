@@ -2,14 +2,6 @@ package it.ness.queryable.util;
 
 import org.apache.maven.plugin.logging.Log;
 import org.atteo.evo.inflector.English;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
 
 public class StringUtil {
 

@@ -2,6 +2,7 @@ package it.ness.queryable.model;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
+import it.ness.queryable.util.FilterUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -24,14 +25,8 @@ public class QNotNilFilterDef extends FilterDefBase {
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
 
-        AnnotationSource<JavaClassSource> filterDefAnnotation = javaClass.addAnnotation();
-        filterDefAnnotation.setName("FilterDef");
-        filterDefAnnotation.setStringValue("name", filterName);
-
-        AnnotationSource<JavaClassSource> filterAnnotation = javaClass.addAnnotation();
-        filterAnnotation.setName("Filter");
-        filterAnnotation.setStringValue("name", filterName);
-        filterAnnotation.setStringValue("condition", String.format("%s IS NOT NULL", name));
+        AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
+        FilterUtils.addFilter(javaClass, filterName, String.format("%s IS NOT NULL", name));
     }
 
     @Override

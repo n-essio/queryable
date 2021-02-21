@@ -8,16 +8,18 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * Queryable is maven plugin for filter defs.
  */
-@Mojo(name = "add-api",
+@Mojo(name = "install",
         defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
         threadSafe = true)
-public class AddApiMojo extends QuerableBaseMojo {
+public class InstallMojo extends QuerableBaseMojo {
+
 
     public void execute() throws MojoExecutionException {
         init(getLog());
-        if (logging) log.info(String.format("Begin generating api sources for groupId {%s}", parameters.groupId));
+        if (logging) log.info(String.format("Begin install api and greeting"));
         MojoUtils.addApi(parameters, log);
-        if (logging) log.info("Done generating api sources");
+        MojoUtils.greeting(parameters, log);
+        if (logging) log.info("Done install api and greeting");
     }
 
 

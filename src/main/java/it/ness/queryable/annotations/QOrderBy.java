@@ -8,5 +8,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE) //on class level
 public @interface QOrderBy {
-	String orderBy() default "";
+    String value() default "";
 }
