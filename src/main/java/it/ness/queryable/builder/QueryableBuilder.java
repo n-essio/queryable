@@ -144,6 +144,9 @@ public class QueryableBuilder {
     private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd) {
         if (fd == null) return;
         for (FilterDefBase f : fd) {
+            if ("Date".equals(f.fieldType)) {
+                javaClassSource.addImport("java.util.Date");
+            }
             if ("LocalDateTime".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDateTime");
             }
