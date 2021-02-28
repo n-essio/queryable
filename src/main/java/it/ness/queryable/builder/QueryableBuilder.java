@@ -146,6 +146,7 @@ public class QueryableBuilder {
         for (FilterDefBase f : fd) {
             if ("Date".equals(f.fieldType)) {
                 javaClassSource.addImport("java.util.Date");
+                javaClassSource.addImport("it.plab.api.util.DateUtils");
             }
             if ("LocalDateTime".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDateTime");

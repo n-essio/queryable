@@ -171,7 +171,7 @@ public class QFilterDef extends FilterDefBase {
     private String getDateSearchMethod() {
         StringBuilder sb = new StringBuilder();
         String formatBody = "if (nn(\"%s\")) {" +
-                "Date date = Date.parse(get(\"%s\"));" +
+                "Date date = DateUtils.parse(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
                 "}";
         String filterName = "from." + name;

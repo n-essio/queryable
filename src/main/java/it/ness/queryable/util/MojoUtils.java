@@ -13,10 +13,14 @@ public class MojoUtils {
     public static void addApi(Parameters parameters, Log log) {
         FileUtils.createPath(parameters.outputDir, parameters.apiPath, parameters.logging ? log : null);
         File filterPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/filter/", parameters.logging ? log : null);
+        File producerPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/producer/", parameters.logging ? log : null);
+        File utilPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/util/", parameters.logging ? log : null);
         File managementPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/management/", parameters.logging ? log : null);
         File servicePath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/service/", parameters.logging ? log : null);
         Map<String, Object> data = Data.with("groupId", parameters.groupId).map();
         FileUtils.createJavaClassFromTemplate(filterPath, "CorsFilter", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(utilPath, "DateUtils", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(producerPath, "CorsExceptionMapper", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(managementPath, "AppConstants", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "RsRepositoryServiceV3", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "RsResponseService", null, data, parameters.logging ? log : null);
