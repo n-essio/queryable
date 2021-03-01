@@ -12,15 +12,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-<#if rsPath=="NOT_SET">
-<#else>
+<#if rsPath??>
 import static ${packageName}.management.AppConstants.${rsPath};
-</#if>
-
-<#if rsPath=="NOT_SET">
-@Path("NOT_SET")
-<#else>
 @Path(${rsPath})
+<#else>
+@Path("NOT_SET")
 </#if>
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -34,7 +30,11 @@ public class ${className}ServiceRs extends RsRepositoryServiceV3<${className}, S
 
     @Override
     protected String getDefaultOrderBy() {
+        <#if defaultSort??>
         return "${defaultSort}";
+        <#else>
+        return "not_set";
+        </#if>
     }
 
     @Override

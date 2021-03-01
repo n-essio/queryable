@@ -12,6 +12,7 @@ public class StringUtil {
     }
 
     public static String removeQuotes(final String str) {
+        if (str == null) return null;
         return str.replaceAll("\"", "");
     }
 
