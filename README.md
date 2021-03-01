@@ -139,7 +139,7 @@ we will add to the pom.xml configuration the hibernate/panache dependencies:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -152,11 +152,11 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.5-SNAPSHOT</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
-                !-- default is {groupId}/model -->
+                <!-- default is {groupId}/model -->
                 <sourceModelDirectory>model</sourceModelDirectory>
                 <!-- default is {groupId}/service/rs -->
                 <sourceRestDirectory>service/rs</sourceRestDirectory>
@@ -189,7 +189,7 @@ Our convention is:
 
 And after:
 ```
-mvn queryable:create
+mvn queryable:greeting
 ```
 That command will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting):
 
