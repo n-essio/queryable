@@ -95,13 +95,18 @@ public class QueryableBuilder {
     private static void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
-        Map<String, Object> data = Data.with("packageName", groupId + "." + artefactId)
+        Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
-                .and("className", className)
-                .and("rsPath", rsPath)
-                .and("defaultSort", orderBy).map();
+                .and("className", className);
+        if (orderBy!= null && !"NOT_SET".equals(orderBy)) {
+            data = data.and("defaultSort", orderBy);
+        }
+        if (rsPath!= null && !"NOT_SET".equals(rsPath)) {
+            data = data.and("rsPath", rsPath);
+        }
+        Map<String, Object> map = data.map();
 
-        String serviceRsClass = FreeMarkerTemplates.processTemplate("servicers", data);
+        String serviceRsClass = FreeMarkerTemplates.processTemplate("servicers", map);
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
         Collection<FilterDefBase> preQueryFilters = mf.getFilterDef(className, FilterType.PREQUERY);
         Collection<FilterDefBase> postQueryFilters = mf.getFilterDef(className, FilterType.POSTQUERY);
