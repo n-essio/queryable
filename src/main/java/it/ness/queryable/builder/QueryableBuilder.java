@@ -107,8 +107,8 @@ public class QueryableBuilder {
         Collection<FilterDefBase> postQueryFilters = mf.getFilterDef(className, FilterType.POSTQUERY);
 
         GetSearchMethod getSearchMethod = new GetSearchMethod(log, preQueryFilters, postQueryFilters, className);
-        addImportsToClass(javaClassTemplate, preQueryFilters);
-        addImportsToClass(javaClassTemplate, postQueryFilters);
+        addImportsToClass(javaClassTemplate, preQueryFilters, groupId);
+        addImportsToClass(javaClassTemplate, postQueryFilters, groupId);
         MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "getSearch");
         templateMethod.setBody(getSearchMethod.create());
 
@@ -118,8 +118,8 @@ public class QueryableBuilder {
         if (filePath.exists()) {
             JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
             // add imports to original
-            addImportsToClass(javaClassOriginal, preQueryFilters);
-            addImportsToClass(javaClassOriginal, postQueryFilters);
+            addImportsToClass(javaClassOriginal, preQueryFilters, groupId);
+            addImportsToClass(javaClassOriginal, postQueryFilters, groupId);
             MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "getSearch");
             if (method != null) {
                 if (!excludeMethodByName(javaClassOriginal, "getSearch")) {
@@ -141,12 +141,12 @@ public class QueryableBuilder {
         }
     }
 
-    private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd) {
+    private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd, String groupId) {
         if (fd == null) return;
         for (FilterDefBase f : fd) {
             if ("Date".equals(f.fieldType)) {
                 javaClassSource.addImport("java.util.Date");
-                javaClassSource.addImport("it.plab.api.util.DateUtils");
+                javaClassSource.addImport(String.format("%s.api.util.DateUtils", groupId));
             }
             if ("LocalDateTime".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDateTime");

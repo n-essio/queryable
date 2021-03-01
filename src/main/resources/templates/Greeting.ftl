@@ -7,13 +7,28 @@ import static ${groupId}.${artifactId}.management.AppConstants.GREETING_PATH;
 
 @Entity
 @Table(name = "greeetings")
-@Q
 @QRs(GREETING_PATH)
 @QOrderBy("name asc")
 public class Greeting extends PanacheEntityBase {
 
-@Id
-public String uuid;
-public String name;
+	@Id
+	@Q
+	@QList
+	public String uuid;
 
+	@QLike
+	public String name;
+
+	@Q
+	public LocalDateTime date_time;
+
+	@Q
+	@Enumerated(EnumType.STRING)
+	public GreetingEnum greetingEnum;
+
+	@QLikeList
+	public String tags;
+
+	@QLogicalDelete
+	boolean active;
 }

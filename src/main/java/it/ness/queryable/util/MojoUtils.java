@@ -29,9 +29,11 @@ public class MojoUtils {
     public static void greeting(Parameters parameters, Log log) {
         FileUtils.createPath(parameters.outputDir, parameters.projectPath, parameters.logging ? log : null);
         File modelPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/model/", parameters.logging ? log : null);
+        File enumPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/model/enums/", parameters.logging ? log : null);
         File managementPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/management/", parameters.logging ? log : null);
         Map<String, Object> data = Data.with("groupId", parameters.groupId).and("artifactId", parameters.artifactId).map();
         FileUtils.createJavaClassFromTemplate(managementPath, "AppConstantsApp", "AppConstants", data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(enumPath, "GreetingEnum", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(modelPath, "Greeting", null, data, parameters.logging ? log : null);
     }
 
