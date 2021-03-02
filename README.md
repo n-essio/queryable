@@ -86,6 +86,7 @@ public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
 ```
 https://prj.n-ess.it/api/v1/customers?obj.code=xxxx&like.name=yyyy
 ```
+You can find more examples <a href="API.MD">in the api rules page.</a>
 
 The boring process is:
 
