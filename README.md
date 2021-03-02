@@ -100,7 +100,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
+mvn io.quarkus:quarkus-maven-plugin:1.12.0.Final:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
@@ -108,9 +108,7 @@ mvn io.quarkus:quarkus-maven-plugin:1.11.3.Final:create \
 cd awesomeproj
 ```
 
-Following the guide: https://quarkus.io/guides/hibernate-orm-panache
-
-we will add to the pom.xml configuration the hibernate/panache dependencies:
+Following the guide: https://quarkus.io/guides/hibernate-orm-panache we will add to the pom.xml configuration the hibernate/panache/driver dependencies:
 
 ```
 ./mvnw quarkus:add-extension -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache"
