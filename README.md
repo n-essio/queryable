@@ -7,9 +7,7 @@ and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annot
 
 # Scenario
 
-
-
-Normally we use the following paradigm to developing quarkus rest app.
+Normally we use the following paradigm to developing quarkus rest app (our <a href="API.MD">api rules</a>).
 
 1 - Let's start writing our entities with some hibernate filters:
 
