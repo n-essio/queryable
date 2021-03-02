@@ -138,12 +138,19 @@ or directly on the pom.xml:
 
 #### And then?! you should start to in our pom.xml our plugin:
 
+Add queryable to your project:
+```
+./mvnw mvn it.n-ess.queryable:queryable-maven-plugin:1.0.6:add
+```
+
+or directly on the pom.xml:
+
 ```xml
 
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 ```
 
