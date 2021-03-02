@@ -139,7 +139,7 @@ we will add to the pom.xml configuration the hibernate/panache dependencies:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
@@ -180,18 +180,12 @@ In build section add plugin:
 Before start to edit the entities, run this maven command:
 
 ```
-mvn queryable:add-api
+mvn queryable:install
 ```
-This command will add our minimal api.
+This command will add our minimal api and will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting).
 Our convention is:
  - the package for the api will be: {groupId}.api (ie it.queryable.api)
  - the package for model classes will be:  {groupId}.{artifactId}.model (ie it.queryable.awesomeproj.model)
-
-And after:
-```
-mvn queryable:greeting
-```
-That command will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting):
 
 #### And then?! start to write your entities!
 
@@ -210,7 +204,7 @@ specified folder location {groupId}.{artifactId}.model
 ## JAX-RS classes location
 
 The plugins searches for java classes (JAX-RS @Path @Singleton classes) in specified folder location
-{groupId}.{artifactId}.service.rs with naming convention...
+{groupId}.{artifactId}.service.rs with naming convention {entity_name}ServiceRs (Greeting => GreetingServiceRs)
 
 ## Usage
 
@@ -294,7 +288,7 @@ will create FilterDef in model class
 @Filter(name = "obj.operationType", condition = "operationType = :operationType")
 ```
 
-and in rest service class will add to getSearch method
+and in rest service class will add to getSearch method (the filter will be execute in each get list request):
 
 ```
 search.filter("obj.operationType", Parameters.with("operationType", "BLANK_DELIVERY"));
