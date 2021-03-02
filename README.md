@@ -163,7 +163,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
         </plugin>
     </plugins>
 </build>
@@ -178,7 +178,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
