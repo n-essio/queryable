@@ -29,39 +29,36 @@ public class Student extends PanacheEntityBase {
     public boolean active;
 }
 ```
-Some possible queries:
+## Some query parameters examples:
 
-GET: /api/v1/users?like.surname=Pizz
-QUERY CONDITION: select * from users where lowercase(surname) = :surname 
-PARAMETER: surname= '%'+lowercase(like.surname) +'%'
+- GET: /api/v1/users?like.surname=Pizz
+- QUERY CONDITION: select * from users where lowercase(surname) = :surname 
+- PARAMETER: surname= '%'+lowercase(like.surname) +'%'
 
-GET: /api/v1/users?obj.nationality=IT
-QUERY CONDITION: select * from users where nationality = :nationality 
-PARAMETER: nationality = obj.nationality
+- GET: /api/v1/users?obj.nationality=IT
+- QUERY CONDITION: select * from users where nationality = :nationality 
+- PARAMETER: nationality = obj.nationality
 
-GET: /api/v1/users?obj.nationalities=IT,FR,DE
-QUERY CONDITION: select * from users where nationality IN (:nationality_list)
-PARAMETER: nationality_list = [ 'IT','FR','DE' ]
+- GET: /api/v1/users?obj.nationalities=IT,FR,DE
+- QUERY CONDITION: select * from users where nationality IN (:nationality_list)
+- PARAMETER: nationality_list = [ 'IT','FR','DE' ]
 
-GET: /api/v1/users?nil.last_examen_date=xxxxx
-QUERY CONDITION: select * from users where last_examen_date IS NOT NULL
+- GET: /api/v1/users?nil.last_examen_date=xxxxx
+- QUERY CONDITION: select * from users where last_examen_date IS NOT NULL
 
-GET: /api/v1/users?null.last_examen_date=2021-01-31
-QUERY CONDITION: select * from users where last_examen_date IS NULL
+- GET: /api/v1/users?null.last_examen_date=2021-01-31
+- QUERY CONDITION: select * from users where last_examen_date IS NULL
 
-GET: /api/v1/users?from.last_examen_date=2021-01-01&to.last_examen_date=2021-01-31
-QUERY CONDITION: select * from users where last_examen_date >= :from_date AND last_examen_date <: to_date
-PARAMETER: from_date = from.last_examen_date - to_date=to.last_examen_date
+- GET: /api/v1/users?from.last_examen_date=2021-01-01&to.last_examen_date=2021-01-31
+- QUERY CONDITION: select * from users where last_examen_date >= :from_date AND last_examen_date <: to_date
+- PARAMETER: from_date = from.last_examen_date - to_date=to.last_examen_date
 
+## prefixes
+- from, to, like, obj, not, nil
 
-- filter by range (dates or numbers) using a field name.
-- url example: ? from.
-    from: T;
-    to: T;
-    like: T;
-    obj: T;
-    not: T;
+## pagination parameters:
+- startRow: (default is 0)
+- pageSize: (default is 10)
 
-    startRow: number = 0;
-    pageSize: number = 10;
-    orderBy: string;
+## order 
+- orderBy
