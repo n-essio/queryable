@@ -113,6 +113,13 @@ Following the guide: https://quarkus.io/guides/hibernate-orm-panache
 we will add to the pom.xml configuration the hibernate/panache dependencies:
 
 ```
+./mvnw quarkus:add-extension -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache"
+```
+
+or directly on the pom.xml: 
+
+```xml
+
     <!-- Jackson Mapper -->
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -152,7 +159,22 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.5</version>
+        </plugin>
+    </plugins>
+</build>
+```
+
+Some avaliable options in the configuration:
+
+```xml
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>it.n-ess.queryable</groupId>
+            <artifactId>queryable-maven-plugin</artifactId>
+            <version>1.0.5</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -174,7 +196,7 @@ In build section add plugin:
 </build>
 ```
 
-#### And then?! maven cmd:
+#### And then?! Our queryable maven cmd:
 
 
 Before start to edit the entities, run this maven command:
@@ -189,8 +211,8 @@ Our convention is:
 
 #### And then?! start to write your entities!
 
-That command will add some classes that make you to generate all rest api controllers. After creating your annotated
-entities, run the following maven command:
+That command will add some classes that make you to generate all rest api controllers. 
+After creating your annotated entities, run the following maven command:
 
 ```
 mvn queryable:source
