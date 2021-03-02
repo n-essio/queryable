@@ -3,10 +3,20 @@ package it.ness.queryable.util;
 import it.ness.queryable.builder.QueryableBuilder;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Plugin;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.Map;
+
+import static it.ness.queryable.builder.Constants.*;
 
 public class MojoUtils {
 
@@ -46,5 +56,38 @@ public class MojoUtils {
             e.printStackTrace();
             return;
         }
+    }
+
+
+    public static Model parsePomXmlFileToMavenPomModel(String path) throws Exception {
+        Model model = null;
+        FileReader reader = null;
+        MavenXpp3Reader mavenreader = new MavenXpp3Reader();
+        reader = new FileReader(path);
+        model = mavenreader.read(reader);
+        return model;
+
+    }
+
+    public static void parseMavenPomModelToXmlString(String path, Model model) throws Exception {
+        MavenXpp3Writer mavenWriter = new MavenXpp3Writer();
+        Writer writer = new FileWriter(path);
+        mavenWriter.write(writer, model);
+    }
+
+    public static void addQueryableDependency(Model model) {
+        Dependency dependency = new Dependency();
+        dependency.setGroupId(Q_GROUPID);
+        dependency.setArtifactId(Q_ARTIFACTID);
+        dependency.setVersion(Q_VERSION);
+        model.addDependency(dependency);
+    }
+
+    public static void addQueryablePlugin(Model model) {
+        Plugin plugin = new Plugin();
+        plugin.setGroupId(Q_GROUPID);
+        plugin.setArtifactId(Q_ARTIFACTID);
+        plugin.setVersion(Q_VERSION);
+        model.getBuild().addPlugin(plugin);
     }
 }
