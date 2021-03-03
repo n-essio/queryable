@@ -140,7 +140,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw mvn it.n-ess.queryable:queryable-maven-plugin:1.0.6:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.6:add-querable
 ```
 
 or directly on the pom.xml:
@@ -206,7 +206,7 @@ Some avaliable options in the configuration:
 Before start to edit the entities, run this maven command:
 
 ```
-mvn queryable:install
+./mvnw queryable:install
 ```
 This command will add our minimal api and will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting).
 Our convention is:
