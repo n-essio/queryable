@@ -219,7 +219,7 @@ That command will add some classes that make you to generate all rest api contro
 After creating your annotated entities, run the following maven command:
 
 ```
-mvn queryable:source
+./mvnw queryable:source
 ```
 
 ## JPA @Entity classes location
