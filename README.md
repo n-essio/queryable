@@ -331,10 +331,12 @@ public LocalDateTime execution_date;
 will create two FilterDefs in model class
 
 ```
-@Filter(name = "from.execution_date", condition = "execution_date >= :execution_date")
+@FilterDef(name = "from.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
+@Filter(name = "from.operation_date", condition = "operation_date >= :execution_date")
+
 @FilterDef(name = "to.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
 @Filter(name = "to.execution_date", condition = "execution_date <= :execution_date")
-@FilterDef(name = "like.username", parameters = @ParamDef(name = "username", type = "string"))
+
 ```
 
 and in rest service class will add to getSearch method
