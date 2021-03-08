@@ -413,10 +413,12 @@ will create FilterDef in model class
 ```
 
 and in rest service class will add to getSearch method
-
-if (nn("obj.quantity")) { Long numberof = _long("obj.quantity"); search.filter("obj.quantity", Parameters.with("
-quantity", numberof)); }
-
+```
+if (nn("obj.quantity")) { 
+	Long numberof = _long("obj.quantity"); 
+	search.filter("obj.quantity", Parameters.with("quantity", numberof)); 
+}
+```
 Boolean usage case:
 
 ```
