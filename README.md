@@ -215,12 +215,12 @@ Our convention is:
 
 #### And then?! start to write your entities!
 
-That command will add some classes that make you to generate all rest api controllers. 
 After creating your annotated entities, run the following maven command:
 
 ```
 mvn queryable:source
 ```
+That command will add @FilterDef on your model classes and will add the "getSearch" method on existent rest api controllers, or will generate the non existent rest api controllers (one for each model class). 
 
 ## JPA @Entity classes location
 
