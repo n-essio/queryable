@@ -24,7 +24,7 @@ public class QNilFilterDef extends FilterDefBase {
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
-        AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, name);
+        AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
         FilterUtils.addFilter(javaClass, filterName, String.format("%s IS NULL", name));
     }
 
