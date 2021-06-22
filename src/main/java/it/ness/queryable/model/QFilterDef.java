@@ -210,7 +210,7 @@ public class QFilterDef extends FilterDefBase {
                 return getLocalDateTimeSearchMethod();
             case "LocalDate":
                 return getLocalDateSearchMethod();
-            case "Date":
+            case "java.util.Date":
                 return getDateSearchMethod();
             case "boolean":
                 return getBooleanSearchMethod();
