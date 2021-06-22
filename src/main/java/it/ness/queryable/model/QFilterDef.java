@@ -22,7 +22,7 @@ public class QFilterDef extends FilterDefBase {
 
     @Override
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
-        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "Date".equals(fieldType)) {
+        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "java.util.Date".equals(fieldType)) {
             addAnnotationToModelClass_date(javaClass);
             return;
         }
@@ -210,7 +210,7 @@ public class QFilterDef extends FilterDefBase {
                 return getLocalDateTimeSearchMethod();
             case "LocalDate":
                 return getLocalDateSearchMethod();
-            case "Date":
+            case "java.util.Date":
                 return getDateSearchMethod();
             case "boolean":
                 return getBooleanSearchMethod();
@@ -276,7 +276,7 @@ public class QFilterDef extends FilterDefBase {
             case "LocalDate":
                 return "LocalDate";
             case "Date":
-                return "Date";
+                return "java.util.Date";
             case "Boolean":
             case "boolean":
                 return "boolean";
