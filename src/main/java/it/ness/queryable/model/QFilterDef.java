@@ -22,7 +22,7 @@ public class QFilterDef extends FilterDefBase {
 
     @Override
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
-        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "Date".equals(fieldType)) {
+        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "java.util.Date".equals(fieldType)) {
             addAnnotationToModelClass_date(javaClass);
             return;
         }
