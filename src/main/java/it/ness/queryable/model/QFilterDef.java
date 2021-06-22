@@ -41,8 +41,14 @@ public class QFilterDef extends FilterDefBase {
     public void addAnnotationToModelClass_date(JavaClassSource javaClass) {
         String filterNameFrom = "from." + name;
         String filterNameTo = "to." + name;
+        String filterNameObj = "obj." + name;
         removeFilterDef(javaClass, filterNameFrom);
         removeFilterDef(javaClass, filterNameTo);
+        removeFilterDef(javaClass, filterNameObj);
+
+        AnnotationSource<JavaClassSource> filterDefAnnotationObj = FilterUtils.addFilterDef(javaClass, filterNameObj);
+        FilterUtils.addParamDef(filterDefAnnotationObj, name, type);
+        FilterUtils.addFilter(javaClass, filterNameObj, String.format("%s = :%s", name, name));
 
         AnnotationSource<JavaClassSource> filterDefAnnotationFrom = FilterUtils.addFilterDef(javaClass, filterNameFrom);
         FilterUtils.addParamDef(filterDefAnnotationFrom, name, type);
