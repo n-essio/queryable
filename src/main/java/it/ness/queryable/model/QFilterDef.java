@@ -276,7 +276,7 @@ public class QFilterDef extends FilterDefBase {
             case "LocalDate":
                 return "LocalDate";
             case "Date":
-                return "Date";
+                return "java.util.Date";
             case "Boolean":
             case "boolean":
                 return "boolean";
