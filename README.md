@@ -99,7 +99,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus:quarkus-maven-plugin:1.12.0.Final:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:2.2.1.Final:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
@@ -140,7 +140,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw mvn it.n-ess.queryable:queryable-maven-plugin:1.0.9:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.9:add
 ```
 
 or directly on the pom.xml:
@@ -206,7 +206,7 @@ Some avaliable options in the configuration:
 Before start to edit the entities, run this maven command:
 
 ```
-mvn queryable:install
+./mvnw queryable:install
 ```
 This command will add our minimal api and will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting).
 Our convention is:
@@ -218,7 +218,7 @@ Our convention is:
 After creating your annotated entities, run the following maven command:
 
 ```
-mvn queryable:source
+./mvnw queryable:source
 ```
 That command will add @FilterDef on your model classes and will add the "getSearch" method on existent rest api controllers, or will generate the non existent rest api controllers (one for each model class). 
 
