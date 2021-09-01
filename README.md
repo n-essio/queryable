@@ -138,7 +138,7 @@ or directly on the pom.xml:
     </dependency>
 ```
 
-# And then?! you should start to in our pom.xml our plugin:
+### And then?! you should start to in our pom.xml our plugin:
 
 Add queryable to your project:
 ```
@@ -215,7 +215,7 @@ Our convention is:
  - the package for the api will be: {groupId}.api (ie it.queryable.api)
  - the package for model classes will be:  {groupId}.{artifactId}.model (ie it.queryable.awesomeproj.model)
 
-#### And then?! start to write your entities!
+# And then?! start to write your entities!
 
 After creating your annotated entities, run the following maven command:
 
