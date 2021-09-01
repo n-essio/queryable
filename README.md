@@ -9,7 +9,8 @@ and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annot
 
 Normally we use the following paradigm to developing quarkus rest app (our <a href="API.MD">api rules</a>).
 
-1 - Let's start writing our entities with some hibernate filters ( <a href="https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#pc-filter" target=_blank">official documentation</a> ) :
+1 - Let's start writing our entities with some hibernate filters:
+official documentation - https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#pc-filter
 
 ```
 @Entity
