@@ -138,7 +138,7 @@ or directly on the pom.xml:
     </dependency>
 ```
 
-#### And then?! you should start to in our pom.xml our plugin:
+# And then?! you should start to in our pom.xml our plugin:
 
 Add queryable to your project:
 ```
