@@ -11,6 +11,7 @@ Normally we use the following paradigm to developing quarkus rest app (our <a hr
 
 1 - Let's start writing our entities with some hibernate filters:
 official documentation - https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#pc-filter
+Hibernate’s @Filter Annotation – Apply Dynamic Filters at Runtime (Thorben Janssen)  https://thorben-janssen.com/hibernate-filter/
 
 ```
 @Entity
