@@ -10,6 +10,8 @@ and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annot
 Normally we use the following paradigm to developing quarkus rest app (our <a href="API.MD">api rules</a>).
 
 1 - Let's start writing our entities with some hibernate filters:
+official documentation - https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#pc-filter
+Hibernate’s @Filter Annotation – Apply Dynamic Filters at Runtime (Thorben Janssen)  https://thorben-janssen.com/hibernate-filter/
 
 ```
 @Entity
@@ -99,7 +101,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus:quarkus-maven-plugin:1.12.0.Final:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:2.2.1.Final:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
@@ -136,11 +138,11 @@ or directly on the pom.xml:
     </dependency>
 ```
 
-#### And then?! you should start to in our pom.xml our plugin:
+### And then?! you should start to in our pom.xml our plugin:
 
 Add queryable to your project:
 ```
-./mvnw mvn it.n-ess.queryable:queryable-maven-plugin:1.0.6:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.9:add
 ```
 
 or directly on the pom.xml:
@@ -150,7 +152,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.9</version>
 </dependency>
 ```
 
@@ -163,7 +165,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.9</version>
         </plugin>
     </plugins>
 </build>
@@ -206,19 +208,19 @@ Some avaliable options in the configuration:
 Before start to edit the entities, run this maven command:
 
 ```
-mvn queryable:install
+./mvnw queryable:install
 ```
 This command will add our minimal api and will add an entity class in the package {groupId}.{artifactId}.model.Greeeting (ie it.queryable.awesomeproj.model.Greeeting).
 Our convention is:
  - the package for the api will be: {groupId}.api (ie it.queryable.api)
  - the package for model classes will be:  {groupId}.{artifactId}.model (ie it.queryable.awesomeproj.model)
 
-#### And then?! start to write your entities!
+# And then?! start to write your entities!
 
 After creating your annotated entities, run the following maven command:
 
 ```
-mvn queryable:source
+./mvnw queryable:source
 ```
 That command will add @FilterDef on your model classes and will add the "getSearch" method on existent rest api controllers, or will generate the non existent rest api controllers (one for each model class). 
 

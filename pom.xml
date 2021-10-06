@@ -7,7 +7,7 @@
 
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.9-SNAPSHOT</version>
+    <version>1.0.9</version>
     <packaging>maven-plugin</packaging>
     <name>Queryable Maven Plugin</name>
     <description>Queryable Maven Plugin.</description>
