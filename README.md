@@ -496,25 +496,65 @@ if (nn("notNil.executor")) {
 
 ### QList annotation
 
+on String field:
+
 ```
 @QList
-public String operation_uuid;
+public String uuid;
 ```
 
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.operation_uuids", parameters = @ParamDef(name = "operation_uuids", type = "string"))
-@Filter(name = "obj.operation_uuids", condition = "operation_uuid IN (:operation_uuids)")
+@FilterDef(name = "obj.uuids", parameters = @ParamDef(name = "uuids", type = "string"))
+@Filter(name = "obj.uuids", condition = "uuid IN (:uuids)")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
-if (nn("obj.operation_uuids")) {
-	String[] operation_uuids = get("obj.operation_uuids").split(",");
-	getEntityManager().unwrap(Session.class).enableFilter("obj.operation_uuids")
-			.setParameterList("operation_uuids", operation_uuids);
+if (nn("obj.uuids")) {
+	    search.filter("obj.uuids", Parameters.with("uuids", asList("obj.uuids")));
+}
+```
+on Integer field:
+```
+@QList
+public Integer id;
+```
+
+will create FilterDef in model class
+
+```
+@FilterDef(name = "obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@Filter(name = "obj.ids", condition = "id IN (:ids)")
+```
+
+and in rest service class will add to getSearch method
+
+```
+if (nn("obj.uuids")) {
+	    search.filter("obj.uuids", Parameters.with("uuids", asIntegerList("obj.uuids")));
+}
+```
+on Long field:
+```
+@QList
+public Long id;
+```
+
+will create FilterDef in model class
+
+```
+@FilterDef(name = "obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@Filter(name = "obj.ids", condition = "id IN (:ids)")
+```
+
+and in rest service class will add to getSearch method
+
+```
+if (nn("obj.uuids")) {
+	    search.filter("obj.uuids", Parameters.with("uuids", asLongList("obj.uuids")));
 }
 ```
 
