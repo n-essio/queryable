@@ -142,7 +142,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.10:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.11:add
 ```
 
 or directly on the pom.xml:
@@ -152,7 +152,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
 </dependency>
 ```
 
@@ -165,7 +165,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.11</version>
         </plugin>
     </plugins>
 </build>
@@ -180,7 +180,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.11</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>

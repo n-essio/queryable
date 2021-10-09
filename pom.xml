@@ -7,7 +7,7 @@
 
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
     <packaging>maven-plugin</packaging>
     <name>Queryable Maven Plugin</name>
     <description>Queryable Maven Plugin.</description>
@@ -18,7 +18,6 @@
     </organization>
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
