@@ -7,7 +7,7 @@
 
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
     <packaging>maven-plugin</packaging>
     <name>Queryable Maven Plugin</name>
     <description>Queryable Maven Plugin.</description>
@@ -56,13 +56,14 @@
         <maven.version>3.3.9</maven.version>
         <version.roaster>2.22.2.Final</version.roaster>
         <version.freemarker>2.3.30</version.freemarker>
+        <version.org.atteo>1.2.2</version.org.atteo>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.atteo</groupId>
             <artifactId>evo-inflector</artifactId>
-            <version>1.2.2</version>
+            <version>${version.org.atteo}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

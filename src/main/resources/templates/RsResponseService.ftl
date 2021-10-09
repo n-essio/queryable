@@ -87,6 +87,28 @@ public abstract class RsResponseService implements Serializable {
         return get(key) != null ? get(key).toLowerCase() : null;
     }
 
+    public List<String> asList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(",", -1))
+                    .collect(Collectors.toList());
+        }
+
+        public List<Integer> asIntegerList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(","))
+                    .map(String::trim)
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+
+        public List<Long> asLongList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(","))
+                    .map(String::trim)
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+        }
+
     public Integer _integer(String key) {
         String value = ui.getQueryParameters().getFirst(key);
         return Integer.valueOf(value);

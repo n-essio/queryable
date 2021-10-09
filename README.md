@@ -101,7 +101,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus.platform:quarkus-maven-plugin:2.2.1.Final:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:2.3.0.Final:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
@@ -142,7 +142,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.9:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.10:add
 ```
 
 or directly on the pom.xml:
@@ -152,7 +152,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 </dependency>
 ```
 
@@ -165,7 +165,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.10</version>
         </plugin>
     </plugins>
 </build>
