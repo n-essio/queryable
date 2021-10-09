@@ -1,5 +1,8 @@
 # @Queryable
 
+<img src="https://badgen.net/maven/v/maven-central/it.n-ess.queryable/queryable-maven-plugin"><br/>
+
+
 <img src="docs/queryable.png"><br/>
 
 **Queryable** is a Maven plugin to generate quickly Java classes for **JAX-RS** controllers using with **Quarkus**
