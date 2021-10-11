@@ -34,17 +34,17 @@ public class Student extends PanacheEntityBase {
 ## like.xxxx
 - GET: /api/v1/users?like.surname=Pizz
 - QUERY CONDITION: select * from users where lowercase(surname) = :surname 
-- PARAMETER: surname= '%'+lowercase(like.surname) +'%'
+- QUERY PARAMETER: surname= '%'+lowercase(like.surname) +'%'
 
 ## obj.xxxx
 - GET: /api/v1/users?obj.nationality=IT
 - QUERY CONDITION: select * from users where nationality = :nationality 
-- PARAMETER: nationality = obj.nationality
+- QUERY PARAMETER: nationality = obj.nationality
 
 ## obj for list
 - GET: /api/v1/users?obj.nationalities=IT,FR,DE
 - QUERY CONDITION: select * from users where nationality IN (:nationality_list)
-- PARAMETER: nationality_list = [ 'IT','FR','DE' ]
+- QUERY PARAMETER: nationality_list = [ 'IT','FR','DE' ]
 
 ## nil.xxx
 - GET: /api/v1/users?nil.last_examen_date=xxxxx
@@ -57,7 +57,7 @@ public class Student extends PanacheEntityBase {
 ## from.xxx && to.xxx
 - GET: /api/v1/users?from.last_examen_date=2021-01-01&to.last_examen_date=2021-01-31
 - QUERY CONDITION: select * from users where last_examen_date >= :from_date AND last_examen_date <: to_date
-- PARAMETER: from_date = from.last_examen_date - to_date=to.last_examen_date
+- QUERY PARAMETER: from_date = from.last_examen_date - to_date=to.last_examen_date
 
 ## prefixes
 - from, to, like, obj, not, nil

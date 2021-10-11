@@ -11,7 +11,10 @@ import javax.ws.rs.core.UriInfo;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public abstract class RsResponseService implements Serializable {
@@ -86,6 +89,28 @@ public abstract class RsResponseService implements Serializable {
     public String lowercase(String key) {
         return get(key) != null ? get(key).toLowerCase() : null;
     }
+
+    public List<String> asList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(",", -1))
+                    .collect(Collectors.toList());
+        }
+
+        public List<Integer> asIntegerList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(","))
+                    .map(String::trim)
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+
+        public List<Long> asLongList(String key) {
+            String value = get(key);
+            return Stream.of(value.split(","))
+                    .map(String::trim)
+                    .map(Long::parseLong)
+                    .collect(Collectors.toList());
+        }
 
     public Integer _integer(String key) {
         String value = ui.getQueryParameters().getFirst(key);

@@ -74,15 +74,74 @@ public class QListFilterDef extends FilterDefBase {
         return fd;
     }
 
+//    @Override
+//    public String getSearchMethod() {
+//        String formatBody = "if (nn(\"%s\")) {" +
+//                "String[] %s = get(\"%s\").split(\",\");" +
+//                "getEntityManager().unwrap(Session.class)" +
+//                "         .enableFilter(\"%s\")" +
+//                "         .setParameterList(\"%s\", %s);" +
+//                "}";
+//        return String.format(formatBody, filterName, nameInPlural, filterName, filterName, nameInPlural, nameInPlural);
+//    }
+
     @Override
     public String getSearchMethod() {
+        switch (fieldType) {
+            case "string":
+                return getStringSearchMethod();
+            case "integer":
+                return getIntegerSearchMethod();
+            case "long":
+                return getLongSearchMethod();
+        }
+        log.error("not handled getSearchMethod for fieldType: " + fieldType + " name: " + name);
+        return "";
+    }
+
+    /*
+     if (nn("obj.uuids")) {
+            search.filter("obj.uuids", Parameters.with("uuids", asList("obj.uuids")));
+        }
+     */
+
+    private String getStringSearchMethod() {
+        if (null == condition) {
+            String formatBody = "if (nn(\"%s\")) {" +
+                    "search.filter(\"%s\", Parameters.with(\"%s\", asList(\"%s\")));" +
+                    "}";
+            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+        }
         String formatBody = "if (nn(\"%s\")) {" +
-                "String[] %s = get(\"%s\").split(\",\");" +
-                "getEntityManager().unwrap(Session.class)" +
-                "         .enableFilter(\"%s\")" +
-                "         .setParameterList(\"%s\", %s);" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
                 "}";
-        return String.format(formatBody, filterName, nameInPlural, filterName, filterName, nameInPlural, nameInPlural);
+        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
+    }
+
+    private String getLongSearchMethod() {
+        if (null == condition) {
+            String formatBody = "if (nn(\"%s\")) {" +
+                    "search.filter(\"%s\", Parameters.with(\"%s\", asLongList(\"%s\")));" +
+                    "}";
+            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+        }
+        String formatBody = "if (nn(\"%s\")) {" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+                "}";
+        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
+    }
+
+    private String getIntegerSearchMethod() {
+        if (null == condition) {
+            String formatBody = "if (nn(\"%s\")) {" +
+                    "search.filter(\"%s\", Parameters.with(\"%s\", asIntegerList(\"%s\")));" +
+                    "}";
+            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+        }
+        String formatBody = "if (nn(\"%s\")) {" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+                "}";
+        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
     }
 
     @Override
@@ -99,6 +158,10 @@ public class QListFilterDef extends FilterDefBase {
         switch (fieldType) {
             case "String":
                 return "string";
+            case "Integer":
+                return "int";
+            case "Long":
+                return "long";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -107,6 +170,8 @@ public class QListFilterDef extends FilterDefBase {
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
         supported.add("String");
+        supported.add("Integer");
+        supported.add("Long");
         return supported;
     }
 
