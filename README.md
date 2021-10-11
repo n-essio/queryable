@@ -145,7 +145,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.11:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.12:add
 ```
 
 or directly on the pom.xml:
