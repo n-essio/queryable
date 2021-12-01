@@ -29,7 +29,7 @@ public class QNilFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QNilFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QNilFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -48,11 +48,13 @@ public class QNilFilterDef extends FilterDefBase {
         }
 
         QNilFilterDef fd = new QNilFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);
@@ -65,7 +67,7 @@ public class QNilFilterDef extends FilterDefBase {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\");" +
                 "}";
-        return String.format(formatBody, filterName, filterName);
+        return String.format(formatBody, queryName, filterName);
     }
 
     @Override

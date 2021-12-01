@@ -30,7 +30,8 @@ public class QListFilterDef extends FilterDefBase {
         } else {
             nameInPlural = stringUtil.getPlural(name);
         }
-        filterName = prefix + "." + nameInPlural;
+        filterName = entityName + "." + prefix + "." + nameInPlural;
+        queryName = prefix + "." + nameInPlural;
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
@@ -43,7 +44,7 @@ public class QListFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QListFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QListFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -62,11 +63,13 @@ public class QListFilterDef extends FilterDefBase {
         }
 
         QListFilterDef fd = new QListFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);
@@ -110,12 +113,12 @@ public class QListFilterDef extends FilterDefBase {
             String formatBody = "if (nn(\"%s\")) {" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", asList(\"%s\")));" +
                     "}";
-            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+            return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
+        return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
 
     private String getLongSearchMethod() {
@@ -123,12 +126,12 @@ public class QListFilterDef extends FilterDefBase {
             String formatBody = "if (nn(\"%s\")) {" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", asLongList(\"%s\")));" +
                     "}";
-            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+            return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
+        return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
 
     private String getIntegerSearchMethod() {
@@ -136,12 +139,12 @@ public class QListFilterDef extends FilterDefBase {
             String formatBody = "if (nn(\"%s\")) {" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", asIntegerList(\"%s\")));" +
                     "}";
-            return String.format(formatBody, filterName, filterName, nameInPlural, filterName);
+            return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, nameInPlural, condition);
+        return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
 
     @Override
