@@ -30,7 +30,8 @@ public class QLikeListFilterDef extends FilterDefBase {
         } else {
             nameInPlural = stringUtil.getPlural(name);
         }
-        filterName = prefix + "." + nameInPlural;
+        filterName = entityName + "." + prefix + "." + nameInPlural;
+        queryName = prefix + "." + nameInPlural;
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
 
@@ -44,7 +45,7 @@ public class QLikeListFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QLikeListFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLikeListFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -63,11 +64,13 @@ public class QLikeListFilterDef extends FilterDefBase {
         }
 
         QLikeListFilterDef fd = new QLikeListFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);
@@ -87,7 +90,7 @@ public class QLikeListFilterDef extends FilterDefBase {
                         "   for (int i = 0; i < %s.length; i++) {" +
                         "      final String paramName = String.format(\"%s%%d\", i);" +
                         "      sb.append(String.format(\"%s LIKE :%%s\", paramName));" +
-                        "      params.put(paramName, %s[i]);" +
+                        "      params.put(paramName, %s + %s[i] + %s);" +
                         "      if (i < %s.length - 1) {" +
                         "         sb.append(\" OR \");" +
                         "      }" +
@@ -99,7 +102,7 @@ public class QLikeListFilterDef extends FilterDefBase {
                         "      query = query + \" OR \" + sb.toString();\n" +
                         "   }" +
                         "}";
-        return String.format(formatBody, filterName, nameInPlural, filterName, nameInPlural, name, name, nameInPlural, nameInPlural);
+        return String.format(formatBody, queryName, nameInPlural, queryName, nameInPlural, name, name, "\"%\"", nameInPlural, "\"%\"", nameInPlural);
     }
 
     @Override

@@ -31,7 +31,7 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QLogicalDeleteFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLogicalDeleteFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -50,11 +50,13 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
         }
 
         QLogicalDeleteFilterDef fd = new QLogicalDeleteFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);

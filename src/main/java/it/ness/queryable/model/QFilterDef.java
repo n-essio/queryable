@@ -39,9 +39,9 @@ public class QFilterDef extends FilterDefBase {
     }
 
     public void addAnnotationToModelClass_date(JavaClassSource javaClass) {
-        String filterNameFrom = "from." + name;
-        String filterNameTo = "to." + name;
-        String filterNameObj = "obj." + name;
+        String filterNameFrom = entityName + ".from." + name;
+        String filterNameTo = entityName + ".to." + name;
+        String filterNameObj = entityName + ".obj." + name;
         removeFilterDef(javaClass, filterNameFrom);
         removeFilterDef(javaClass, filterNameTo);
         removeFilterDef(javaClass, filterNameObj);
@@ -60,7 +60,7 @@ public class QFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             if (!qClassLevelAnnotation) {
@@ -85,11 +85,13 @@ public class QFilterDef extends FilterDefBase {
         }
 
         QFilterDef fd = new QFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);
@@ -102,12 +104,12 @@ public class QFilterDef extends FilterDefBase {
             String formatBody = "if (nn(\"%s\")) {" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", get(\"%s\")));" +
                     "}";
-            return String.format(formatBody, filterName, filterName, name, filterName);
+            return String.format(formatBody, queryName, filterName, name, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, name, condition);
+        return String.format(formatBody, queryName, filterName, name, condition);
     }
 
     private String getIntegerSearchMethod() {
@@ -115,7 +117,7 @@ public class QFilterDef extends FilterDefBase {
                 "Integer numberof = _integer(\"%s\");" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, filterName, name);
+        return String.format(formatBody, queryName, filterName, queryName, name);
     }
 
     private String getLongSearchMethod() {
@@ -123,7 +125,7 @@ public class QFilterDef extends FilterDefBase {
                 "Long numberof = _long(\"%s\");" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, filterName, name);
+        return String.format(formatBody, queryName, filterName, queryName, name);
     }
 
     private String getBooleanSearchMethod() {
@@ -132,12 +134,12 @@ public class QFilterDef extends FilterDefBase {
                     "Boolean valueof = _boolean(\"%s\");" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", valueof));" +
                     "}";
-            return String.format(formatBody, filterName, filterName, filterName, name);
+            return String.format(formatBody, queryName, filterName, queryName, name);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", %s));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, filterName, condition);
+        return String.format(formatBody, queryName, filterName, queryName, condition);
     }
 
     private String getBigDecimalSearchMethod() {
@@ -145,7 +147,7 @@ public class QFilterDef extends FilterDefBase {
                 "BigDecimal numberof = new BigDecimal(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, filterName, name);
+        return String.format(formatBody, queryName, queryName, filterName, name);
     }
 
     private String getLocalDateSearchMethod() {
@@ -154,10 +156,15 @@ public class QFilterDef extends FilterDefBase {
                 "LocalDate date = LocalDate.parse(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
                 "}";
-        String filterName = "from." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
-        filterName = "to." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
+        String filterName = entityName + ".from." + name;
+        String queryName = "from." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".to." + name;
+        queryName = "to." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".obj." + name;
+        queryName = "obj." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
         return sb.toString();
     }
 
@@ -167,23 +174,33 @@ public class QFilterDef extends FilterDefBase {
                 "LocalDateTime date = LocalDateTime.parse(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
                 "}";
-        String filterName = "from." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
-        filterName = "to." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
+        String filterName = entityName + ".from." + name;
+        String queryName = "from." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".to." + name;
+        queryName = "to." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".obj." + name;
+        queryName = "obj." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
         return sb.toString();
     }
 
     private String getDateSearchMethod() {
         StringBuilder sb = new StringBuilder();
         String formatBody = "if (nn(\"%s\")) {" +
-                "Date date = DateUtils.parse(get(\"%s\"));" +
+                "Date date = DateUtils.parseDate(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
                 "}";
-        String filterName = "from." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
-        filterName = "to." + name;
-        sb.append(String.format(formatBody, filterName, filterName, filterName, name));
+        String filterName = entityName + ".from." + name;
+        queryName = "from." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".to." + name;
+        queryName = "to." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".obj." + name;
+        queryName = "obj." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
         return sb.toString();
     }
 
@@ -238,7 +255,7 @@ public class QFilterDef extends FilterDefBase {
     private String getStringEqualsAlways() {
         if (null == condition) {
             String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", get(\"%s\")));";
-            return String.format(formatBody, filterName, name, filterName);
+            return String.format(formatBody, filterName, name, queryName);
         }
         String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));";
         return String.format(formatBody, filterName, name, condition);
@@ -248,13 +265,13 @@ public class QFilterDef extends FilterDefBase {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\");" +
                 "}";
-        return String.format(formatBody, filterName, filterName);
+        return String.format(formatBody, queryName, filterName);
     }
 
     private String getBooleanEqualsAlways() {
         if (null == condition) {
             String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", get(\"%s\")));";
-            return String.format(formatBody, filterName, name, filterName);
+            return String.format(formatBody, filterName, name, queryName);
         }
         String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", %s));";
         return String.format(formatBody, filterName, name, condition);
@@ -264,7 +281,7 @@ public class QFilterDef extends FilterDefBase {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\");" +
                 "}";
-        return String.format(formatBody, filterName, filterName);
+        return String.format(formatBody, queryName, filterName);
     }
 
     private String getTypeFromFieldType(final String fieldType) {

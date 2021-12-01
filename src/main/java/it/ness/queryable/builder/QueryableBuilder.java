@@ -2,7 +2,6 @@ package it.ness.queryable.builder;
 
 import it.ness.queryable.model.FilterDefBase;
 import it.ness.queryable.model.QLikeListFilterDef;
-import it.ness.queryable.model.QListFilterDef;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
@@ -149,7 +148,7 @@ public class QueryableBuilder {
     private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd, String groupId) {
         if (fd == null) return;
         for (FilterDefBase f : fd) {
-            if ("Date".equals(f.fieldType)) {
+            if ("java.util.Date".equals(f.fieldType)) {
                 javaClassSource.addImport("java.util.Date");
                 javaClassSource.addImport(String.format("%s.api.util.DateUtils", groupId));
             }
@@ -161,9 +160,6 @@ public class QueryableBuilder {
             }
             if ("BigDecimal".equals(f.fieldType) || "big_decimal".equals(f.fieldType)) {
                 javaClassSource.addImport("java.math.BigDecimal");
-            }
-            if (f instanceof QListFilterDef) {
-                javaClassSource.addImport("org.hibernate.Session");
             }
             if (f instanceof QLikeListFilterDef) {
                 javaClassSource.addImport("java.util.HashMap");
