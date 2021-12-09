@@ -20,14 +20,14 @@ Hibernate’s @Filter Annotation – Apply Dynamic Filters at Runtime (Thorben J
 @Entity
 @Table(name = "customers")
 
-@FilterDef(name = "obj.code", parameters = @ParamDef(name = "code", type = "string"))
-@Filter(name = "obj.code", condition = "code = :code")
+@FilterDef(name = "Customer.obj.code", parameters = @ParamDef(name = "code", type = "string"))
+@Filter(name = "Customer.obj.code", condition = "code = :code")
 
-@FilterDef(name = "like.name", parameters = @ParamDef(name = "name", type = "string"))
-@Filter(name = "like.name", condition = "lower(name) LIKE :name")
+@FilterDef(name = "Customer.like.name", parameters = @ParamDef(name = "name", type = "string"))
+@Filter(name = "Customer.like.name", condition = "lower(name) LIKE :name")
 
-@FilterDef(name = "obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
-@Filter(name = "obj.active", condition = "active = :active")
+@FilterDef(name = "Customer.obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
+@Filter(name = "Customer.obj.active", condition = "active = :active")
 
 public class Customer extends PanacheEntityBase {
 
@@ -74,12 +74,12 @@ public class CustomerServiceRs extends RsRepositoryServiceV3<Customer, String> {
             search = Customer.find(null);
         }
         if (nn("obj.code")) {
-            search.filter("obj.code", Parameters.with("code", get("obj.code")));
+            search.filter("Customer.obj.code", Parameters.with("code", get("obj.code")));
         }
         if (nn("like.name")) {
-            search.filter("like.name", Parameters.with("name", likeParamToLowerCase("like.name")));
+            search.filter("Customer.like.name", Parameters.with("name", likeParamToLowerCase("like.name")));
         }
-        search.filter("obj.active", Parameters.with("active", true));
+        search.filter("Customer.obj.active", Parameters.with("active", true));
         return search;
     }
 
@@ -269,15 +269,15 @@ public String code;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.code", parameters = @ParamDef(name = "code", type = "string"))
-@Filter(name = "obj.code", condition = "code = :code")
+@FilterDef(name = "XXX.obj.code", parameters = @ParamDef(name = "code", type = "string"))
+@Filter(name = "XXX.obj.code", condition = "code = :code")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("obj.code")) {
-	search.filter("obj.code", Parameters.with("code", get("obj.code")));
+	search.filter("XXX.obj.code", Parameters.with("code", get("obj.code")));
 }
 ```
 
@@ -292,15 +292,15 @@ public MovementReason movementReason;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.movementReason", parameters = @ParamDef(name = "movementReason", type = "string"))
-@Filter(name = "obj.movementReason", condition = "movementReason = :movementReason")
+@FilterDef(name = "XXX.obj.movementReason", parameters = @ParamDef(name = "movementReason", type = "string"))
+@Filter(name = "XXX.obj.movementReason", condition = "movementReason = :movementReason")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("obj.movementReason")) {
-	search.filter("obj.movementReason", Parameters.with("movementReason", get("obj.movementReason")));
+	search.filter("XXX.obj.movementReason", Parameters.with("movementReason", get("obj.movementReason")));
 }
 ```
 
@@ -315,14 +315,14 @@ public OperationType operationType;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.operationType", parameters = @ParamDef(name = "operationType", type = "string"))
-@Filter(name = "obj.operationType", condition = "operationType = :operationType")
+@FilterDef(name = "XXX.obj.operationType", parameters = @ParamDef(name = "operationType", type = "string"))
+@Filter(name = "XXX.obj.operationType", condition = "operationType = :operationType")
 ```
 
 and in rest service class will add to getSearch method (the filter will be execute in each get list request):
 
 ```
-search.filter("obj.operationType", Parameters.with("operationType", "BLANK_DELIVERY"));
+search.filter("XXX.obj.operationType", Parameters.with("operationType", "BLANK_DELIVERY"));
 ```
 
 LocalDateTime, LocalDate, Date usage case:
@@ -336,11 +336,11 @@ public LocalDateTime execution_date;
 will create two FilterDefs in model class
 
 ```
-@FilterDef(name = "from.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
-@Filter(name = "from.operation_date", condition = "operation_date >= :execution_date")
+@FilterDef(name = "XXX.from.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
+@Filter(name = "XXX.from.operation_date", condition = "operation_date >= :execution_date")
 
-@FilterDef(name = "to.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
-@Filter(name = "to.execution_date", condition = "execution_date <= :execution_date")
+@FilterDef(name = "XXX.to.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
+@Filter(name = "XXX.to.execution_date", condition = "execution_date <= :execution_date")
 
 ```
 
@@ -349,11 +349,11 @@ and in rest service class will add to getSearch method
 ```
 if (nn("from.execution_date")) {
 	LocalDateTime date = LocalDateTime.parse(get("from.execution_date"));
-	search.filter("from.execution_date", Parameters.with("execution_date", date));
+	search.filter("XXX.from.execution_date", Parameters.with("execution_date", date));
 }
 if (nn("to.execution_date")) {
 	LocalDateTime date = LocalDateTime.parse(get("to.execution_date"));
-	search.filter("to.execution_date", Parameters.with("execution_date", date));
+	search.filter("XXX.to.execution_date", Parameters.with("execution_date", date));
 }
 ```
 
@@ -367,8 +367,8 @@ public BigDecimal weight;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.weight", parameters = @ParamDef(name = "weight", type = "big_decimal"))
-@Filter(name = "obj.weight", condition = "weight = :weight")
+@FilterDef(name = "XXX.obj.weight", parameters = @ParamDef(name = "weight", type = "big_decimal"))
+@Filter(name = "XXX.obj.weight", condition = "weight = :weight")
 ```
 
 and in rest service class will add to getSearch method
@@ -376,7 +376,7 @@ and in rest service class will add to getSearch method
 ```
 if (nn("obj.weight")) {
 	BigDecimal numberof = new BigDecimal(get("obj.weight"));
-	search.filter("obj.weight", Parameters.with("weight", numberof));
+	search.filter("XXX.obj.weight", Parameters.with("weight", numberof));
 }
 ```
 
@@ -390,8 +390,8 @@ public Integer quantity;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.quantity", parameters = @ParamDef(name = "quantity", type = "int"))
-@Filter(name = "obj.quantity", condition = "quantity = :quantity")
+@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = "int"))
+@Filter(name = "XXX.obj.quantity", condition = "quantity = :quantity")
 ```
 
 and in rest service class will add to getSearch method
@@ -399,7 +399,7 @@ and in rest service class will add to getSearch method
 ```
 if (nn("obj.quantity")) {
 	Integer numberof = _integer("obj.quantity");
-	search.filter("obj.quantity", Parameters.with("quantity", numberof));
+	search.filter("XXX.obj.quantity", Parameters.with("quantity", numberof));
 }
 ```
 
@@ -413,15 +413,15 @@ public Long quantity;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.quantity", parameters = @ParamDef(name = "quantity", type = "long"))
-@Filter(name = "obj.quantity", condition = "quantity = :quantity")
+@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = "long"))
+@Filter(name = "XXX.obj.quantity", condition = "quantity = :quantity")
 ```
 
 and in rest service class will add to getSearch method
 ```
 if (nn("obj.quantity")) { 
 	Long numberof = _long("obj.quantity"); 
-	search.filter("obj.quantity", Parameters.with("quantity", numberof)); 
+	search.filter("XXX.obj.quantity", Parameters.with("quantity", numberof)); 
 }
 ```
 Boolean usage case:
@@ -434,8 +434,8 @@ public boolean default_template;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
-@Filter(name = "not.default_template", condition = "default_template = :default_template")
+@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
+@Filter(name = "XXX.not.default_template", condition = "default_template = :default_template")
 ```
 
 and in rest service class will add to getSearch method
@@ -443,7 +443,7 @@ and in rest service class will add to getSearch method
 ```
 if (nn("not.default_template")) {
 	Boolean valueof = _boolean("not.default_template");
-	search.filter("not.default_template", Parameters.with("default_template", valueof));
+	search.filter("XXX.not.default_template", Parameters.with("default_template", valueof));
 }
 ```
 
@@ -457,15 +457,15 @@ public boolean default_template;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
-@Filter(name = "not.default_template", condition = "default_template = :default_template")
+@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
+@Filter(name = "XXX.not.default_template", condition = "default_template = :default_template")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("not.default_template")) {
-	search.filter("not.default_template", Parameters.with("not.default_template", false));
+	search.filter("XXX.not.default_template", Parameters.with("not.default_template", false));
 }
 ```
 
@@ -480,20 +480,20 @@ public String executor;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "nil.executor")
-@Filter(name = "nil.executor", condition = "executor IS NULL")
-@FilterDef(name = "notNil.executor")
-@Filter(name = "notNil.executor", condition = "executor IS NOT NULL")
+@FilterDef(name = "XXX.nil.executor")
+@Filter(name = "XXX.nil.executor", condition = "executor IS NULL")
+@FilterDef(name = "XXX.notNil.executor")
+@Filter(name = "XXX.notNil.executor", condition = "executor IS NOT NULL")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("nil.executor")) {
-	search.filter("nil.executor");
+	search.filter("XXX.nil.executor");
 }
 if (nn("notNil.executor")) {
-	search.filter("notNil.executor");
+	search.filter("XXX.notNil.executor");
 }
 ```
 
@@ -509,15 +509,15 @@ public String uuid;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.uuids", parameters = @ParamDef(name = "uuids", type = "string"))
-@Filter(name = "obj.uuids", condition = "uuid IN (:uuids)")
+@FilterDef(name = "XXX.obj.uuids", parameters = @ParamDef(name = "uuids", type = "string"))
+@Filter(name = "XXX.obj.uuids", condition = "uuid IN (:uuids)")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("obj.uuids")) {
-	    search.filter("obj.uuids", Parameters.with("uuids", asList("obj.uuids")));
+	    search.filter("XXX.obj.uuids", Parameters.with("uuids", asList("obj.uuids")));
 }
 ```
 on Integer field:
@@ -529,15 +529,15 @@ public Integer id;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
-@Filter(name = "obj.ids", condition = "id IN (:ids)")
+@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@Filter(name = "XXX.obj.ids", condition = "id IN (:ids)")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("obj.uuids")) {
-	    search.filter("obj.uuids", Parameters.with("uuids", asIntegerList("obj.uuids")));
+	    search.filter("XXX.obj.uuids", Parameters.with("uuids", asIntegerList("obj.uuids")));
 }
 ```
 on Long field:
@@ -549,15 +549,15 @@ public Long id;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
-@Filter(name = "obj.ids", condition = "id IN (:ids)")
+@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@Filter(name = "XXX.obj.ids", condition = "id IN (:ids)")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
 if (nn("obj.uuids")) {
-	    search.filter("obj.uuids", Parameters.with("uuids", asLongList("obj.uuids")));
+	    search.filter("XXX.obj.uuids", Parameters.with("uuids", asLongList("obj.uuids")));
 }
 ```
 
@@ -571,8 +571,8 @@ public String tags;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "like.tags", parameters = @ParamDef(name = "tags", type = "string"))
-@Filter(name = "like.tags", condition = "lower(tags) LIKE :tags")
+@FilterDef(name = "XXX.like.tags", parameters = @ParamDef(name = "tags", type = "string"))
+@Filter(name = "XXX.like.tags", condition = "lower(tags) LIKE :tags")
 ```
 
 and in rest service class will add to getSearch method
@@ -619,12 +619,12 @@ public boolean active = true;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
-@Filter(name = "obj.active", condition = "active = :active")
+@FilterDef(name = "XXX.obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
+@Filter(name = "XXX.obj.active", condition = "active = :active")
 ```
 
 and in rest service class will add to getSearch method
 
 ```
-search.filter("obj.active", Parameters.with("active", true));
+search.filter("XXX.obj.active", Parameters.with("active", true));
 ```
