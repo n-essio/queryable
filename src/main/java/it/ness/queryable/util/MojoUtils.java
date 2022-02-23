@@ -1,6 +1,7 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.builder.QueryableBuilder;
+import it.ness.queryable.builder.TestBuilder;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
 import org.apache.maven.model.Dependency;
@@ -58,6 +59,18 @@ public class MojoUtils {
         }
     }
 
+    public static void testsource(Parameters parameters, Log log) {
+        ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+        if (!mf.isParsingSuccessful) {
+            return;
+        }
+        try {
+            TestBuilder.generateSources(mf, log, parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
 
     public static Model parsePomXmlFileToMavenPomModel(String path) throws Exception {
         Model model = null;
