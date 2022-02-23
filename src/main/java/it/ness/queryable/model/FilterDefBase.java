@@ -16,16 +16,18 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     protected Log log;
     protected StringUtil stringUtil;
 
+    public String entityName;
     public String prefix;
     public String name;
     public String type;
     public String fieldType;
     public String condition;
     public String filterName;
+    public String queryName;
     public QOption[] options;
 
     public abstract void addAnnotationToModelClass(JavaClassSource javaClass);
-    public abstract FilterDefBase parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation);
+    public abstract FilterDefBase parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation);
     public abstract String getSearchMethod();
     public abstract FilterType getFilterType();
     public abstract boolean overrideOnSameFilterName();
@@ -59,7 +61,7 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     }
 
     public String toString() {
-        return String.format("FilterDef={prefix=%s, name=%s, type=%s, condition=%s}", prefix, name, type, condition);
+        return String.format("FilterDef={entityName=%s, prefix=%s, name=%s, type=%s, condition=%s}", entityName, prefix, name, type, condition);
     }
 
     public String getFilterName() {

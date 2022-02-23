@@ -31,7 +31,7 @@ public class QLikeFilterDef extends FilterDefBase {
     }
 
     @Override
-    public QLikeFilterDef parseQFilterDef(FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLikeFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -50,11 +50,13 @@ public class QLikeFilterDef extends FilterDefBase {
         }
 
         QLikeFilterDef fd = new QLikeFilterDef(log);
+        fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
         fd.fieldType = getTypeFromFieldType(fieldType);
         fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = prefix + "." + name;
+        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
             fd.options = QOption.from(options);
@@ -73,19 +75,19 @@ public class QLikeFilterDef extends FilterDefBase {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));" +
                 "}";
-        return String.format(formatBody, filterName, filterName, name, filterName);
+        return String.format(formatBody, queryName, filterName, name, queryName);
     }
 
     private String getStringEqualsAlways() {
         String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));";
-        return String.format(formatBody, filterName, name, filterName);
+        return String.format(formatBody, filterName, name, queryName);
     }
 
     private String getStringEqualsWithoutParameters() {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\");" +
                 "}";
-        return String.format(formatBody, filterName, filterName);
+        return String.format(formatBody, queryName, filterName);
     }
 
     @Override

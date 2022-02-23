@@ -174,9 +174,10 @@ public class ModelFiles {
                         }
                     }
                     List<FieldSource<JavaClassSource>> fields = javaClass.getFields();
+                    String entityName = javaClass.getName(); // gets the simple name of the class
                     for (FieldSource<JavaClassSource> f : fields) {
                         for (FilterDefBase fdbase : filterDefBases) {
-                            FilterDefBase fd = fdbase.parseQFilterDef(f, qClassLevelAnnotation);
+                            FilterDefBase fd = fdbase.parseQFilterDef(entityName, f, qClassLevelAnnotation);
                             if (null != fd) {
                                 final FilterType filterType = fd.getFilterType();
                                 LinkedHashSet<FilterDefBase> filterTypeSet = allFilterDefs.get(filterType);
