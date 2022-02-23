@@ -117,7 +117,7 @@ public class QFilterDef extends FilterDefBase {
                 "Integer numberof = _integer(\"%s\");" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
                 "}";
-        return String.format(formatBody, queryName, filterName, queryName, name);
+        return String.format(formatBody, queryName, queryName, filterName, name);
     }
 
     private String getLongSearchMethod() {
@@ -125,7 +125,7 @@ public class QFilterDef extends FilterDefBase {
                 "Long numberof = _long(\"%s\");" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
                 "}";
-        return String.format(formatBody, queryName, filterName, queryName, name);
+        return String.format(formatBody, queryName, queryName, filterName, name);
     }
 
     private String getBooleanSearchMethod() {
@@ -134,12 +134,12 @@ public class QFilterDef extends FilterDefBase {
                     "Boolean valueof = _boolean(\"%s\");" +
                     "search.filter(\"%s\", Parameters.with(\"%s\", valueof));" +
                     "}";
-            return String.format(formatBody, queryName, filterName, queryName, name);
+            return String.format(formatBody, queryName, queryName, filterName, name);
         }
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", %s));" +
                 "}";
-        return String.format(formatBody, queryName, filterName, queryName, condition);
+        return String.format(formatBody, queryName, queryName, filterName, condition);
     }
 
     private String getBigDecimalSearchMethod() {
