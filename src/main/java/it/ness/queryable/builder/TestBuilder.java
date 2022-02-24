@@ -36,7 +36,6 @@ public class TestBuilder {
     }
 
     private static TestDataPojo readModel(Log log, String modelFileName, Parameters parameters) throws Exception {
-        System.out.println("Creating model for class : " + modelFileName);
         String className = StringUtil.getClassNameFromFileName(modelFileName);
         String path = parameters.modelPath;
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
@@ -76,35 +75,41 @@ public class TestBuilder {
 
     public static void printValues(TestDataPojo testDataPojo, String className) {
 
-        String defaultValue = "    private static final %s DEFAULT_%s = \"%s\";";
-        String updatedValue = "    private static final %s UPDATED_%s = \"%s\";";
-
         List<TField> tFieldList = testDataPojo.tFieldList;
 
-        for (TField tfield : tFieldList) {
-            String name = tfield.field.getName().toUpperCase(Locale.ROOT);
-            String type = tfield.field.getType().toString();
-            System.out.println(String.format(defaultValue, type, name, tfield.defaultValue));
-            System.out.println(String.format(updatedValue, type, name, tfield.defaultValue));
-            System.out.println(tfield);
-        }
-
         if (tFieldList.size() > 0) {
-            System.out.println("tFieldList.size() = " + tFieldList.size());
             Map<String, Object> map = new HashMap<>();
             String classInstance = className.toLowerCase();
 
             map.put("className", className);
-            map.put("insert", getInsertFields(tFieldList, className, classInstance));
+            map.put("classInstance", classInstance);
+            map.put("rsPath", testDataPojo.rsPath);
+
+            map.put("insertItems", getInsertFields(tFieldList, className, classInstance));
+            map.put("putItems", getPutFields(tFieldList, className, classInstance, "34343-4343"));
+            map.put("bodyChecks", getBodyChecks(tFieldList, className, classInstance));
+
+            map.put("createdInstance", "created" + className);
+            map.put("updatedInstance", "updated" + className);
+
+            map.put("addMethod", "shouldAdd" + className + "Item");
+            map.put("putMethod", "shouldPut" + className + "Item");
+
+            for (TField tField : tFieldList) {
+                if (tField.isId) {
+                    map.put("id", tField.field.getName());
+                }
+            }
 
             String serviceRsClass = FreeMarkerTemplates.processTemplate("TestShouldAdd", map);
-            System.out.println("serviceRsClass" + serviceRsClass);
+            System.out.println(serviceRsClass);
         }
     }
 
     public static List<String> getInsertFields(List<TField> tFieldList, String className, String classInstance) {
         List<String> statements = new ArrayList<>();
         statements.add(String.format("%s %s = new %s();", className, classInstance, className));
+
         for (TField tField : tFieldList) {
             if (tField.isId) {
                 continue;
@@ -128,4 +133,62 @@ public class TestBuilder {
         return statements;
     }
 
+    public static List<String> getPutFields(List<TField> tFieldList, String className, String classInstance,
+                                               String uuid) {
+        List<String> statements = new ArrayList<>();
+        if (uuid != null) {
+            statements.add(String.format("%s %s = created%s;", className, classInstance, className));
+        }
+
+        for (TField tField : tFieldList) {
+            if (tField.isId) {
+                continue;
+            }
+            if (tField.field.getType().getName().equals("String")) {
+                statements.add(String.format("%s.%s = \"%s\";", classInstance,
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+            if (tField.field.getType().getName().equals("int")) {
+                statements.add(String.format("%s.%s = %s;", classInstance,
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+            if (tField.field.getType().getName().equals("LocalDateTime")) {
+                statements.add(String.format("%s.%s = %s;", classInstance,
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+        }
+        return statements;
+    }
+
+    public static List<String> getBodyChecks(List<TField> tFieldList, String className, String classInstance) {
+        List<String> statements = new ArrayList<>();
+
+        for (TField tField : tFieldList) {
+            if (tField.isId) {
+                continue;
+            }
+            if (tField.field.getType().getName().equals("String")) {
+                statements.add(String.format(".body(\"%s\", Is.is(%s));",
+                        tField.field.getName(),
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+            if (tField.field.getType().getName().equals("int")) {
+                statements.add(String.format(".body(\"%s\", Is.is(%s));",
+                        tField.field.getName(),
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+            if (tField.field.getType().getName().equals("LocalDateTime")) {
+                statements.add(String.format(".body(\"%s\", Is.is(%s));",
+                        tField.field.getName(),
+                        tField.field.getName(),
+                        tField.updatedValue));
+            }
+        }
+        return statements;
+    }
 }
