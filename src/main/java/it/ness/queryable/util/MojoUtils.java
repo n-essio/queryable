@@ -61,11 +61,13 @@ public class MojoUtils {
 
     public static void testsource(Parameters parameters, Log log) {
         ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+
         if (!mf.isParsingSuccessful) {
             return;
         }
         try {
-            TestBuilder.generateSources(mf, log, parameters);
+            String packageName = parameters.groupId + "." + parameters.artifactId;
+            TestBuilder.generateSources(mf, log, parameters, packageName);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -79,7 +81,6 @@ public class MojoUtils {
         reader = new FileReader(path);
         model = mavenreader.read(reader);
         return model;
-
     }
 
     public static void parseMavenPomModelToXmlString(String path, Model model) throws Exception {

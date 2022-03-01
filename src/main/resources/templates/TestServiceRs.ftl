@@ -1,97 +1,53 @@
-package ${packageName}.test.service.rs;
+package ${packageName}.service.rs;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.http.Header;
-import it.ness.querytester.querytester.model.Simple;
-import it.ness.querytester.test.service.util.KeycloaUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import ${packageName}.model.*;
+import ${packageName}.service.rs.profile.PostgresResource;
+import ${packageName}.service.rs.util.KeycloakUtils;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.TestMethodOrder;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
-import static it.ness.querytester.querytester.management.AppConstants.SIMPLE_PATH;
-import static org.hamcrest.CoreMatchers.is;
+import static ${packageName}.management.AppConstants.*;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.apache.http.HttpHeaders.ACCEPT;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @QuarkusTest
+@QuarkusTestResource(PostgresResource.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SimpleServiceRsTest {
 
-    @ConfigProperty(name = "keycloak.username")
-    String username;
+    @Inject
+    KeycloakUtils keycloakUtils;
 
-    @ConfigProperty(name = "keycloak.password")
-    String password;
+    <#list createdItems as x>
+    ${x}
+    </#list>
 
-    @ConfigProperty(name="quarkus.oidc.auth-server-url")
-    String serverUrl;
-
-    @ConfigProperty(name="quarkus.oidc.client-id")
-    static String clientId;
-
-    static String accessToken;
-
-    @Test
-    public void testFetch() {
-        String uuid = createSingle();
-        given().header(makeBearerToken())
-                .when().get(SIMPLE_PATH + "/" + uuid)
-                .then()
-                .statusCode(200)
-                .body(is("Hello RESTEasy"));
+    public String getBearerToken() {
+        String token = "Bearer " + keycloakUtils.getToken();
+        return token;
     }
 
-    public String getAccessToken() {
-        if (accessToken != null) {
-            return accessToken;
-        }
-        String body = String.format("client_id=%s&username=%s&password=%s&grant_type=password", clientId, username, password);
-        accessToken = given()
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .baseUri(serverUrl)
-                .body(body)
-                .post("/protocol/openid-connect/token")
-                .then().extract().response().jsonPath().getString("access_token");
-        return accessToken;
+    @Transactional
+    public String createSingle() {
+        return null;
     }
 
-    private String createSingle() {
-        Simple simple = new Simple();
-        simple.persistAndFlush();
-        return simple.uuid;
+    @Transactional
+    public int createList() {
+        return 0;
     }
 
-    private int createList() {
-        Simple.persist(Simple.build("flower", "the power"),
-                Simple.build("more", "info"));
-        return Simple.listAll().size();
-    }
-
-    @Test
-    public void testList() {
-        int size = createList();
-        given().header(makeBearerToken())
-                .when().get(SIMPLE_PATH)
-                .then()
-                .statusCode(200)
-                .body(is("Hello RESTEasy"));
-    }
-
-    @Test
-    public void testInsert() {
-        // create using POST on API
-        // try to use the uuid to read the object by Simple.findById()
-    }
-
-    @Test
-    public void testUpdate() {
-        // create using POST on API
-        // update using PUT api
-        // try to use the uuid to read the object by Simple.findById()
-
-    }
-
-    @Test
-    public void testDelete() {
-        // create using POST on API
-        // delete using DELETE api
-        // try to use the uuid to read the object by Simple.findById()
-    }
+${allMethods}
 }
