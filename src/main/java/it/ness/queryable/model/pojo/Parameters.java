@@ -5,6 +5,7 @@ import org.apache.maven.plugin.logging.Log;
 import java.io.File;
 
 import static it.ness.queryable.builder.Constants.JAVA_FOLDER;
+import static it.ness.queryable.builder.Constants.TEST_FOLDER;
 
 public class Parameters {
 
@@ -27,6 +28,8 @@ public class Parameters {
     public String modelPath;
     // path to groupId/artifactId/service/rs
     public String serviceRsPath;
+    // path to groupId/api
+    public String testPath;
     // ie. src/main/java
     public File outputDir;
 
@@ -54,5 +57,7 @@ public class Parameters {
         log.info("modelPath:" + modelPath);
         log.info("serviceRsPath:" + serviceRsPath);
 
+        this.testPath = TEST_FOLDER + this.projectPath + sourceRestDirectory;
+        log.info("testPath:" + testPath);
     }
 }

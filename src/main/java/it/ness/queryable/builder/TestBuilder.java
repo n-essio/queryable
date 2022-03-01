@@ -4,6 +4,7 @@ import it.ness.queryable.model.TField;
 import it.ness.queryable.model.pojo.Parameters;
 import it.ness.queryable.model.pojo.TestDataPojo;
 import it.ness.queryable.templates.FreeMarkerTemplates;
+import it.ness.queryable.util.FileUtils;
 import it.ness.queryable.util.ModelFiles;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
@@ -14,29 +15,51 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.io.File;
 import java.util.*;
 
+import static it.ness.queryable.builder.Constants.TEST_FOLDER;
+
 public class TestBuilder {
 
     protected static String ANNOTATION_FIELD = "TField";
     protected static String ANNOTATION_ID = "Id";
 
-    public static void generateSources(ModelFiles mf, Log log, Parameters parameters) throws Exception {
+    public static void generateSources(ModelFiles mf, Log log, Parameters parameters,
+                                       String packageName) throws Exception {
         String[] modelFiles = mf.getModelFileNames();
+        List<String> created = getCreated(log, modelFiles, mf);
+        StringBuilder sb = new StringBuilder();
+        int order = 1;
         for (String modelFileName : modelFiles) {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
                     TestDataPojo testDataPojo = readModel(log, modelFileName, parameters);
-                    printValues(testDataPojo, className);
+                    String methods = printValues(testDataPojo, className, order);
+                    if (methods != null) {
+                        sb.append(methods);
+                    }
                 } catch (Exception e) {
                     log.error(e);
                 }
             }
+            order += 2;
         }
+        String allMethods = sb.toString();
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("packageName", packageName);
+        map.put("createdItems", created);
+        map.put("allMethods", allMethods);
+
+        String serviceRsClass = FreeMarkerTemplates.processTemplate("TestServiceRs", map);
+        System.out.println(serviceRsClass);
+
+        FileUtils.createJavaClassFromTemplate(new File(TEST_FOLDER), "TestServiceRs", "SimpleServiceRsTest", map, null);
+
         if (log != null) log.info("Done generating sources");
     }
 
     private static TestDataPojo readModel(Log log, String modelFileName, Parameters parameters) throws Exception {
-        String className = StringUtil.getClassNameFromFileName(modelFileName);
         String path = parameters.modelPath;
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
 
@@ -73,7 +96,7 @@ public class TestBuilder {
         return testDataPojo;
     }
 
-    public static void printValues(TestDataPojo testDataPojo, String className) {
+    public static String printValues(TestDataPojo testDataPojo, String className, int order) {
 
         List<TField> tFieldList = testDataPojo.tFieldList;
 
@@ -87,13 +110,16 @@ public class TestBuilder {
 
             map.put("insertItems", getInsertFields(tFieldList, className, classInstance));
             map.put("putItems", getPutFields(tFieldList, className, classInstance, "34343-4343"));
-            map.put("bodyChecks", getBodyChecks(tFieldList, className, classInstance));
 
             map.put("createdInstance", "created" + className);
             map.put("updatedInstance", "updated" + className);
 
             map.put("addMethod", "shouldAdd" + className + "Item");
             map.put("putMethod", "shouldPut" + className + "Item");
+
+            map.put("addMethodOrder", order);
+            map.put("putMethodOrder", order+1);
+
 
             for (TField tField : tFieldList) {
                 if (tField.isId) {
@@ -102,8 +128,24 @@ public class TestBuilder {
             }
 
             String serviceRsClass = FreeMarkerTemplates.processTemplate("TestShouldAdd", map);
-            System.out.println(serviceRsClass);
+            return serviceRsClass;
         }
+        return null;
+    }
+
+    public static List<String> getCreated(Log log, String[] modelFiles, ModelFiles mf) {
+        List<String> statements = new ArrayList<>();
+        for (String modelFileName : modelFiles) {
+            String className = StringUtil.getClassNameFromFileName(modelFileName);
+            if (!mf.excludeClass(className)) {
+                try {
+                    statements.add(String.format("%s %s;", className, "created" + className));
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+        }
+        return statements;
     }
 
     public static List<String> getInsertFields(List<TField> tFieldList, String className, String classInstance) {
@@ -125,7 +167,12 @@ public class TestBuilder {
                         tField.defaultValue));
             }
             if (tField.field.getType().getName().equals("LocalDateTime")) {
-                statements.add(String.format("%s.%s = %s;", classInstance,
+                statements.add(String.format("%s.%s = LocalDateTime.parse(\"%s\");", classInstance,
+                        tField.field.getName(),
+                        tField.defaultValue));
+            }
+            if (tField.field.getType().getName().equals("BigDecimal")) {
+                statements.add(String.format("%s.%s = BigDecimal.valueOf(%s);", classInstance,
                         tField.field.getName(),
                         tField.defaultValue));
             }
@@ -155,38 +202,14 @@ public class TestBuilder {
                         tField.updatedValue));
             }
             if (tField.field.getType().getName().equals("LocalDateTime")) {
-                statements.add(String.format("%s.%s = %s;", classInstance,
+                statements.add(String.format("%s.%s = LocalDateTime.parse(\"%s\");", classInstance,
                         tField.field.getName(),
                         tField.updatedValue));
             }
-        }
-        return statements;
-    }
-
-    public static List<String> getBodyChecks(List<TField> tFieldList, String className, String classInstance) {
-        List<String> statements = new ArrayList<>();
-
-        for (TField tField : tFieldList) {
-            if (tField.isId) {
-                continue;
-            }
-            if (tField.field.getType().getName().equals("String")) {
-                statements.add(String.format(".body(\"%s\", Is.is(%s));",
+            if (tField.field.getType().getName().equals("BigDecimal")) {
+                statements.add(String.format("%s.%s = BigDecimal.valueOf(%s);", classInstance,
                         tField.field.getName(),
-                        tField.field.getName(),
-                        tField.updatedValue));
-            }
-            if (tField.field.getType().getName().equals("int")) {
-                statements.add(String.format(".body(\"%s\", Is.is(%s));",
-                        tField.field.getName(),
-                        tField.field.getName(),
-                        tField.updatedValue));
-            }
-            if (tField.field.getType().getName().equals("LocalDateTime")) {
-                statements.add(String.format(".body(\"%s\", Is.is(%s));",
-                        tField.field.getName(),
-                        tField.field.getName(),
-                        tField.updatedValue));
+                        tField.defaultValue));
             }
         }
         return statements;
