@@ -41,3 +41,19 @@
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     }
 
+    @Test
+    @Order(${deleteMethodOrder})
+    public void ${deleteMethod}() {
+
+        String token = getBearerToken();
+
+        given()
+            .header(HttpHeaders.AUTHORIZATION, token)
+            .when()
+            .delete(${rsPath} + "/" + ${createdInstance}.${id})
+            .then()
+            .statusCode(NO_CONTENT.getStatusCode());
+
+    }
+
+

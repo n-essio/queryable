@@ -628,3 +628,52 @@ and in rest service class will add to getSearch method
 ```
 search.filter("XXX.obj.active", Parameters.with("active", true));
 ```
+
+## Test builder annotations
+
+
+### QT annotation
+QT annotation is used to describe test values, and override defaults, for test classes generation. 
+
+```
+@QT(defaultValue = "default_fiscal_code", updatedValue = "updated_fiscal_code")
+public String fiscal_code;
+```
+To generate test classes run
+```
+./mvnw queryable:testsources
+```
+The plugin will generate test stub classes for each model class, with adding, updating, deleting model items.
+Headers are generated for keycloak too, using token from oidc-client, thus dependencies for oidc-client should be added, 
+along with appropriate settings in application.properties 
+If annotations is not used on field, default values are used depending on field type.
+For String default values are
+```
+defaultValue = "defaultValue_" + field name
+updatedValue = "updatedValue_" + field name
+```
+for int, Integer, long, Long 
+```
+defaultValue = "0";
+updatedValue = "1";
+```
+for boolean, Boolean
+```
+defaultValue = "false";
+updatedValue = "true";
+```
+for LocalDateTime
+```
+defaultValue = LocalDateTime.now().toString();
+updatedValue = LocalDateTime.now().plusDays(1).toString();
+```
+for LocalDate
+```
+defaultValue = LocalDate.now().toString();
+updatedValue = LocalDate.now().plusDays(1).toString();
+```
+for BigDecimal
+```
+defaultValue = "0";
+updatedValue = "1";
+```
