@@ -677,3 +677,114 @@ for BigDecimal
 defaultValue = "0";
 updatedValue = "1";
 ```
+
+example class, with just one overloaded default value for fiscal code
+```
+public class Simple extends PanacheEntityBase {
+  @Id
+  @GeneratedValue(generator = "uuid")
+  @GenericGenerator(name = "uuid", strategy = "uuid2")
+  @Column(name = "uuid", unique = true)
+  public String uuid;
+
+  public String name;
+
+  public String surname;
+
+  @QT(defaultValue = "BBAZNB67E68Z301G", updatedValue = "5f4984648e00e528b50")
+  public String fiscal_code;
+
+  public LocalDateTime born_date;
+}
+```
+generated test class
+```
+@QuarkusTest
+@QuarkusTestResource(PostgresResource.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class SimpleServiceRsTest {
+
+    @Inject
+    KeycloakUtils keycloakUtils;
+
+    public static Simple createdSimple;
+
+    public String getBearerToken() {
+        String token = "Bearer " + keycloakUtils.getToken();
+        return token;
+    }
+
+    @Transactional
+    public String createSingle() {
+        return null;
+    }
+
+    @Transactional
+    public int createList() {
+        return 0;
+    }
+
+
+    @Test
+    @Order(1)
+    public void shouldAddSimpleItem() {
+        Simple simple = new Simple();
+        simple.fiscal_code = "BBAZNB67E68Z301G";
+        simple.name = "defaultValue_name";
+        simple.surname = "defaultValue_surname";
+        simple.born_date = LocalDateTime.parse("2022-03-02T19:33:23.379120043");
+
+        String token = getBearerToken();
+
+        createdSimple = given()
+            .body(simple)
+            .header(CONTENT_TYPE, ContentType.JSON)
+            .header(ACCEPT, ContentType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, token)
+            .when()
+            .post(SIMPLE_PATH)
+            .then()
+            .statusCode(OK.getStatusCode())
+            .extract().body().as(Simple.class);
+    }
+
+    @Test
+    @Order(2)
+    public void shouldPutSimpleItem() {
+        Simple simple = createdSimple;
+        simple.fiscal_code = "5f4984648e00e528b50";
+        simple.name = "updatedValue_name";
+        simple.surname = "updatedValue_surname";
+        simple.born_date = LocalDateTime.parse("2022-03-03T19:33:23.380619377");
+
+        String token = getBearerToken();
+
+        given()
+            .body(createdSimple)
+            .header(CONTENT_TYPE, ContentType.JSON)
+            .header(ACCEPT, ContentType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, token)
+            .when()
+            .put(SIMPLE_PATH + "/" + createdSimple.uuid)
+            .then()
+            .statusCode(OK.getStatusCode())
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    }
+
+    @Test
+    @Order(3)
+    public void shouldDeleteSimpleItem() {
+
+        String token = getBearerToken();
+
+        given()
+            .header(HttpHeaders.AUTHORIZATION, token)
+            .when()
+            .delete(SIMPLE_PATH + "/" + createdSimple.uuid)
+            .then()
+            .statusCode(NO_CONTENT.getStatusCode());
+
+    }
+}
+```
+
