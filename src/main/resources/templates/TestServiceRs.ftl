@@ -4,8 +4,8 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import ${packageName}.model.*;
-import ${packageName}.service.rs.profile.PostgresResource;
-import ${packageName}.service.rs.util.KeycloakUtils;
+import ${packageName}.service.profile.PostgresResource;
+import ${packageName}.service.util.KeycloakUtils;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import static io.restassured.RestAssured.given;
 import static ${packageName}.management.AppConstants.*;
 import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 

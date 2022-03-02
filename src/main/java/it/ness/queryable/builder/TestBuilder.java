@@ -13,6 +13,7 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -132,9 +133,11 @@ public class TestBuilder {
 
             map.put("addMethod", "shouldAdd" + className + "Item");
             map.put("putMethod", "shouldPut" + className + "Item");
+            map.put("deleteMethod", "shouldDelete" + className + "Item");
 
             map.put("addMethodOrder", order);
             map.put("putMethodOrder", order+1);
+            map.put("deleteMethodOrder", order+2);
 
             for (QT tField : tFieldList) {
                 if (tField.isId) {
@@ -174,7 +177,10 @@ public class TestBuilder {
                         tField.field.getName(),
                         tField.defaultValue));
             }
-            if (tField.field.getType().getName().equals("int")) {
+            if (tField.field.getType().getName().equalsIgnoreCase("int") ||
+                    tField.field.getType().getName().equalsIgnoreCase("integer") ||
+                    tField.field.getType().getName().equalsIgnoreCase("long") ||
+                    tField.field.getType().getName().equalsIgnoreCase("boolean")) {
                 statements.add(String.format("%s.%s = %s;", classInstance,
                         tField.field.getName(),
                         tField.defaultValue));
@@ -206,7 +212,10 @@ public class TestBuilder {
                         tField.field.getName(),
                         tField.updatedValue));
             }
-            if (tField.field.getType().getName().equals("int")) {
+            if (tField.field.getType().getName().equalsIgnoreCase("int") ||
+                    tField.field.getType().getName().equalsIgnoreCase("integer") ||
+                    tField.field.getType().getName().equalsIgnoreCase("long") ||
+                    tField.field.getType().getName().equalsIgnoreCase("boolean")) {
                 statements.add(String.format("%s.%s = %s;", classInstance,
                         tField.field.getName(),
                         tField.updatedValue));
@@ -243,10 +252,23 @@ public class TestBuilder {
             tField.isId = isId;
             return tField;
         }
-        if (field.getType().getName().equals("int")) {
+        if (field.getType().getName().equals("int") ||
+                field.getType().getName().equals("Integer") ||
+                field.getType().getName().equals("long") ||
+                field.getType().getName().equals("Long")) {
             QT tField = new QT();
             tField.defaultValue = "0";
             tField.updatedValue = "1";
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (field.getType().getName().equals("boolean") ||
+                field.getType().getName().equals("Boolean")) {
+            QT tField = new QT();
+            tField.defaultValue = "false";
+            tField.updatedValue = "true";
             tField.field = field;
             tField.annotations = list;
             tField.isId = isId;
@@ -256,6 +278,15 @@ public class TestBuilder {
             QT tField = new QT();
             tField.defaultValue = LocalDateTime.now().toString();
             tField.updatedValue = LocalDateTime.now().plusDays(1).toString();
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (field.getType().getName().equals("LocalDate")) {
+            QT tField = new QT();
+            tField.defaultValue = LocalDate.now().toString();
+            tField.updatedValue = LocalDate.now().plusDays(1).toString();
             tField.field = field;
             tField.annotations = list;
             tField.isId = isId;
