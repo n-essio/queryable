@@ -2,6 +2,7 @@ package ${packageName}.service.rs;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import ${packageName}.model.*;
 import ${packageName}.service.rs.profile.PostgresResource;
 import ${packageName}.service.rs.util.KeycloakUtils;
@@ -20,12 +21,11 @@ import static ${packageName}.management.AppConstants.*;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 @QuarkusTest
 @QuarkusTestResource(PostgresResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SimpleServiceRsTest {
+public class ${testClassName} {
 
     @Inject
     KeycloakUtils keycloakUtils;

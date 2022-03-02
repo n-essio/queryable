@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.TYPE}) //on class field
-public @interface TField {
+public @interface QT {
     String defaultValue() default "";
     String updatedValue() default "";
 }

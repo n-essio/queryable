@@ -10,8 +10,8 @@
 
         ${createdInstance} = given()
             .body(${classInstance})
-            .header(CONTENT_TYPE, APPLICATION_JSON)
-            .header(ACCEPT, APPLICATION_JSON)
+            .header(CONTENT_TYPE, ContentType.JSON)
+            .header(ACCEPT, ContentType.JSON)
             .header(HttpHeaders.AUTHORIZATION, token)
             .when()
             .post(${rsPath})
@@ -31,8 +31,8 @@
 
         given()
             .body(${createdInstance})
-            .header(CONTENT_TYPE, APPLICATION_JSON)
-            .header(ACCEPT, APPLICATION_JSON)
+            .header(CONTENT_TYPE, ContentType.JSON)
+            .header(ACCEPT, ContentType.JSON)
             .header(HttpHeaders.AUTHORIZATION, token)
             .when()
             .put(${rsPath} + "/" + ${createdInstance}.${id})
