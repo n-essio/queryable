@@ -1,6 +1,6 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.model.TField;
+import it.ness.queryable.model.QT;
 import it.ness.queryable.model.pojo.Parameters;
 import it.ness.queryable.model.pojo.TestDataPojo;
 import it.ness.queryable.templates.FreeMarkerTemplates;
@@ -13,22 +13,20 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.*;
-
-import static it.ness.queryable.builder.Constants.TEST_FOLDER;
 
 public class TestBuilder {
 
-    protected static String ANNOTATION_FIELD = "TField";
+    protected static String ANNOTATION_FIELD = QT.class.getSimpleName();
     protected static String ANNOTATION_ID = "Id";
 
     public static void generateSources(ModelFiles mf, Log log, Parameters parameters,
                                        String packageName) throws Exception {
         String[] modelFiles = mf.getModelFileNames();
-        List<String> created = getCreated(log, modelFiles, mf);
-        StringBuilder sb = new StringBuilder();
-        int order = 1;
         for (String modelFileName : modelFiles) {
+            int order = 1;
+            StringBuilder sb = new StringBuilder();
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
@@ -41,21 +39,21 @@ public class TestBuilder {
                     log.error(e);
                 }
             }
-            order += 2;
+            String allMethods = sb.toString();
+
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("packageName", packageName);
+            List<String> created = getCreated(log, modelFileName, mf);
+            map.put("createdItems", created);
+            map.put("allMethods", allMethods);
+            String testClassName = className + "ServiceRsTest";
+            map.put("testClassName", testClassName);
+
+            File testfile = new File(parameters.testPath + "/");
+            FileUtils.deleteJavaClassFromTemplate(testfile, "TestServiceRs", testClassName);
+            FileUtils.createJavaClassFromTemplate(testfile, "TestServiceRs", testClassName, map, log);
         }
-        String allMethods = sb.toString();
-
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("packageName", packageName);
-        map.put("createdItems", created);
-        map.put("allMethods", allMethods);
-
-        String serviceRsClass = FreeMarkerTemplates.processTemplate("TestServiceRs", map);
-        System.out.println(serviceRsClass);
-
-        FileUtils.createJavaClassFromTemplate(new File(TEST_FOLDER), "TestServiceRs", "SimpleServiceRsTest", map, null);
-
         if (log != null) log.info("Done generating sources");
     }
 
@@ -72,33 +70,51 @@ public class TestBuilder {
         }
 
         testDataPojo.tFieldList = new ArrayList<>();
-
+        List<FieldSource<JavaClassSource>> defaultFields = new ArrayList<>();
         for (FieldSource<JavaClassSource> field : fieldsList) {
             List<AnnotationSource<JavaClassSource>> list = field.getAnnotations();
+            boolean addDefaults = true;
             for (AnnotationSource<JavaClassSource> anno : list) {
                 if (anno.getName().equals(ANNOTATION_FIELD)) {
-                    TField tField = new TField();
+                    QT tField = new QT();
                     tField.defaultValue = anno.getStringValue("defaultValue");
                     tField.updatedValue = anno.getStringValue("updatedValue");
                     tField.field = field;
+                    tField.annotations = list;
+                    tField.isId = false;
                     testDataPojo.tFieldList.add(tField);
+                    addDefaults = false;
                 }
                 if (anno.getName().equals(ANNOTATION_ID)) {
-                    TField tField = new TField();
+                    QT tField = new QT();
                     tField.defaultValue = null;
                     tField.updatedValue = null;
                     tField.field = field;
+                    tField.annotations = list;
                     tField.isId = true;
                     testDataPojo.tFieldList.add(tField);
+                    addDefaults = false;
                 }
             }
+            if (addDefaults) {
+                defaultFields.add(field);
+            }
         }
+
+        for (FieldSource<JavaClassSource> field : defaultFields) {
+            List<AnnotationSource<JavaClassSource>> list = field.getAnnotations();
+            QT tField = getDefaultsField(field, list);
+            if (tField != null) {
+                testDataPojo.tFieldList.add(tField);
+            }
+        }
+
         return testDataPojo;
     }
 
     public static String printValues(TestDataPojo testDataPojo, String className, int order) {
 
-        List<TField> tFieldList = testDataPojo.tFieldList;
+        List<QT> tFieldList = testDataPojo.tFieldList;
 
         if (tFieldList.size() > 0) {
             Map<String, Object> map = new HashMap<>();
@@ -109,7 +125,7 @@ public class TestBuilder {
             map.put("rsPath", testDataPojo.rsPath);
 
             map.put("insertItems", getInsertFields(tFieldList, className, classInstance));
-            map.put("putItems", getPutFields(tFieldList, className, classInstance, "34343-4343"));
+            map.put("putItems", getPutFields(tFieldList, className, classInstance));
 
             map.put("createdInstance", "created" + className);
             map.put("updatedInstance", "updated" + className);
@@ -120,8 +136,7 @@ public class TestBuilder {
             map.put("addMethodOrder", order);
             map.put("putMethodOrder", order+1);
 
-
-            for (TField tField : tFieldList) {
+            for (QT tField : tFieldList) {
                 if (tField.isId) {
                     map.put("id", tField.field.getName());
                 }
@@ -133,26 +148,24 @@ public class TestBuilder {
         return null;
     }
 
-    public static List<String> getCreated(Log log, String[] modelFiles, ModelFiles mf) {
+    public static List<String> getCreated(Log log, String modelFileName, ModelFiles mf) {
         List<String> statements = new ArrayList<>();
-        for (String modelFileName : modelFiles) {
-            String className = StringUtil.getClassNameFromFileName(modelFileName);
-            if (!mf.excludeClass(className)) {
-                try {
-                    statements.add(String.format("%s %s;", className, "created" + className));
-                } catch (Exception e) {
-                    log.error(e);
-                }
+        String className = StringUtil.getClassNameFromFileName(modelFileName);
+        if (!mf.excludeClass(className)) {
+            try {
+                statements.add(String.format("public static %s %s;", className, "created" + className));
+            } catch (Exception e) {
+                log.error(e);
             }
         }
         return statements;
     }
 
-    public static List<String> getInsertFields(List<TField> tFieldList, String className, String classInstance) {
+    public static List<String> getInsertFields(List<QT> tFieldList, String className, String classInstance) {
         List<String> statements = new ArrayList<>();
         statements.add(String.format("%s %s = new %s();", className, classInstance, className));
 
-        for (TField tField : tFieldList) {
+        for (QT tField : tFieldList) {
             if (tField.isId) {
                 continue;
             }
@@ -180,14 +193,11 @@ public class TestBuilder {
         return statements;
     }
 
-    public static List<String> getPutFields(List<TField> tFieldList, String className, String classInstance,
-                                               String uuid) {
+    public static List<String> getPutFields(List<QT> tFieldList, String className, String classInstance) {
         List<String> statements = new ArrayList<>();
-        if (uuid != null) {
-            statements.add(String.format("%s %s = created%s;", className, classInstance, className));
-        }
+        statements.add(String.format("%s %s = created%s;", className, classInstance, className));
 
-        for (TField tField : tFieldList) {
+        for (QT tField : tFieldList) {
             if (tField.isId) {
                 continue;
             }
@@ -213,5 +223,53 @@ public class TestBuilder {
             }
         }
         return statements;
+    }
+
+    public static QT getDefaultsField(FieldSource<JavaClassSource> field,
+                                      List<AnnotationSource<JavaClassSource>> list) {
+        boolean isId = false;
+        for (AnnotationSource<JavaClassSource> anno : list) {
+            if (anno.getName().equals(ANNOTATION_ID)) {
+                isId = true;
+            }
+        }
+
+        if (field.getType().getName().equals("String")) {
+            QT tField = new QT();
+            tField.defaultValue = "defaultValue_" + field.getName();
+            tField.updatedValue = "updatedValue_" + field.getName();
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (field.getType().getName().equals("int")) {
+            QT tField = new QT();
+            tField.defaultValue = "0";
+            tField.updatedValue = "1";
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (field.getType().getName().equals("LocalDateTime")) {
+            QT tField = new QT();
+            tField.defaultValue = LocalDateTime.now().toString();
+            tField.updatedValue = LocalDateTime.now().plusDays(1).toString();
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (field.getType().getName().equals("BigDecimal")) {
+            QT tField = new QT();
+            tField.defaultValue = "0";
+            tField.updatedValue = "1";
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        return null;
     }
 }

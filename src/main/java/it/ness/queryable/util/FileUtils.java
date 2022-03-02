@@ -38,4 +38,16 @@ public class FileUtils {
             if (log != null) log.info("file: " + filePath.getPath() + " already exists.");
         }
     }
+
+    public static void deleteJavaClassFromTemplate(File dir, String templateName, String replaceWithName) {
+        File filePath;
+        if (replaceWithName != null) {
+            filePath = new File(dir, replaceWithName + ".java");
+        } else {
+            filePath = new File(dir, templateName + ".java");
+        }
+        if (filePath.exists()) {
+            filePath.delete();
+        }
+    }
 }
