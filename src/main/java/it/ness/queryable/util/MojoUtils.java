@@ -1,5 +1,6 @@
 package it.ness.queryable.util;
 
+import it.ness.queryable.builder.OpenApiBuilder;
 import it.ness.queryable.builder.QueryableBuilder;
 import it.ness.queryable.builder.TestBuilder;
 import it.ness.queryable.model.pojo.Data;
@@ -68,6 +69,21 @@ public class MojoUtils {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
             TestBuilder.generateSources(mf, log, parameters, packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public static void openapisource(Parameters parameters, Log log) {
+        ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+
+        if (!mf.isParsingSuccessful) {
+            return;
+        }
+        try {
+            String packageName = parameters.groupId + "." + parameters.artifactId;
+            OpenApiBuilder.generateSources(mf, log, parameters, packageName);
         } catch (Exception e) {
             e.printStackTrace();
             return;

@@ -96,6 +96,8 @@ public class QNotNilFilterDef extends FilterDefBase {
                 return "boolean";
             case "BigDecimal":
                 return "big_decimal";
+            case "BigInteger":
+                return "big_integer";
             case "Integer":
                 return "int";
             case "Long":
@@ -113,6 +115,7 @@ public class QNotNilFilterDef extends FilterDefBase {
         supported.add("Boolean");
         supported.add("boolean");
         supported.add("BigDecimal");
+        supported.add("BigInteger");
         supported.add("LocalDateTime");
         supported.add("LocalDate");
         supported.add("Date");
