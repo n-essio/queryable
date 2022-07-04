@@ -104,7 +104,7 @@ public class TestBuilder {
 
         for (FieldSource<JavaClassSource> field : defaultFields) {
             List<AnnotationSource<JavaClassSource>> list = field.getAnnotations();
-            QT tField = getDefaultsField(field, list);
+            QT tField = getDefaultsField(log, field, list);
             if (tField != null) {
                 testDataPojo.tFieldList.add(tField);
             }
@@ -195,6 +195,11 @@ public class TestBuilder {
                         tField.field.getName(),
                         tField.defaultValue));
             }
+            if (tField.field.getType().getName().equals("BigInteger")) {
+                statements.add(String.format("%s.%s = BigInteger.valueOf(%s);", classInstance,
+                        tField.field.getName(),
+                        tField.defaultValue));
+            }
         }
         return statements;
     }
@@ -230,11 +235,16 @@ public class TestBuilder {
                         tField.field.getName(),
                         tField.defaultValue));
             }
+            if (tField.field.getType().getName().equals("BigInteger")) {
+                statements.add(String.format("%s.%s = BigInteger.valueOf(%s);", classInstance,
+                        tField.field.getName(),
+                        tField.defaultValue));
+            }
         }
         return statements;
     }
 
-    public static QT getDefaultsField(FieldSource<JavaClassSource> field,
+    public static QT getDefaultsField(Log log, FieldSource<JavaClassSource> field,
                                       List<AnnotationSource<JavaClassSource>> list) {
         boolean isId = false;
         for (AnnotationSource<JavaClassSource> anno : list) {
@@ -301,6 +311,16 @@ public class TestBuilder {
             tField.isId = isId;
             return tField;
         }
+        if (field.getType().getName().equals("BigInteger")) {
+            QT tField = new QT();
+            tField.defaultValue = "0";
+            tField.updatedValue = "1";
+            tField.field = field;
+            tField.annotations = list;
+            tField.isId = isId;
+            return tField;
+        }
+        if (log != null) log.warn("Unknown field type :" + field.getType().getName());
         return null;
     }
 }

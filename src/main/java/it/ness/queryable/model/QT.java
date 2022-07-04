@@ -18,7 +18,7 @@ public class QT {
         return "QT{" +
                 "defaultValue='" + defaultValue + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
-                ", field=" + field +
+                ", field=" + field.getType() + " " + field.getName() +
                 ", annotations=" + annotations +
                 ", isId=" + isId +
                 '}';

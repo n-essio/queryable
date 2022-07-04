@@ -22,6 +22,7 @@ public class ModelFiles {
     private Map<String, String> rsPathMap = new LinkedHashMap<>();
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
+    private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
 
     public ModelFiles(Log log, Parameters parameters) {
         isParsingSuccessful = false;
@@ -61,6 +62,9 @@ public class ModelFiles {
     public String getDefaultOrderBy(final String className) {
         return defaultOrderByMap.get(className);
     }
+    public String getQualifiedClassName(final String className) {
+        return qualifiedClassName.get(className);
+    }
 
     public Boolean excludeClass(final String className) {
         return excludeClassMap.get(className);
@@ -91,6 +95,7 @@ public class ModelFiles {
                     orderBy = a.getStringValue();
                     orderBy = StringUtil.removeQuotes(orderBy);
                 }
+                qualifiedClassName.put(className, javaClass.getQualifiedName());
             } catch (Exception e) {
                 log.error(e);
             }
