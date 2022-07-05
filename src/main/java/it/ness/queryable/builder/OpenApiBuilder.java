@@ -90,6 +90,7 @@ public class OpenApiBuilder {
             print(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet);
         }
 
+        if (log != null) log.info(getParamethers());
         if (log != null) log.info("Done generating openapi sources");
     }
 
@@ -399,6 +400,117 @@ public class OpenApiBuilder {
         qApiField.annotations = null;
         qApiField.isId = isId;
         return qApiField;
+    }
+
+    public static String getPath() {
+        return null;
+    }
+
+    public static String getParamethers() {
+        StringBuilder indent = new StringBuilder();
+        indent.append("\npaths:\n");
+        indent.append(getIndent(1) + "/api/v1/asset:\n");
+        indent.append(getIndent(2) + "get:\n");
+        indent.append(getIndent(3) + "summary: Ritorna la lista degli asset\n");
+        indent.append(getIndent(3) + "tags:\n");
+        indent.append(getIndent(4) + "- asset\n");
+        indent.append(getIndent(3) + "parameters:\n");
+
+
+        getQueryParam(indent, "orderBy", null, null, null,
+                "false", "string", "description: ordinamento della query (compreso di ASC/DESC)");
+
+        getQueryParam(indent, "startRow", null, "int32", "0",
+                "false", "integer", "offset per la paginazione ");
+
+        getQueryParam(indent, "obj.tipo_asset", "$ref: '#/components/schemas/AssetTipo'", null, null,
+                "false", null, null);
+
+        getQueryParam(indent, "obj.descrizione_asset", null, null, "",
+                "false", "string", "description: filtro in EQUAL per descrizione_asset");
+
+        getQueryParam(indent, "like.descrizione_asset", null, null, "",
+                "false", "string", "filtro in LIKE per descrizione_asset (da usare senza il carattere speciale \"%\")");
+
+        getQueryParam(indent, "obj.identificativo_asset", null, null, "",
+                "false", "string", "filtro in EQUAL per identificativo_asset");
+
+        getQueryParam(indent, "obj.stato_asset", "$ref: '#/components/schemas/AssetStato'", null, "",
+                "false", "string", "filtro in EQUAL per stato_asset");
+
+        getQueryParam(indent, "like.descrizione_asset", null, null, "",
+                "false", "string", "filtro in LIKE per descrizione_asset (da usare senza il carattere speciale \"%\")");
+
+        getQueryParam(indent, "obj.identificativo_asset", null, null, "",
+                "false", "string", "filtro in EQUAL per identificativo_asset");
+
+        getQueryParam(indent, "obj.stato_asset", "$ref: '#/components/schemas/AssetStato'", null, "",
+                "false", "string", "filtro in EQUAL per identificativo_asset");
+
+        getQueryParam(indent, "obj.wbs_assegnazione", null, null, "",
+                "false", "string", "filtro in EQUAL per wbs_assegnazione");
+
+        setResponse(indent);
+
+        return indent.toString();
+    }
+
+    public static void setResponse(StringBuilder sb){
+        sb.append(getIndent(3) + "responses:\n");
+        sb.append(getIndent(4) + "'200':\n");
+        sb.append(getIndent(4) + "description: OK\n");
+        sb.append(getIndent(4) + "headers:\n");
+        sb.append(getIndent(5) + "listSize:\n");
+        sb.append(getIndent(6) + "description: il numero di elementi restituiti dalla chiamata\n");
+        sb.append(getIndent(6) + "schema:\n");
+        sb.append(getIndent(7) + "type: integer\n");
+        sb.append(getIndent(5) + "startRow:\n");
+        sb.append(getIndent(6) + "description: l'offset per la paginazione\n");
+        sb.append(getIndent(6) + "schema:\n");
+        sb.append(getIndent(7) + "type: integer\n");
+        sb.append(getIndent(5) + "pageSize:\n");
+        sb.append(getIndent(6) + "description: il numero di elementi per pagina \n");
+        sb.append(getIndent(6) + "schema:\n");
+        sb.append(getIndent(7) + "type: integer\n");
+        sb.append(getIndent(4) + "content:\n");
+        sb.append(getIndent(5) + "application/json:\n");
+        sb.append(getIndent(6) + "schema\n");
+        sb.append(getIndent(7) + "$ref: '#/components/schemas/Assets'\n");
+        sb.append(getIndent(3) + "security:\n");
+        sb.append(getIndent(4) + "- kimeraToken: []\n");
+    }
+
+
+    public static void getQueryParam(StringBuilder sb,
+                                       String name, String ref, String format, String defaultValue,
+                                       String required, String type, String description) {
+
+        sb.append(getIndent(4) + String.format("- name: %s\n", name));
+        sb.append(getIndent(5) + "in: query\n");
+        sb.append(getIndent(5) + "schema:\n");
+        if (ref != null) {
+            sb.append(getIndent(6) + "$ref: '#/components/schemas/AssetTipo'\n");
+        }
+
+        if (format != null) {
+            sb.append(getIndent(6) + String.format("format: %s\n", format));
+        }
+        if (defaultValue != null) {
+            sb.append(getIndent(6) + String.format("default: \"%s\"\n", defaultValue));
+        }
+        if (type != null) {
+            sb.append(getIndent(6) + String.format("type: %s\n", type));
+        }
+        if (required != null) {
+            sb.append(getIndent(5) + String.format("required: %s\n", required));
+        }
+        if (description != null) {
+            sb.append(getIndent(5) + String.format("description: %s\n", description));
+        }
+    }
+
+    public static String getIndent(int level) {
+        return " ".repeat(Math.max(0, level*2));
     }
 
 }
