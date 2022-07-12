@@ -9,6 +9,7 @@ import it.ness.queryable.util.ModelFiles;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.Annotation;
 import org.jboss.forge.roaster.model.Type;
 import org.jboss.forge.roaster.model.source.*;
 import java.io.File;
@@ -89,8 +90,13 @@ public class OpenApiBuilder {
         for (ApiDataPojo apiDataPojo : apiDataPojoList) {
             print(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet);
         }
+        for (ApiDataPojo apiDataPojo : apiDataPojoList) {
+            printServices(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet);
+        }
+        for (ApiDataPojo apiDataPojo : apiDataPojoList) {
+            printComponents(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet);
+        }
 
-        if (log != null) log.info(getParamethers());
         if (log != null) log.info("Done generating openapi sources");
     }
 
@@ -104,6 +110,54 @@ public class OpenApiBuilder {
         }
     }
 
+    private static void printServices(Log log, ApiDataPojo apiDataPojo, Set<String> classSet, Set<String> simpleClassSet, Set<String> enumPojoSet) {
+        if (apiDataPojo.rsPath == null) {
+            return;
+        }
+        if (log != null)
+            log.info("******************** printServices ");
+
+        if (log != null)
+            log.info(getListMethod(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet));
+
+    }
+
+    private static void printComponents(Log log, ApiDataPojo apiDataPojo, Set<String> classSet, Set<String> simpleClassSet, Set<String> enumPojoSet) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(String.format("\n%s:\n", apiDataPojo.className));
+        if (apiDataPojo.qualifiedClassName.contains("enum")) {
+            sb.append(getIndent(1) + "enum:\n");
+            for (QApi qApi : apiDataPojo.apiFieldList) {
+                String enumName = qApi.enumField.getName();
+                sb.append(getIndent(3) + String.format("- %s:\n", enumName));
+            }
+            sb.append(getIndent(1) + "type: string\n");
+        } else {
+            sb.append(getIndent(1) + "type : object\n");
+            sb.append(getIndent(2) + "properties:\n");
+            for (QApi qApi : apiDataPojo.apiFieldList) {
+                String fieldName = qApi.field.getName();
+                String fieldType = qApi.field.getType().getName();
+                String fieldQualifiedType = qApi.field.getType().getQualifiedName();
+
+                sb.append(getIndent(3) + String.format("%s:\n", fieldName));
+                String openApiType = getOpenApiType(fieldType);
+                String openApiFormat = getOpenApiFormat(fieldType);
+                if (openApiType != null) {
+                    sb.append(getIndent(4) + String.format("type: %s\n", openApiType));
+                    if (openApiFormat != null) {
+                        sb.append(getIndent(4) + String.format("format: %s\n", openApiFormat));
+                    }
+                } else {
+                    sb.append(getIndent(4) + String.format("$ref: '#/components/schemas/%s'\n", fieldType));
+                }
+            }
+        }
+        if (log != null)
+            log.info(sb.toString());
+    }
 
     private static void print(Log log, ApiDataPojo apiDataPojo, Set<String> classSet, Set<String> simpleClassSet, Set<String> enumPojoSet) {
         if (log != null)
@@ -174,7 +228,6 @@ public class OpenApiBuilder {
                 String fieldName = qApiField.enumField.getName();
                 if (log != null)
                     log.info("enum type : " + fieldName);
-
             }
         }
 
@@ -183,11 +236,16 @@ public class OpenApiBuilder {
         }
         if (log != null)
             log.info("****************method list ");
+
         for (QMethodApi qMethodApi : apiDataPojo.apiMethodList) {
             if (qMethodApi.methodPath != null) {
                 if (log != null)
                     log.info("methodPath : " + qMethodApi.methodPath);
             }
+        }
+
+        if (apiDataPojo.filterDefs != null && apiDataPojo.filterDefs.size() > 0) {
+            log.info("filterDefs : " + apiDataPojo.filterDefs);
         }
     }
 
@@ -218,6 +276,100 @@ public class OpenApiBuilder {
         }
         return null;
     }
+
+    private static boolean isKnownSimpleType(String fieldTypeName) {
+
+        if (fieldTypeName.equalsIgnoreCase("String")) {
+            return true;
+        }
+        if (fieldTypeName.equalsIgnoreCase("int") ||
+                fieldTypeName.equalsIgnoreCase("integer") ||
+                fieldTypeName.equalsIgnoreCase("long") ||
+                fieldTypeName.equalsIgnoreCase("boolean") ||
+                fieldTypeName.equalsIgnoreCase("double") ||
+                fieldTypeName.equalsIgnoreCase("float")) {
+            return true;
+        }
+
+        if ("LocalDateTime".equals(fieldTypeName) || "LocalDate".equals(fieldTypeName) || "java.util.Date".equals(fieldTypeName)) {
+            return true;
+        }
+        if (fieldTypeName.equals("BigDecimal")) {
+            return true;
+        }
+        if (fieldTypeName.equals("BigInteger")) {
+            return true;
+        }
+        return false;
+    }
+
+    private static String getOpenApiType(String fieldTypeName) {
+
+        if (fieldTypeName.equalsIgnoreCase("String")) {
+            return "string";
+        }
+        if (fieldTypeName.equalsIgnoreCase("int") ||
+                fieldTypeName.equalsIgnoreCase("integer") ||
+                fieldTypeName.equalsIgnoreCase("long")) {
+            return "integer";
+        }
+        if (fieldTypeName.equalsIgnoreCase("double") ||
+                fieldTypeName.equalsIgnoreCase("float")) {
+            return "number";
+        }
+
+        if (fieldTypeName.equalsIgnoreCase("boolean")) {
+            return "boolean";
+        }
+
+        if ("LocalDateTime".equals(fieldTypeName) || "LocalDate".equals(fieldTypeName) || "java.util.Date".equals(fieldTypeName)) {
+            return "string";
+        }
+        if (fieldTypeName.equals("BigDecimal")) {
+            return "number";
+        }
+        if (fieldTypeName.equals("BigInteger")) {
+            return "integer";
+        }
+        return null;
+    }
+
+    private static String getOpenApiFormat(String fieldTypeName) {
+
+        if (fieldTypeName.equalsIgnoreCase("String")) {
+            return null;
+        }
+        if (fieldTypeName.equalsIgnoreCase("int") ||
+                fieldTypeName.equalsIgnoreCase("integer")) {
+            return "int32";
+        }
+        if (fieldTypeName.equalsIgnoreCase("long")) {
+            return "int64";
+        }
+        if (fieldTypeName.equalsIgnoreCase("double")) {
+            return "double";
+        }
+        if (fieldTypeName.equalsIgnoreCase("float")) {
+            return "float";
+        }
+        if (fieldTypeName.equalsIgnoreCase("boolean")) {
+            return null;
+        }
+        if ("LocalDateTime".equals(fieldTypeName)) {
+            return "date-time";
+        }
+        if ("LocalDate".equals(fieldTypeName) || "java.util.Date".equals(fieldTypeName)) {
+            return "date";
+        }
+        if (fieldTypeName.equals("BigDecimal")) {
+            return "double";
+        }
+        if (fieldTypeName.equals("BigInteger")) {
+            return "int64";
+        }
+        return null;
+    }
+
 
     private static Set<String> getEnumPojoTypes(Log log, ApiDataPojo apiDataPojo, String packageName, Set<String> classSet, Set<String> enumPojoSet) {
         Set<String> pojoEnumSet = new LinkedHashSet<>();
@@ -267,9 +419,40 @@ public class OpenApiBuilder {
         List<FieldSource<JavaClassSource>> fieldsList = javaClass.getFields();
         ApiDataPojo apiDataPojo = new ApiDataPojo();
         apiDataPojo.qualifiedClassName = qualifiedClassName;
+        apiDataPojo.className = qualifiedClassName.substring(qualifiedClassName.lastIndexOf('.') + 1);
+        apiDataPojo.filterDefs = new HashMap<>();
         for (AnnotationSource<JavaClassSource> anno : javaClass.getAnnotations()) {
             if (anno.getName().equals("QRs")) {
-                apiDataPojo.rsPath = anno.getStringValue();
+                apiDataPojo.rsPath = getConstantValue(log, parameters, anno.getStringValue(), javaClass);
+            }
+            if (anno.getName().equals("FilterDef")) {
+                String filterName = anno.getStringValue("name");
+                Annotation<JavaClassSource> filterParameter = anno.getAnnotationValue("parameters");
+                String paramName = filterParameter.getStringValue("name");
+                String paramType = filterParameter.getStringValue("type");
+                String[] filterNamesToken = filterName.split("\\.");
+
+                if (filterNamesToken.length > 1) {
+                    filterName = filterNamesToken[filterNamesToken.length - 2] + "." + filterNamesToken[filterNamesToken.length - 1];
+                }
+
+                String ref = null;
+                if (apiDataPojo.apiFieldList != null && apiDataPojo.apiFieldList.size() > 0) {
+                    String fieldName = filterName.substring(filterName.indexOf('.') + 1);
+                    for (QApi qApis : apiDataPojo.apiFieldList) {
+                        if (qApis.field.getName().equals(fieldName)) {
+                            if (qApis.enumField != null) {
+                                ref = qApis.enumField.getName();
+                            }
+                        }
+                    }
+                }
+
+                if (ref == null) {
+                    apiDataPojo.filterDefs.put(filterName, paramType);
+                } else {
+                    apiDataPojo.filterDefs.put(filterName, ref);
+                }
             }
         }
 
@@ -333,6 +516,7 @@ public class OpenApiBuilder {
         try {
             ApiDataPojo apiDataPojo = new ApiDataPojo();
             apiDataPojo.qualifiedClassName = className;
+            apiDataPojo.className = className.substring(className.lastIndexOf('.') + 1);
             JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(filePath));
 
             List<FieldSource<JavaClassSource>> fieldsList = javaClass.getFields();
@@ -354,6 +538,7 @@ public class OpenApiBuilder {
 
         ApiDataPojo apiDataPojo = new ApiDataPojo();
         apiDataPojo.qualifiedClassName = className;
+        apiDataPojo.className = className.substring(className.lastIndexOf('.') + 1);
         JavaEnumSource javaClass = Roaster.parse(JavaEnumSource.class, new File(filePath));
 
         List<EnumConstantSource> fieldsList = javaClass.getEnumConstants();
@@ -406,56 +591,47 @@ public class OpenApiBuilder {
         return null;
     }
 
-    public static String getParamethers() {
-        StringBuilder indent = new StringBuilder();
-        indent.append("\npaths:\n");
-        indent.append(getIndent(1) + "/api/v1/asset:\n");
-        indent.append(getIndent(2) + "get:\n");
-        indent.append(getIndent(3) + "summary: Ritorna la lista degli asset\n");
-        indent.append(getIndent(3) + "tags:\n");
-        indent.append(getIndent(4) + "- asset\n");
-        indent.append(getIndent(3) + "parameters:\n");
+    public static String getListMethod(Log log, ApiDataPojo apiDataPojo, Set<String> classSet, Set<String> simpleClassSet, Set<String> enumPojoSet) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\npaths:\n");
+        sb.append(getIndent(1) + String.format("%s\n", apiDataPojo.rsPath));
+        sb.append(getIndent(2) + "get:\n");
+        sb.append(getIndent(3) + String.format("summary: Ritorna la lista degli %s\n", apiDataPojo.className));
+        sb.append(getIndent(3) + "tags:\n");
+        sb.append(getIndent(4) + String.format("- %s\n", apiDataPojo.className));
+        sb.append(getIndent(3) + "parameters:\n");
 
 
-        getQueryParam(indent, "orderBy", null, null, null,
+        getQueryParam(sb, "orderBy", null, null, null,
                 "false", "string", "description: ordinamento della query (compreso di ASC/DESC)");
 
-        getQueryParam(indent, "startRow", null, "int32", "0",
+        getQueryParam(sb, "startRow", null, "int32", "0",
                 "false", "integer", "offset per la paginazione ");
 
-        getQueryParam(indent, "obj.tipo_asset", "$ref: '#/components/schemas/AssetTipo'", null, null,
-                "false", null, null);
+        if (apiDataPojo.filterDefs != null && apiDataPojo.filterDefs.size() > 0) {
+            Set<String> keySet = apiDataPojo.filterDefs.keySet();
+            for (String key : keySet) {
+                String fieldType = apiDataPojo.filterDefs.get(key);
+                String ref = null;
+                String format = null;
+                if (isKnownSimpleType(fieldType)) {
+                    format = fieldType;
+                } else {
+                    ref = fieldType;
+                }
+                getQueryParam(sb, key, ref, format, null,
+                        "false", null, null);
+            }
+        }
+        sb.append(getListResponse(log, apiDataPojo, classSet, simpleClassSet, enumPojoSet));
 
-        getQueryParam(indent, "obj.descrizione_asset", null, null, "",
-                "false", "string", "description: filtro in EQUAL per descrizione_asset");
-
-        getQueryParam(indent, "like.descrizione_asset", null, null, "",
-                "false", "string", "filtro in LIKE per descrizione_asset (da usare senza il carattere speciale \"%\")");
-
-        getQueryParam(indent, "obj.identificativo_asset", null, null, "",
-                "false", "string", "filtro in EQUAL per identificativo_asset");
-
-        getQueryParam(indent, "obj.stato_asset", "$ref: '#/components/schemas/AssetStato'", null, "",
-                "false", "string", "filtro in EQUAL per stato_asset");
-
-        getQueryParam(indent, "like.descrizione_asset", null, null, "",
-                "false", "string", "filtro in LIKE per descrizione_asset (da usare senza il carattere speciale \"%\")");
-
-        getQueryParam(indent, "obj.identificativo_asset", null, null, "",
-                "false", "string", "filtro in EQUAL per identificativo_asset");
-
-        getQueryParam(indent, "obj.stato_asset", "$ref: '#/components/schemas/AssetStato'", null, "",
-                "false", "string", "filtro in EQUAL per identificativo_asset");
-
-        getQueryParam(indent, "obj.wbs_assegnazione", null, null, "",
-                "false", "string", "filtro in EQUAL per wbs_assegnazione");
-
-        setResponse(indent);
-
-        return indent.toString();
+        return sb.toString();
     }
 
-    public static void setResponse(StringBuilder sb){
+    public static String getListResponse(Log log, ApiDataPojo apiDataPojo, Set<String> classSet, Set<String> simpleClassSet, Set<String> enumPojoSet){
+        StringBuilder sb = new StringBuilder();
+
         sb.append(getIndent(3) + "responses:\n");
         sb.append(getIndent(4) + "'200':\n");
         sb.append(getIndent(4) + "description: OK\n");
@@ -475,9 +651,11 @@ public class OpenApiBuilder {
         sb.append(getIndent(4) + "content:\n");
         sb.append(getIndent(5) + "application/json:\n");
         sb.append(getIndent(6) + "schema\n");
-        sb.append(getIndent(7) + "$ref: '#/components/schemas/Assets'\n");
+        sb.append(getIndent(7) + String.format("$ref: '#/components/schemas/%s'\n", apiDataPojo.className));
         sb.append(getIndent(3) + "security:\n");
         sb.append(getIndent(4) + "- kimeraToken: []\n");
+
+        return sb.toString();
     }
 
 
@@ -489,7 +667,7 @@ public class OpenApiBuilder {
         sb.append(getIndent(5) + "in: query\n");
         sb.append(getIndent(5) + "schema:\n");
         if (ref != null) {
-            sb.append(getIndent(6) + "$ref: '#/components/schemas/AssetTipo'\n");
+            sb.append(getIndent(6) + String.format("$ref: '#/components/schemas/%s'\n", ref));
         }
 
         if (format != null) {
@@ -511,6 +689,84 @@ public class OpenApiBuilder {
 
     public static String getIndent(int level) {
         return " ".repeat(Math.max(0, level*2));
+    }
+
+    private static String getConstantValue(Log log, Parameters parameters, String constantName, JavaClassSource javaClass) {
+
+        for (Import imp : javaClass.getImports()) {
+            String constantImport = imp.getQualifiedName();
+            if (constantImport.endsWith(constantName)) {
+
+                String filePath = parameters.serviceRsPath;
+                String constantPath = filePath.substring("src/main/java/".length(), filePath.length() - "/service/rs".length())
+                        .replaceAll("/", "\\.");
+
+                String subConstantPath = constantImport.replaceAll(constantPath, "").substring(1);
+
+                String[] tokens = subConstantPath.split("\\.");
+                StringBuilder appConstantFilePath = new StringBuilder(parameters.serviceRsPath.substring(0,
+                        parameters.serviceRsPath.length() - "/service/rs".length()));
+                for (int i=0; i<tokens.length-1; i++) {
+                    appConstantFilePath.append("/").append(tokens[i]);
+                }
+                appConstantFilePath.append(".java");
+
+                try {
+                    JavaClassSource javaAppContantsClass = Roaster.parse(JavaClassSource.class,
+                            new File(appConstantFilePath.toString()));
+
+                    Map<String, String> constantsMap = new HashMap<>();
+
+                    int i = 1;
+                    while (i < 10) {
+                        for (FieldSource<JavaClassSource> field : javaAppContantsClass.getFields()) {
+                            String fieldName = field.getName().trim();
+                            if (!constantsMap.containsKey(fieldName)) {
+                                String fieldDeclaration = field.toString().split("=")[1];
+                                if (!fieldDeclaration.contains("+")) {
+                                    fieldDeclaration = fieldDeclaration.replaceAll("\"", "")
+                                            .replaceAll(";", "").trim();
+                                    constantsMap.put(fieldName, fieldDeclaration);
+                                } else {
+                                    String[] fieldTokens = fieldDeclaration.split("\\+");
+                                    boolean allFieldsFound = true;
+                                    for (String fToken : fieldTokens) {
+                                        fToken = fToken.trim();
+                                        if (!fToken.contains("\"") && !constantsMap.containsKey(fToken)) {
+                                            allFieldsFound = false;
+                                            break;
+                                        }
+                                    }
+
+                                    if (allFieldsFound) {
+                                        StringBuilder sb = new StringBuilder();
+                                        for (String fToken : fieldTokens) {
+                                            fToken = fToken.trim();
+                                            if (fToken.contains("\"")) {
+                                                sb.append(fToken.replaceAll("\"", "")
+                                                        .replaceAll(";", "").trim());
+                                            } else {
+                                                sb.append(constantsMap.get(fToken));
+                                            }
+                                        }
+                                        constantsMap.put(fieldName, sb.toString());
+                                    }
+                                }
+                            }
+                        }
+                        i++;
+                    }
+
+                    if (log != null) log.info(" constantName :" + constantsMap.get(constantName));
+
+                    return constantsMap.get(constantName);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
     }
 
 }
