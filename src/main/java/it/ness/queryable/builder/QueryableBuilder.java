@@ -155,11 +155,17 @@ public class QueryableBuilder {
             if ("LocalDateTime".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDateTime");
             }
+            if ("ZonedDateTime".equals(f.fieldType)) {
+                javaClassSource.addImport("java.time.ZonedDateTime");
+            }
             if ("LocalDate".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDate");
             }
             if ("BigDecimal".equals(f.fieldType) || "big_decimal".equals(f.fieldType)) {
                 javaClassSource.addImport("java.math.BigDecimal");
+            }
+            if ("BigInteger".equals(f.fieldType) || "big_integer".equals(f.fieldType)) {
+                javaClassSource.addImport("java.math.BigInteger");
             }
             if (f instanceof QLikeListFilterDef) {
                 javaClassSource.addImport("java.util.HashMap");
