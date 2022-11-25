@@ -22,7 +22,8 @@ public class QFilterDef extends FilterDefBase {
 
     @Override
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
-        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "java.util.Date".equals(fieldType)) {
+        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType)
+                || "ZonedDateTime".equals(fieldType) || "java.util.Date".equals(fieldType)) {
             addAnnotationToModelClass_date(javaClass);
             return;
         }
@@ -149,6 +150,13 @@ public class QFilterDef extends FilterDefBase {
                 "}";
         return String.format(formatBody, queryName, queryName, filterName, name);
     }
+    private String getBigIntegerSearchMethod() {
+        String formatBody = "if (nn(\"%s\")) {" +
+                "BigInteger numberof = new BigInteger(get(\"%s\"));" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
+                "}";
+        return String.format(formatBody, queryName, queryName, filterName, name);
+    }
 
     private String getLocalDateSearchMethod() {
         StringBuilder sb = new StringBuilder();
@@ -172,6 +180,23 @@ public class QFilterDef extends FilterDefBase {
         StringBuilder sb = new StringBuilder();
         String formatBody = "if (nn(\"%s\")) {" +
                 "LocalDateTime date = LocalDateTime.parse(get(\"%s\"));" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
+                "}";
+        String filterName = entityName + ".from." + name;
+        String queryName = "from." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".to." + name;
+        queryName = "to." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".obj." + name;
+        queryName = "obj." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        return sb.toString();
+    }
+    private String getZonedDateTimeSearchMethod() {
+        StringBuilder sb = new StringBuilder();
+        String formatBody = "if (nn(\"%s\")) {" +
+                "ZonedDateTime date = ZonedDateTime.parse(get(\"%s\"));" +
                 "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
                 "}";
         String filterName = entityName + ".from." + name;
@@ -225,6 +250,8 @@ public class QFilterDef extends FilterDefBase {
                 return getStringSearchMethod();
             case "LocalDateTime":
                 return getLocalDateTimeSearchMethod();
+            case "ZonedDateTime":
+                return getZonedDateTimeSearchMethod();
             case "LocalDate":
                 return getLocalDateSearchMethod();
             case "java.util.Date":
@@ -233,6 +260,8 @@ public class QFilterDef extends FilterDefBase {
                 return getBooleanSearchMethod();
             case "big_decimal":
                 return getBigDecimalSearchMethod();
+            case "big_integer":
+                return getBigIntegerSearchMethod();
             case "int":
                 return getIntegerSearchMethod();
             case "long":
@@ -290,6 +319,8 @@ public class QFilterDef extends FilterDefBase {
                 return "string";
             case "LocalDateTime":
                 return "LocalDateTime";
+            case "ZonedDateTime":
+                return "ZonedDateTime";
             case "LocalDate":
                 return "LocalDate";
             case "Date":
@@ -299,9 +330,13 @@ public class QFilterDef extends FilterDefBase {
                 return "boolean";
             case "BigDecimal":
                 return "big_decimal";
+            case "BigInteger":
+                return "big_integer";
             case "Integer":
+            case "int":
                 return "int";
             case "Long":
+            case "long":
                 return "long";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
@@ -312,11 +347,15 @@ public class QFilterDef extends FilterDefBase {
         Set<String> supported = new HashSet<>();
         supported.add("String");
         supported.add("Integer");
+        supported.add("int");
         supported.add("Long");
+        supported.add("long");
         supported.add("Boolean");
         supported.add("boolean");
         supported.add("BigDecimal");
+        supported.add("BigInteger");
         supported.add("LocalDateTime");
+        supported.add("ZonedDateTime");
         supported.add("LocalDate");
         supported.add("Date");
         return supported;
