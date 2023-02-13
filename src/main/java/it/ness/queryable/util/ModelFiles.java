@@ -150,9 +150,11 @@ public class ModelFiles {
                     if (superClassName.contains(".")) {
                         superClassName = superClassName.substring(superClassName.lastIndexOf('.') + 1);
                     }
+                    /*
                     if (!superClassName.equals("PanacheEntityBase") && !resolvedModels.contains(superClassName)) {
                         continue;
                     }
+                     */
                     // if the superclass is PanacheEntityBase or is resolved, continue with parsing filterdef
                     Map<FilterType, LinkedHashSet<FilterDefBase>> allFilterDefs = new LinkedHashMap<>();
                     if (resolvedModels.contains(superClassName)) {

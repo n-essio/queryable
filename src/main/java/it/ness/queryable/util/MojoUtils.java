@@ -1,6 +1,7 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.builder.OpenApiBuilder;
+import it.ness.queryable.builder.QeexBuilder;
 import it.ness.queryable.builder.QueryableBuilder;
 import it.ness.queryable.builder.TestBuilder;
 import it.ness.queryable.model.pojo.Data;
@@ -84,6 +85,16 @@ public class MojoUtils {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
             OpenApiBuilder.generateSources(mf, log, parameters, packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public static void qeexsource(Parameters parameters, Log log) {
+        try {
+            String packageName = parameters.groupId + "." + parameters.artifactId;
+            QeexBuilder.generateSources(log, parameters, packageName);
         } catch (Exception e) {
             e.printStackTrace();
             return;

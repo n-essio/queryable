@@ -97,6 +97,8 @@ public class QListFilterDef extends FilterDefBase {
                 return getIntegerSearchMethod();
             case "long":
                 return getLongSearchMethod();
+            case "big_integer":
+                return getBigIntegerSearchMethod();
         }
         log.error("not handled getSearchMethod for fieldType: " + fieldType + " name: " + name);
         return "";
@@ -147,6 +149,19 @@ public class QListFilterDef extends FilterDefBase {
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
 
+    private String getBigIntegerSearchMethod() {
+        if (null == condition) {
+            String formatBody = "if (nn(\"%s\")) {" +
+                    "search.filter(\"%s\", Parameters.with(\"%s\", Arrays.stream(get(\"%s\").split(\",\")).map(number -> BigInteger.valueOf(Long.parseLong(number))).toList()));" +
+                    "}";
+            return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
+        }
+        String formatBody = "if (nn(\"%s\")) {" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+                "}";
+        return String.format(formatBody, queryName, filterName, nameInPlural, condition);
+    }
+
     @Override
     public FilterType getFilterType() {
         return FilterType.POSTQUERY;
@@ -165,6 +180,8 @@ public class QListFilterDef extends FilterDefBase {
                 return "int";
             case "Long":
                 return "long";
+            case "BigInteger":
+                return "big_integer";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -175,6 +192,7 @@ public class QListFilterDef extends FilterDefBase {
         supported.add("String");
         supported.add("Integer");
         supported.add("Long");
+        supported.add("BigInteger");
         return supported;
     }
 
