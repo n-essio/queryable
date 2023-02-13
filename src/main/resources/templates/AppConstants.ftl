@@ -2,7 +2,7 @@ package ${groupId}.api.management;
 
 public class AppConstants {
 
-    public static final String API_PATH = "/api";
+    public static final String API_PATH = "/api/v1";
     public static final String EMAIL_SEPARATOR = ";|,";
 
     public static final String MULTIPLE_VALUES_SEPARATOR = ";";
