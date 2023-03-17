@@ -262,7 +262,7 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
                 } else {
                     pageSize = Long.valueOf(listSize).intValue();
                 }
-                list = search.page(currentPage, pageSize).list();
+                list = search.page(Page.of(currentPage, pageSize)).list();
             }
             postList(list);
 
