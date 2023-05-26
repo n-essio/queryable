@@ -14,7 +14,7 @@ public class QeexBuilder {
     protected static String ANNOTATION_ID = "Id";
 
     public static void generateSources(Log log, Parameters parameters, String packageName) throws Exception {
-        List<String> lines = Files.readAllLines(Path.of("src/main/resources/application.properties"), StandardCharsets.UTF_8);
+        List<String> lines = Files.readAllLines(Path.of("src/main/resources/messages.properties"), StandardCharsets.UTF_8);
 
         //[INFO] qeex.project=FLW, qeex.default.id=100, qeex.default.code=400, qeex.messages[0].id=101, qeex.messages[0].code=400, qeex.messages[0].message=non va ancora 101, qeex.messages[1].id=102, qeex.messages[1].code=400, qeex.messages[1].message=non va ancora 101
         String project = null;
@@ -48,6 +48,25 @@ public class QeexBuilder {
                 continue;
             }
         }
+        int msg_idx = 101;
+        for (Integer i : messages.keySet()) {
+            Map<String, String> msgMap = messages.get(i);
+            int id = msg_idx;
+            if (msgMap.containsKey("id")) {
+                id = Integer.parseInt(msgMap.get("id"));
+            } else {
+                msgMap.put("id", String.valueOf(id));
+                msg_idx++;
+            }
+
+            for (String key : msgMap.keySet()) {
+                String value = msgMap.get(key);
+                value = value.replaceAll("msg_idx", String.valueOf(id));
+                msgMap.put(key, value);
+            }
+            messages.put(i, msgMap);
+        }
+
         log.info("project : " + project);
         log.info("defaultId : " + defaultId);
         log.info("defaultCode : " + defaultCode);
