@@ -2,7 +2,7 @@ package ${groupId}.${artifactId}.model;
 
 import it.ness.queryable.annotations.*;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import static ${groupId}.${artifactId}.management.AppConstants.GREETING_PATH;
 import ${groupId}.${artifactId}.model.enums.GreetingEnum;
 import java.time.LocalDateTime;

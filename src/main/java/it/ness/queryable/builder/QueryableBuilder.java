@@ -84,11 +84,23 @@ public class QueryableBuilder {
 
         FileWriter out = new FileWriter(new File(pd, modelFileName));
         try {
-            out.append(javaClass.toString());
+            out.append(replaceModelTypeAnnotations(javaClass.toString()));
         } finally {
             out.flush();
             out.close();
         }
+    }
+
+    private static String replaceModelTypeAnnotations(String modelClazz) {
+        return modelClazz.replaceAll("@String", "String.class")
+                .replaceAll("@java.time.LocalDateTime", "java.time.LocalDateTime.class")
+                .replaceAll("@java.time.ZonedDateTime", "java.time.ZonedDateTime.class")
+                .replaceAll("@java.time.LocalDate", "java.time.LocalDate.class")
+                .replaceAll("@Boolean", "Boolean.class")
+                .replaceAll("@java.math.BigDecimal", "java.math.BigDecimal.class")
+                .replaceAll("@java.math.BigInteger", "java.math.BigInteger.class")
+                .replaceAll("@Integer", "Integer.class")
+                .replaceAll("@Long", "Long.class");
     }
 
     private static void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
