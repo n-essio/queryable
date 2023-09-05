@@ -20,13 +20,13 @@ Hibernate’s @Filter Annotation – Apply Dynamic Filters at Runtime (Thorben J
 @Entity
 @Table(name = "customers")
 
-@FilterDef(name = "Customer.obj.code", parameters = @ParamDef(name = "code", type = "string"))
+@FilterDef(name = "Customer.obj.code", parameters = @ParamDef(name = "code", type = String.class))
 @Filter(name = "Customer.obj.code", condition = "code = :code")
 
-@FilterDef(name = "Customer.like.name", parameters = @ParamDef(name = "name", type = "string"))
+@FilterDef(name = "Customer.like.name", parameters = @ParamDef(name = "name", type = String.class))
 @Filter(name = "Customer.like.name", condition = "lower(name) LIKE :name")
 
-@FilterDef(name = "Customer.obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
+@FilterDef(name = "Customer.obj.active", parameters = @ParamDef(name = "active", type = Boolean.class))
 @Filter(name = "Customer.obj.active", condition = "active = :active")
 
 public class Customer extends PanacheEntityBase {
@@ -104,7 +104,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus.platform:quarkus-maven-plugin:2.14.3.Final:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.2.5.Final:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
@@ -145,7 +145,7 @@ or directly on the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.14:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:1.0.15:add
 ```
 
 or directly on the pom.xml:
@@ -155,7 +155,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.14</version>
+    <version>1.0.15</version>
 </dependency>
 ```
 
@@ -168,7 +168,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15</version>
         </plugin>
     </plugins>
 </build>
@@ -183,7 +183,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.14</version>
+            <version>1.0.15</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -269,7 +269,7 @@ public String code;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.code", parameters = @ParamDef(name = "code", type = "string"))
+@FilterDef(name = "XXX.obj.code", parameters = @ParamDef(name = "code", type = String.class))
 @Filter(name = "XXX.obj.code", condition = "code = :code")
 ```
 
@@ -292,7 +292,7 @@ public MovementReason movementReason;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.movementReason", parameters = @ParamDef(name = "movementReason", type = "string"))
+@FilterDef(name = "XXX.obj.movementReason", parameters = @ParamDef(name = "movementReason", type = String.class))
 @Filter(name = "XXX.obj.movementReason", condition = "movementReason = :movementReason")
 ```
 
@@ -315,7 +315,7 @@ public OperationType operationType;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.operationType", parameters = @ParamDef(name = "operationType", type = "string"))
+@FilterDef(name = "XXX.obj.operationType", parameters = @ParamDef(name = "operationType", type = String.class))
 @Filter(name = "XXX.obj.operationType", condition = "operationType = :operationType")
 ```
 
@@ -336,10 +336,10 @@ public LocalDateTime execution_date;
 will create two FilterDefs in model class
 
 ```
-@FilterDef(name = "XXX.from.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
+@FilterDef(name = "XXX.from.execution_date", parameters = @ParamDef(name = "execution_date", type = java.time.LocalDate.class))
 @Filter(name = "XXX.from.operation_date", condition = "operation_date >= :execution_date")
 
-@FilterDef(name = "XXX.to.execution_date", parameters = @ParamDef(name = "execution_date", type = "LocalDateTime"))
+@FilterDef(name = "XXX.to.execution_date", parameters = @ParamDef(name = "execution_date", type = java.time.LocalDate.class))
 @Filter(name = "XXX.to.execution_date", condition = "execution_date <= :execution_date")
 
 ```
@@ -367,7 +367,7 @@ public BigDecimal weight;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.weight", parameters = @ParamDef(name = "weight", type = "big_decimal"))
+@FilterDef(name = "XXX.obj.weight", parameters = @ParamDef(name = "weight", type = java.math.BigDecimal.class))
 @Filter(name = "XXX.obj.weight", condition = "weight = :weight")
 ```
 
@@ -390,7 +390,7 @@ public Integer quantity;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = "int"))
+@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = Integer.class))
 @Filter(name = "XXX.obj.quantity", condition = "quantity = :quantity")
 ```
 
@@ -413,7 +413,7 @@ public Long quantity;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = "long"))
+@FilterDef(name = "XXX.obj.quantity", parameters = @ParamDef(name = "quantity", type = Long.class))
 @Filter(name = "XXX.obj.quantity", condition = "quantity = :quantity")
 ```
 
@@ -434,7 +434,7 @@ public boolean default_template;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
+@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = Boolean.class))
 @Filter(name = "XXX.not.default_template", condition = "default_template = :default_template")
 ```
 
@@ -457,7 +457,7 @@ public boolean default_template;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = "boolean"))
+@FilterDef(name = "XXX.not.default_template", parameters = @ParamDef(name = "default_template", type = Boolean.class))
 @Filter(name = "XXX.not.default_template", condition = "default_template = :default_template")
 ```
 
@@ -509,7 +509,7 @@ public String uuid;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.uuids", parameters = @ParamDef(name = "uuids", type = "string"))
+@FilterDef(name = "XXX.obj.uuids", parameters = @ParamDef(name = "uuids", type = String.class))
 @Filter(name = "XXX.obj.uuids", condition = "uuid IN (:uuids)")
 ```
 
@@ -529,7 +529,7 @@ public Integer id;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = Integer.class))
 @Filter(name = "XXX.obj.ids", condition = "id IN (:ids)")
 ```
 
@@ -549,7 +549,7 @@ public Long id;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = "int"))
+@FilterDef(name = "XXX.obj.ids", parameters = @ParamDef(name = "ids", type = Integer.class))
 @Filter(name = "XXX.obj.ids", condition = "id IN (:ids)")
 ```
 
@@ -571,7 +571,7 @@ public String tags;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.like.tags", parameters = @ParamDef(name = "tags", type = "string"))
+@FilterDef(name = "XXX.like.tags", parameters = @ParamDef(name = "tags", type = String.class))
 @Filter(name = "XXX.like.tags", condition = "lower(tags) LIKE :tags")
 ```
 
@@ -619,7 +619,7 @@ public boolean active = true;
 will create FilterDef in model class
 
 ```
-@FilterDef(name = "XXX.obj.active", parameters = @ParamDef(name = "active", type = "boolean"))
+@FilterDef(name = "XXX.obj.active", parameters = @ParamDef(name = "active", type = Boolean.class))
 @Filter(name = "XXX.obj.active", condition = "active = :active")
 ```
 
