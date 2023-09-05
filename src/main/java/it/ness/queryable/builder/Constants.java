@@ -12,5 +12,5 @@ public class Constants {
 
     public static final String Q_GROUPID = "it.n-ess.queryable";
     public static final String Q_ARTIFACTID = "queryable-maven-plugin";
-    public static final String Q_VERSION = "1.0.14";
+    public static final String Q_VERSION = "3.0.0";
 }
