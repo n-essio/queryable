@@ -13,7 +13,7 @@ and **Hibernate Panache**, with **Hibernate**  @filters on @entity classes annot
 Normally we use the following paradigm to developing quarkus rest app (our <a href="API.MD">api rules</a>).
 
 1 - Let's start writing our entities with some hibernate filters:
-official documentation - https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html#pc-filter
+official documentation - [https://docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html#pc-filter](https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#pc-filter)
 Hibernate’s @Filter Annotation – Apply Dynamic Filters at Runtime (Thorben Janssen)  https://thorben-janssen.com/hibernate-filter/
 
 ```
@@ -155,7 +155,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>1.0.15</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
@@ -168,7 +168,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>1.0.15</version>
+            <version>3.0.0</version>
         </plugin>
     </plugins>
 </build>
