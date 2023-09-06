@@ -33,7 +33,7 @@ jobs:
         run: mvn -B package -D skipTests
          
       - name: Publish to Apache Maven Central
-        run: mvn -X -Prelease deploy
+        run: mvn -Prelease deploy
         env:
           OSSRH_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.NEXUS_PASSWORD }}
