@@ -21,11 +21,16 @@ import static ${packageName}.management.AppConstants.${rsPath};
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
-public class ${className}ServiceRs extends RsRepositoryServiceV3<${className}, String> {
+public class ${className}ServiceRs extends RsRepositoryServiceV3<${className}, ${idFieldType}> {
 
 
     public ${className}ServiceRs() {
         super(${className}.class);
+    }
+
+    protected ${idFieldType} getId(${className} object) {
+      // field with @id
+      return object.${idFieldName};
     }
 
     @Override
