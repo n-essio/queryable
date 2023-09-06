@@ -59,6 +59,7 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     protected void prePersist(T object) throws Exception {
     }
 
+    protected abstract U getId(T object);
 
     @POST
     @Transactional
@@ -133,7 +134,9 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     @Transactional
     public Response update(@PathParam("id") U id, T object) {
         logger.info("update:" + id);
-
+        if (!id.equals(getId(object))) {
+            logger.errorv("the object id [%s] is not equal to path id [%s]", getId(object), id);
+        }
         try {
             object = preUpdate(object);
         } catch (Exception e) {

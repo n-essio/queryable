@@ -106,9 +106,13 @@ public class QueryableBuilder {
     private static void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
+        String idFieldName = mf.getIdFieldName();
+        String idFieldType = mf.getIdFieldType();
         Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
-                .and("className", className);
+                .and("className", className)
+                .and("idFieldName", idFieldName)
+                .and("idFieldType", idFieldType);
         if (orderBy!= null && !"NOT_SET".equals(orderBy)) {
             data = data.and("defaultSort", orderBy);
         }

@@ -23,6 +23,8 @@ public class ModelFiles {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
     private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
+    private String idFieldName;
+    private String idFieldType;
 
     public ModelFiles(Log log, Parameters parameters) {
         isParsingSuccessful = false;
@@ -53,6 +55,12 @@ public class ModelFiles {
 
     public String[] getModelFileNames() {
         return modelFileNames;
+    }
+    public String getIdFieldName() {
+        return idFieldName;
+    }
+    public String getIdFieldType() {
+        return idFieldType;
     }
 
     public String getRsPath(final String className) {
@@ -94,6 +102,15 @@ public class ModelFiles {
                 if (null != a) {
                     orderBy = a.getStringValue();
                     orderBy = StringUtil.removeQuotes(orderBy);
+                }
+                idFieldName = "NOT_SET";
+                idFieldType = "String";
+                for (FieldSource<JavaClassSource> fieldSource : javaClass.getFields()) {
+                    a = fieldSource.getAnnotation("Id");
+                    if (null != a) {
+                        idFieldName = fieldSource.getName();
+                        idFieldType = fieldSource.getType().getName();
+                    }
                 }
                 qualifiedClassName.put(className, javaClass.getQualifiedName());
             } catch (Exception e) {
