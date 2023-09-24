@@ -2,8 +2,7 @@ package it.ness.queryable.util;
 
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.model.pojo.Parameters;
-import it.ness.queryable.model.predicates.FilterBase;
-import it.ness.queryable.model.predicates.QFilter;
+import it.ness.queryable.model.predicates.*;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -46,7 +45,7 @@ public class ModelFilesV4 {
         }
     }
 
-    public Set<FilterBase> getFilterDef(final String className, final FilterType filterType) {
+    public Set<FilterBase> getFilter(final String className, final FilterType filterType) {
         if (excludeClass(className)) return null;
         Map<FilterType, LinkedHashSet<FilterBase>> allFilterDefs = filterMap.get(className);
         if (allFilterDefs == null) return null;
@@ -113,6 +112,7 @@ public class ModelFilesV4 {
                     if (null != a) {
                         idFieldName = fieldSource.getName();
                         idFieldType = fieldSource.getType().getName();
+                        System.out.println(className + ", id: " + idFieldName);
                     }
                 }
                 qualifiedClassName.put(className, javaClass.getQualifiedName());
@@ -140,12 +140,12 @@ public class ModelFilesV4 {
 
         // add all supported filterdef bases to parse
         FilterBases.add(new QFilter(log));
-//        FilterBases.add(new QLikeFilterDef(log));
-//        FilterBases.add(new QNilFilterDef(log));
-//        FilterBases.add(new QNotNilFilterDef(log));
-//        FilterBases.add(new QLogicalDeleteFilterDef(log));
-//        FilterBases.add(new QListFilterDef(log));
-//        FilterBases.add(new QLikeListFilterDef(log));
+        FilterBases.add(new QLikeFilter(log));
+        FilterBases.add(new QNilFilter(log));
+        FilterBases.add(new QNotNilFilter(log));
+        FilterBases.add(new QLogicalDeleteFilter(log));
+        FilterBases.add(new QListFilter(log));
+        FilterBases.add(new QLikeListFilter(log));
 
         // loop while in the resolvedModels all modelFile are resolved
         int i = 1;

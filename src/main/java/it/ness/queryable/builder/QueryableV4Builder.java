@@ -1,13 +1,13 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.model.filters.FilterDefBase;
-import it.ness.queryable.model.filters.QLikeListFilterDef;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
+import it.ness.queryable.model.predicates.FilterBase;
+import it.ness.queryable.model.predicates.QLikeListFilter;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.GetSearchMethodV4;
-import it.ness.queryable.util.ModelFilesV3;
+import it.ness.queryable.util.ModelFilesV4;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -22,7 +22,7 @@ import java.util.*;
 public class QueryableV4Builder {
 
 
-    public static void generateSources(ModelFilesV3 mf, Log log, Parameters parameters) throws Exception {
+    public static void generateSources(ModelFilesV4 mf, Log log, Parameters parameters) throws Exception {
         String[] modelFiles = mf.getModelFileNames();
         for (String modelFileName : modelFiles) {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
@@ -40,14 +40,14 @@ public class QueryableV4Builder {
         if (log != null) log.info("Done generating sources");
     }
 
-    private static void createModel(Log log, ModelFilesV3 mf, String modelFileName, Parameters parameters) throws Exception {
+    private static void createModel(Log log, ModelFilesV4 mf, String modelFileName, Parameters parameters) throws Exception {
         String className = StringUtil.getClassNameFromFileName(modelFileName);
         String path = parameters.modelPath;
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
 
-        Set<FilterDefBase> allFilderDefs = new LinkedHashSet<>();
-        Set<FilterDefBase> preQueryDefs = mf.getFilterDef(className, FilterType.PREQUERY);
-        Set<FilterDefBase> postQueryDefs = mf.getFilterDef(className, FilterType.POSTQUERY);
+        Set<FilterBase> allFilderDefs = new LinkedHashSet<>();
+        Set<FilterBase> preQueryDefs = mf.getFilter(className, FilterType.PREQUERY);
+        Set<FilterBase> postQueryDefs = mf.getFilter(className, FilterType.POSTQUERY);
         if (null != preQueryDefs) {
             allFilderDefs.addAll(preQueryDefs);
         }
@@ -60,33 +60,6 @@ public class QueryableV4Builder {
             return;
         }
         if (log != null) log.debug("WE don't need to creating a new model for class : " + className);
-
-//        javaClass.addImport(H_FILTER);
-//        javaClass.addImport(H_FILTERDEF);
-//        javaClass.addImport(H_PARAMDEF);
-
-//        for (FilterDefBase fd : allFilderDefs) {
-//            fd.addAnnotationToModelClass(javaClass);
-//        }
-
-//        // remove imports if has org.hibernate.annotations.*
-//        if (javaClass.hasImport(H_ANNOTATIONS)) {
-//            javaClass.removeImport(H_FILTER);
-//            javaClass.removeImport(H_FILTERDEF);
-//            javaClass.removeImport(H_PARAMDEF);
-//        }
-
-//        String packagePath = getPathFromPackage(javaClass.getPackage());
-//        File pd = new File(parameters.outputDirectory, packagePath);
-//        pd.mkdirs();
-//
-//        FileWriter out = new FileWriter(new File(pd, modelFileName));
-//        try {
-//            out.append(replaceModelTypeAnnotations(javaClass.toString()));
-//        } finally {
-//            out.flush();
-//            out.close();
-//        }
     }
 
     private static String replaceModelTypeAnnotations(String modelClazz) {
@@ -101,7 +74,7 @@ public class QueryableV4Builder {
                 .replaceAll("@Long", "Long.class");
     }
 
-    private static void createRsService(String version, ModelFilesV3 mf, String className, String groupId, String artefactId, String
+    private static void createRsService(String version, ModelFilesV4 mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
         String idFieldName = mf.getIdFieldName();
@@ -120,8 +93,8 @@ public class QueryableV4Builder {
         Map<String, Object> map = data.map();
         String serviceRsClass = FreeMarkerTemplates.processTemplate("servicersv4", map);
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
-        Collection<FilterDefBase> preQueryFilters = mf.getFilterDef(className, FilterType.PREQUERY);
-        Collection<FilterDefBase> postQueryFilters = mf.getFilterDef(className, FilterType.POSTQUERY);
+        Collection<FilterBase> preQueryFilters = mf.getFilter(className, FilterType.PREQUERY);
+        Collection<FilterBase> postQueryFilters = mf.getFilter(className, FilterType.POSTQUERY);
 
         GetSearchMethodV4 getSearchMethodV4 = new GetSearchMethodV4(log, preQueryFilters, postQueryFilters, className);
         addImportsToClass(javaClassTemplate, preQueryFilters, groupId);
@@ -158,9 +131,9 @@ public class QueryableV4Builder {
         }
     }
 
-    private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd, String groupId) {
+    private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterBase> fd, String groupId) {
         if (fd == null) return;
-        for (FilterDefBase f : fd) {
+        for (FilterBase f : fd) {
             if ("java.util.Date".equals(f.fieldType)) {
                 javaClassSource.addImport("java.util.Date");
                 javaClassSource.addImport(String.format("%s.api.util.DateUtils", groupId));
@@ -180,7 +153,7 @@ public class QueryableV4Builder {
             if ("BigInteger".equals(f.fieldType) || "big_integer".equals(f.fieldType)) {
                 javaClassSource.addImport("java.math.BigInteger");
             }
-            if (f instanceof QLikeListFilterDef) {
+            if (f instanceof QLikeListFilter) {
                 javaClassSource.addImport("java.util.HashMap");
                 javaClassSource.addImport("java.util.Map");
             }

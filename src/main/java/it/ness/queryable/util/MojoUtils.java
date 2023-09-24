@@ -60,7 +60,7 @@ public class MojoUtils {
     }
 
     public static void sourceV4(Parameters parameters, Log log) {
-        ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
+        ModelFilesV4 mf = new ModelFilesV4(parameters.logging ? log : null, parameters);
         if (!mf.isParsingSuccessful) return;
         try {
             QueryableV4Builder.generateSources(mf, parameters.logging ? log : null, parameters);

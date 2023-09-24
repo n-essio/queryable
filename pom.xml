@@ -52,7 +52,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <maven.version>3.9.4</maven.version>
+        <maven.version>3.9.3</maven.version>
         <maven-plugin-annotations.version>3.9.0</maven-plugin-annotations.version>
         <version.roaster>2.29.0.Final</version.roaster>
         <version.freemarker>2.3.32</version.freemarker>
@@ -170,7 +170,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>

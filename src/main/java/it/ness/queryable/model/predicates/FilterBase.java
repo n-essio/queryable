@@ -1,5 +1,4 @@
 package it.ness.queryable.model.predicates;
-
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.util.StringUtil;

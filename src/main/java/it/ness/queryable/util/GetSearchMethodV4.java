@@ -1,17 +1,17 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.model.filters.FilterDefBase;
+import it.ness.queryable.model.predicates.FilterBase;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.Collection;
 
 public class GetSearchMethodV4 {
     protected Log log;
-    protected Collection<FilterDefBase> preQueryFilters;
-    protected Collection<FilterDefBase> postQueryFilters;
+    protected Collection<FilterBase> preQueryFilters;
+    protected Collection<FilterBase> postQueryFilters;
     protected String className;
 
-    public GetSearchMethodV4(Log log, Collection<FilterDefBase> preQueryFilters, Collection<FilterDefBase> postQueryFilters, String className) {
+    public GetSearchMethodV4(Log log, Collection<FilterBase> preQueryFilters, Collection<FilterBase> postQueryFilters, String className) {
         this.log = log;
         this.preQueryFilters = preQueryFilters;
         this.postQueryFilters = postQueryFilters;
@@ -28,13 +28,13 @@ public class GetSearchMethodV4 {
         boolean existsPostQueryFilters = postQueryFilters != null && postQueryFilters.size() > 0;
         sb.append(getPreQuery());
         if (existsPreQueryFilters) {
-            for (FilterDefBase f : preQueryFilters) {
-                sb.append(f.getSearchMethodV4());
+            for (FilterBase f : preQueryFilters) {
+                sb.append(f.getSearchMethod());
             }
         }
         if (existsPostQueryFilters) {
-            for (FilterDefBase f : postQueryFilters) {
-                sb.append(f.getSearchMethodV4());
+            for (FilterBase f : postQueryFilters) {
+                sb.append(f.getSearchMethod());
             }
         }
         sb.append("return predicates.toArray(new Predicate[]{});");

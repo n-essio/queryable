@@ -31,4 +31,6 @@ public class Constants {
     public static String ANNOTATION_NAME = "QNotNil";
     public static String PREFIX = "notNil";
 
+    public static String QLIST_ANNOTATION_NAME = "QList";
+
 }

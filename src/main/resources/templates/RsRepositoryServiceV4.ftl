@@ -64,7 +64,7 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
 
 
 
-                @POST
+    @POST
     @Transactional
     public Response persist(T object) {
         logger.info("persist");
