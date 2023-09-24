@@ -3,6 +3,7 @@ package ${groupId}.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ${groupId}.api.management.AppConstants;
+import ${groupId}.api.util.DateUtils;
 
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -10,11 +11,18 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 
 public abstract class RsResponseService implements Serializable {
@@ -91,26 +99,33 @@ public abstract class RsResponseService implements Serializable {
     }
 
     public List<String> asList(String key) {
-            String value = get(key);
-            return Stream.of(value.split(",", -1))
-                    .collect(Collectors.toList());
-        }
+        String value = get(key);
+        return Stream.of(value.split(",", -1))
+                .collect(Collectors.toList());
+    }
 
-        public List<Integer> asIntegerList(String key) {
-            String value = get(key);
-            return Stream.of(value.split(","))
-                    .map(String::trim)
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-        }
+    public List<Integer> asIntegerList(String key) {
+        String value = get(key);
+        return Stream.of(value.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+    }
 
-        public List<Long> asLongList(String key) {
-            String value = get(key);
-            return Stream.of(value.split(","))
-                    .map(String::trim)
-                    .map(Long::parseLong)
-                    .collect(Collectors.toList());
-        }
+    public List<Long> asLongList(String key) {
+        String value = get(key);
+        return Stream.of(value.split(","))
+                .map(String::trim)
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+    }
+
+    public List<BigInteger> asBigIntegerList(String key) {
+        String value = get(key);
+        return Stream.of(value.split(","))
+                .map(number -> BigInteger.valueOf(Long.parseLong(number)))
+                .toList();
+    }
 
     public Integer _integer(String key) {
         String value = ui.getQueryParameters().getFirst(key);
@@ -126,6 +141,53 @@ public abstract class RsResponseService implements Serializable {
         String value = ui.getQueryParameters().getFirst(key);
         return Boolean.valueOf(value);
     }
+
+    public BigDecimal _bigdecimal(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        return new BigDecimal(value);
+    }
+
+    public BigInteger _biginteger(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        return new BigInteger(value);
+    }
+
+    public LocalDate _date(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        return DateUtils.parseDate(value);
+    }
+
+
+    public LocalDate _localDate(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        return LocalDate.parse(value, formatter);
+    }
+
+    public LocalDate _localDate(String key, String pattern) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return LocalDate.parse(value, formatter);
+    }
+
+    public ZonedDateTime _zonedDateTime(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        return ZonedDateTime.parse(value);
+    }
+
+    public LocalDateTime _localDateTime(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss");
+        return LocalDateTime.parse(value, formatter);
+    }
+
+    public LocalDateTime _localDateTime(String key, String pattern) {
+        String value = ui.getQueryParameters().getFirst(key);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return LocalDateTime.parse(value, formatter);
+    }
+
+
 
     protected final String likeParamToLowerCase(String value) {
         return "%" + get(value).toLowerCase() + "%";

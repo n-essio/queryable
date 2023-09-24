@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
@@ -11,12 +11,12 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QLikeFilterDef extends FilterDefBase {
+public class QNotNilFilterDef extends FilterDefBase {
 
-    protected static String ANNOTATION_NAME = "QLike";
-    protected static String PREFIX = "like";
+    protected static String ANNOTATION_NAME = "QNotNil";
+    protected static String PREFIX = "notNil";
 
-    public QLikeFilterDef(final Log log) {
+    public QNotNilFilterDef(final Log log) {
         super(log);
     }
 
@@ -26,12 +26,11 @@ public class QLikeFilterDef extends FilterDefBase {
         removeFilterDef(javaClass, filterName);
 
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
-        FilterUtils.addParamDef(filterDefAnnotation, name, type);
-        FilterUtils.addFilter(javaClass, filterName, String.format("lower(%s) LIKE :%s", name, name));
+        FilterUtils.addFilter(javaClass, filterName, String.format("%s IS NOT NULL", name));
     }
 
     @Override
-    public QLikeFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QNotNilFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -49,7 +48,7 @@ public class QLikeFilterDef extends FilterDefBase {
             return null;
         }
 
-        QLikeFilterDef fd = new QLikeFilterDef(log);
+        QNotNilFilterDef fd = new QNotNilFilterDef(log);
         fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
@@ -66,24 +65,6 @@ public class QLikeFilterDef extends FilterDefBase {
 
     @Override
     public String getSearchMethod() {
-        if (containsOption(QOption.EXECUTE_ALWAYS)) {
-            return getStringEqualsAlways();
-        }
-        if (containsOption(QOption.WITHOUT_PARAMETERS)) {
-            return getStringEqualsWithoutParameters();
-        }
-        String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));" +
-                "}";
-        return String.format(formatBody, queryName, filterName, name, queryName);
-    }
-
-    private String getStringEqualsAlways() {
-        String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));";
-        return String.format(formatBody, filterName, name, queryName);
-    }
-
-    private String getStringEqualsWithoutParameters() {
         String formatBody = "if (nn(\"%s\")) {" +
                 "search.filter(\"%s\");" +
                 "}";
@@ -101,8 +82,26 @@ public class QLikeFilterDef extends FilterDefBase {
     }
 
     private String getTypeFromFieldType(final String fieldType) {
-        if ("String".equals(fieldType)) {
-            return "string";
+        switch (fieldType) {
+            case "String":
+                return "string";
+            case "LocalDateTime":
+                return "LocalDateTime";
+            case "LocalDate":
+                return "LocalDate";
+            case "Date":
+                return "Date";
+            case "Boolean":
+            case "boolean":
+                return "boolean";
+            case "BigDecimal":
+                return "big_decimal";
+            case "BigInteger":
+                return "big_integer";
+            case "Integer":
+                return "int";
+            case "Long":
+                return "long";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -111,6 +110,15 @@ public class QLikeFilterDef extends FilterDefBase {
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
         supported.add("String");
+        supported.add("Integer");
+        supported.add("Long");
+        supported.add("Boolean");
+        supported.add("boolean");
+        supported.add("BigDecimal");
+        supported.add("BigInteger");
+        supported.add("LocalDateTime");
+        supported.add("LocalDate");
+        supported.add("Date");
         return supported;
     }
 

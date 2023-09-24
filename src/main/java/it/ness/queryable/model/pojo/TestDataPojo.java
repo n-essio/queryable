@@ -1,6 +1,6 @@
 package it.ness.queryable.model.pojo;
 
-import it.ness.queryable.model.QT;
+import it.ness.queryable.model.test.QT;
 
 import java.util.List;
 

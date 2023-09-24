@@ -1,11 +1,10 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.model.QApi;
-import it.ness.queryable.model.QMethodApi;
+import it.ness.queryable.model.openapi.QApi;
+import it.ness.queryable.model.test.QMethodApi;
 import it.ness.queryable.model.pojo.ApiDataPojo;
 import it.ness.queryable.model.pojo.Parameters;
-import it.ness.queryable.util.FileUtils;
-import it.ness.queryable.util.ModelFiles;
+import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -24,7 +23,7 @@ public class OpenApiBuilder {
 
     protected static String ANNOTATION_ID = "Id";
 
-    public static void generateSources(ModelFiles mf, Log log, Parameters parameters,
+    public static void generateSources(ModelFilesV3 mf, Log log, Parameters parameters,
                                        String packageName) throws Exception {
 
         String[] modelFiles = mf.getModelFileNames();

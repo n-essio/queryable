@@ -1,9 +1,6 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.builder.OpenApiBuilder;
-import it.ness.queryable.builder.QeexBuilder;
-import it.ness.queryable.builder.QueryableBuilder;
-import it.ness.queryable.builder.TestBuilder;
+import it.ness.queryable.builder.*;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
 import org.apache.maven.model.Dependency;
@@ -36,6 +33,7 @@ public class MojoUtils {
         FileUtils.createJavaClassFromTemplate(producerPath, "CorsExceptionMapper", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(managementPath, "AppConstants", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "RsRepositoryServiceV3", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(servicePath, "RsRepositoryServiceV4", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "RsResponseService", null, data, parameters.logging ? log : null);
     }
 
@@ -50,11 +48,22 @@ public class MojoUtils {
         FileUtils.createJavaClassFromTemplate(modelPath, "Greeting", null, data, parameters.logging ? log : null);
     }
 
-    public static void source(Parameters parameters, Log log) {
-        ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+    public static void sourceV3(Parameters parameters, Log log) {
+        ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
         if (!mf.isParsingSuccessful) return;
         try {
-            QueryableBuilder.generateSources(mf, parameters.logging ? log : null, parameters);
+            QueryableV3Builder.generateSources(mf, parameters.logging ? log : null, parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public static void sourceV4(Parameters parameters, Log log) {
+        ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
+        if (!mf.isParsingSuccessful) return;
+        try {
+            QueryableV4Builder.generateSources(mf, parameters.logging ? log : null, parameters);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -62,7 +71,7 @@ public class MojoUtils {
     }
 
     public static void testsource(Parameters parameters, Log log) {
-        ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+        ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
 
         if (!mf.isParsingSuccessful) {
             return;
@@ -77,7 +86,7 @@ public class MojoUtils {
     }
 
     public static void openapisource(Parameters parameters, Log log) {
-        ModelFiles mf = new ModelFiles(parameters.logging ? log : null, parameters);
+        ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
 
         if (!mf.isParsingSuccessful) {
             return;

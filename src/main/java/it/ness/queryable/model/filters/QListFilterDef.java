@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;

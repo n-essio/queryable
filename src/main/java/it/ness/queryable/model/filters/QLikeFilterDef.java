@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
@@ -11,12 +11,12 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QLogicalDeleteFilterDef extends FilterDefBase {
+public class QLikeFilterDef extends FilterDefBase {
 
-    protected static String ANNOTATION_NAME = "QLogicalDelete";
-    protected static String PREFIX = "obj";
+    protected static String ANNOTATION_NAME = "QLike";
+    protected static String PREFIX = "like";
 
-    public QLogicalDeleteFilterDef(final Log log) {
+    public QLikeFilterDef(final Log log) {
         super(log);
     }
 
@@ -27,11 +27,11 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
 
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
         FilterUtils.addParamDef(filterDefAnnotation, name, type);
-        FilterUtils.addFilter(javaClass, filterName, String.format("%s = :%s", name, name));
+        FilterUtils.addFilter(javaClass, filterName, String.format("lower(%s) LIKE :%s", name, name));
     }
 
     @Override
-    public QLogicalDeleteFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLikeFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -49,7 +49,7 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
             return null;
         }
 
-        QLogicalDeleteFilterDef fd = new QLogicalDeleteFilterDef(log);
+        QLikeFilterDef fd = new QLikeFilterDef(log);
         fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
@@ -66,14 +66,28 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
 
     @Override
     public String getSearchMethod() {
+        if (containsOption(QOption.EXECUTE_ALWAYS)) {
+            return getStringEqualsAlways();
+        }
+        if (containsOption(QOption.WITHOUT_PARAMETERS)) {
+            return getStringEqualsWithoutParameters();
+        }
         String formatBody = "if (nn(\"%s\")) {" +
-                 "Boolean valueof = _boolean(\"%s\");" +
-                 "search.filter(\"%s\", Parameters.with(\"%s\", valueof));" +
-                 "} else {" +
-                 "search.filter(\"%s\", Parameters.with(\"%s\", true));" +
-                 "}";
+                "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));" +
+                "}";
+        return String.format(formatBody, queryName, filterName, name, queryName);
+    }
 
-        return String.format(formatBody, queryName, queryName, filterName, name, filterName, name);
+    private String getStringEqualsAlways() {
+        String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));";
+        return String.format(formatBody, filterName, name, queryName);
+    }
+
+    private String getStringEqualsWithoutParameters() {
+        String formatBody = "if (nn(\"%s\")) {" +
+                "search.filter(\"%s\");" +
+                "}";
+        return String.format(formatBody, queryName, filterName);
     }
 
     @Override
@@ -87,9 +101,8 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
     }
 
     private String getTypeFromFieldType(final String fieldType) {
-        switch (fieldType) {
-            case "boolean":
-                return "boolean";
+        if ("String".equals(fieldType)) {
+            return "string";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -97,7 +110,7 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
 
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
-        supported.add("boolean");
+        supported.add("String");
         return supported;
     }
 

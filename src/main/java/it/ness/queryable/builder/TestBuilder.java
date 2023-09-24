@@ -1,11 +1,11 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.model.QT;
+import it.ness.queryable.model.test.QT;
 import it.ness.queryable.model.pojo.Parameters;
 import it.ness.queryable.model.pojo.TestDataPojo;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.FileUtils;
-import it.ness.queryable.util.ModelFiles;
+import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -22,7 +22,7 @@ public class TestBuilder {
     protected static String ANNOTATION_FIELD = QT.class.getSimpleName();
     protected static String ANNOTATION_ID = "Id";
 
-    public static void generateSources(ModelFiles mf, Log log, Parameters parameters,
+    public static void generateSources(ModelFilesV3 mf, Log log, Parameters parameters,
                                        String packageName) throws Exception {
         String[] modelFiles = mf.getModelFileNames();
         for (String modelFileName : modelFiles) {
@@ -151,7 +151,7 @@ public class TestBuilder {
         return null;
     }
 
-    public static List<String> getCreated(Log log, String modelFileName, ModelFiles mf) {
+    public static List<String> getCreated(Log log, String modelFileName, ModelFilesV3 mf) {
         List<String> statements = new ArrayList<>();
         String className = StringUtil.getClassNameFromFileName(modelFileName);
         if (!mf.excludeClass(className)) {

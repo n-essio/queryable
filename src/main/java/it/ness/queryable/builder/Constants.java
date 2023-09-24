@@ -12,5 +12,23 @@ public class Constants {
 
     public static final String Q_GROUPID = "it.n-ess.queryable";
     public static final String Q_ARTIFACTID = "queryable-maven-plugin";
-    public static final String Q_VERSION = "3.0.0";
+    public static final String Q_VERSION = "3.0.2";
+
+    public static String Q_ANNOTATION_NAME = "Q";
+    public static String OBJ_PREFIX = "obj";
+
+    public static String QLIKE_ANNOTATION_NAME = "QLike";
+    public static String LIKE_PREFIX = "like";
+
+    public static String QLIKELIST_ANNOTATION_NAME = "QLikeList";
+
+    public static String QNOTNILL_ANNOTATION_NAME = "QNotNil";
+    public static String NOTNILL_PREFIX = "notNil";
+
+    public static String QNILL_ANNOTATION_NAME = "QNil";
+    public static String NIL_PREFIX = "nil";
+
+    public static String ANNOTATION_NAME = "QNotNil";
+    public static String PREFIX = "notNil";
+
 }

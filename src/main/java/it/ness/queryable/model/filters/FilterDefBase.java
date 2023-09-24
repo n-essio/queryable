@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
@@ -27,9 +27,13 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     public QOption[] options;
 
     public abstract void addAnnotationToModelClass(JavaClassSource javaClass);
+
     public abstract FilterDefBase parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation);
+
     public abstract String getSearchMethod();
+
     public abstract FilterType getFilterType();
+
     public abstract boolean overrideOnSameFilterName();
 
     public FilterDefBase(final Log log) {
@@ -68,7 +72,9 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
         return filterName;
     }
 
-    public String getType() { return type; }
+    public String getType() {
+        return type;
+    }
 
     @Override
     public int compareTo(FilterDefBase filterDef) {
@@ -100,8 +106,7 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
         String value = a.getLiteralValue(fieldName);
         if (null == value) {
             value = defaultValue;
-        }
-        else {
+        } else {
             value = StringUtil.removeQuotes(value);
         }
         return value;

@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
@@ -11,26 +11,41 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QNotNilFilterDef extends FilterDefBase {
+public class QLikeListFilterDef extends FilterDefBase {
 
-    protected static String ANNOTATION_NAME = "QNotNil";
-    protected static String PREFIX = "notNil";
+    protected static String ANNOTATION_NAME = "QLikeList";
+    protected static String PREFIX = "like";
+    protected String nameInPlural;
 
-    public QNotNilFilterDef(final Log log) {
+    public QLikeListFilterDef(final Log log) {
         super(log);
     }
 
     @Override
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
+        nameInPlural = null;
+        if (name.contains("_")) {
+            nameInPlural = stringUtil.getPlural(name.substring(name.indexOf("_") + 1));
+            nameInPlural = name.substring(0, name.indexOf("_")+1) + nameInPlural;
+        } else {
+            nameInPlural = stringUtil.getPlural(name);
+        }
+        filterName = entityName + "." + prefix + "." + nameInPlural;
+        queryName = prefix + "." + nameInPlural;
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
 
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
-        FilterUtils.addFilter(javaClass, filterName, String.format("%s IS NOT NULL", name));
+        FilterUtils.addParamDef(filterDefAnnotation, nameInPlural, "string");
+        if (null == condition) {
+            FilterUtils.addFilter(javaClass,filterName,  String.format("lower(%s) LIKE :%s", nameInPlural, nameInPlural) );
+        } else {
+            FilterUtils.addFilter(javaClass,filterName,  condition);
+        }
     }
 
     @Override
-    public QNotNilFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLikeListFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -48,7 +63,7 @@ public class QNotNilFilterDef extends FilterDefBase {
             return null;
         }
 
-        QNotNilFilterDef fd = new QNotNilFilterDef(log);
+        QLikeListFilterDef fd = new QLikeListFilterDef(log);
         fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
@@ -65,15 +80,34 @@ public class QNotNilFilterDef extends FilterDefBase {
 
     @Override
     public String getSearchMethod() {
-        String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\");" +
-                "}";
-        return String.format(formatBody, queryName, filterName);
+        String formatBody =
+                "if (nn(\"%s\")) {" +
+                        "   String[] %s = get(\"%s\").split(\",\");" +
+                        "   StringBuilder sb = new StringBuilder();" +
+                        "   if (null == params) {" +
+                        "      params = new HashMap<>();" +
+                        "   }" +
+                        "   for (int i = 0; i < %s.length; i++) {" +
+                        "      final String paramName = String.format(\"%s%%d\", i);" +
+                        "      sb.append(String.format(\"%s LIKE :%%s\", paramName));" +
+                        "      params.put(paramName, %s + %s[i] + %s);" +
+                        "      if (i < %s.length - 1) {" +
+                        "         sb.append(\" OR \");" +
+                        "      }" +
+                        "   }" +
+                        "   if (null == query) {" +
+                        "      query = sb.toString();" +
+                        "   }" +
+                        "   else {" +
+                        "      query = query + \" OR \" + sb.toString();\n" +
+                        "   }" +
+                        "}";
+        return String.format(formatBody, queryName, nameInPlural, queryName, nameInPlural, name, name, "\"%\"", nameInPlural, "\"%\"", nameInPlural);
     }
 
     @Override
     public FilterType getFilterType() {
-        return FilterType.POSTQUERY;
+        return FilterType.PREQUERY;
     }
 
     @Override
@@ -85,23 +119,6 @@ public class QNotNilFilterDef extends FilterDefBase {
         switch (fieldType) {
             case "String":
                 return "string";
-            case "LocalDateTime":
-                return "LocalDateTime";
-            case "LocalDate":
-                return "LocalDate";
-            case "Date":
-                return "Date";
-            case "Boolean":
-            case "boolean":
-                return "boolean";
-            case "BigDecimal":
-                return "big_decimal";
-            case "BigInteger":
-                return "big_integer";
-            case "Integer":
-                return "int";
-            case "Long":
-                return "long";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -110,15 +127,6 @@ public class QNotNilFilterDef extends FilterDefBase {
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
         supported.add("String");
-        supported.add("Integer");
-        supported.add("Long");
-        supported.add("Boolean");
-        supported.add("boolean");
-        supported.add("BigDecimal");
-        supported.add("BigInteger");
-        supported.add("LocalDateTime");
-        supported.add("LocalDate");
-        supported.add("Date");
         return supported;
     }
 

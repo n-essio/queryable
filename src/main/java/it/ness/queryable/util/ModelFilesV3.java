@@ -1,7 +1,7 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.model.*;
 import it.ness.queryable.model.enums.FilterType;
+import it.ness.queryable.model.filters.*;
 import it.ness.queryable.model.pojo.Parameters;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -10,10 +10,9 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
 
-public class ModelFiles {
+public class ModelFilesV3 {
 
     private String[] modelFileNames;
     public boolean isParsingSuccessful;
@@ -26,7 +25,7 @@ public class ModelFiles {
     private String idFieldName;
     private String idFieldType;
 
-    public ModelFiles(Log log, Parameters parameters) {
+    public ModelFilesV3(Log log, Parameters parameters) {
         isParsingSuccessful = false;
 
         if (log != null) log.info("path = " + parameters.modelPath);

@@ -1,8 +1,7 @@
 package it.ness.queryable.model.pojo;
 
-import it.ness.queryable.model.QApi;
-import it.ness.queryable.model.QMethodApi;
-import it.ness.queryable.model.QT;
+import it.ness.queryable.model.openapi.QApi;
+import it.ness.queryable.model.test.QMethodApi;
 
 import java.util.List;
 import java.util.Map;

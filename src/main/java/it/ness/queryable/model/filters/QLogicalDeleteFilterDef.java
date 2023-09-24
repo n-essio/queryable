@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.filters;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
@@ -11,12 +11,12 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QNilFilterDef extends FilterDefBase {
+public class QLogicalDeleteFilterDef extends FilterDefBase {
 
-    protected static String ANNOTATION_NAME = "QNil";
-    protected static String PREFIX = "nil";
+    protected static String ANNOTATION_NAME = "QLogicalDelete";
+    protected static String PREFIX = "obj";
 
-    public QNilFilterDef(final Log log) {
+    public QLogicalDeleteFilterDef(final Log log) {
         super(log);
     }
 
@@ -24,12 +24,14 @@ public class QNilFilterDef extends FilterDefBase {
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
+
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
-        FilterUtils.addFilter(javaClass, filterName, String.format("%s IS NULL", name));
+        FilterUtils.addParamDef(filterDefAnnotation, name, type);
+        FilterUtils.addFilter(javaClass, filterName, String.format("%s = :%s", name, name));
     }
 
     @Override
-    public QNilFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+    public QLogicalDeleteFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
         AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
         if (null == a) {
             return null;
@@ -47,7 +49,7 @@ public class QNilFilterDef extends FilterDefBase {
             return null;
         }
 
-        QNilFilterDef fd = new QNilFilterDef(log);
+        QLogicalDeleteFilterDef fd = new QLogicalDeleteFilterDef(log);
         fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
@@ -65,9 +67,13 @@ public class QNilFilterDef extends FilterDefBase {
     @Override
     public String getSearchMethod() {
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\");" +
-                "}";
-        return String.format(formatBody, queryName, filterName);
+                 "Boolean valueof = _boolean(\"%s\");" +
+                 "search.filter(\"%s\", Parameters.with(\"%s\", valueof));" +
+                 "} else {" +
+                 "search.filter(\"%s\", Parameters.with(\"%s\", true));" +
+                 "}";
+
+        return String.format(formatBody, queryName, queryName, filterName, name, filterName, name);
     }
 
     @Override
@@ -82,25 +88,8 @@ public class QNilFilterDef extends FilterDefBase {
 
     private String getTypeFromFieldType(final String fieldType) {
         switch (fieldType) {
-            case "String":
-                return "string";
-            case "LocalDateTime":
-                return "LocalDateTime";
-            case "LocalDate":
-                return "LocalDate";
-            case "Date":
-                return "Date";
-            case "Boolean":
             case "boolean":
                 return "boolean";
-            case "BigDecimal":
-                return "big_decimal";
-            case "BigInteger":
-                return "big_integer";
-            case "Integer":
-                return "int";
-            case "Long":
-                return "long";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -108,16 +97,7 @@ public class QNilFilterDef extends FilterDefBase {
 
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
-        supported.add("String");
-        supported.add("Integer");
-        supported.add("Long");
-        supported.add("Boolean");
         supported.add("boolean");
-        supported.add("BigDecimal");
-        supported.add("BigInteger");
-        supported.add("LocalDateTime");
-        supported.add("LocalDate");
-        supported.add("Date");
         return supported;
     }
 

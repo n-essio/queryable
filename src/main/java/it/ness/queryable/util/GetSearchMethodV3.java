@@ -1,17 +1,17 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.model.FilterDefBase;
+import it.ness.queryable.model.filters.FilterDefBase;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.Collection;
 
-public class GetSearchMethod {
+public class GetSearchMethodV3 {
     protected Log log;
     protected Collection<FilterDefBase> preQueryFilters;
     protected Collection<FilterDefBase> postQueryFilters;
     protected String className;
 
-    public GetSearchMethod(Log log, Collection<FilterDefBase> preQueryFilters, Collection<FilterDefBase> postQueryFilters, String className) {
+    public GetSearchMethodV3(Log log, Collection<FilterDefBase> preQueryFilters, Collection<FilterDefBase> postQueryFilters, String className) {
         this.log = log;
         this.preQueryFilters = preQueryFilters;
         this.postQueryFilters = postQueryFilters;

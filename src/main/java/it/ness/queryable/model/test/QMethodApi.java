@@ -1,4 +1,4 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.test;
 
 import org.jboss.forge.roaster.model.source.*;
 

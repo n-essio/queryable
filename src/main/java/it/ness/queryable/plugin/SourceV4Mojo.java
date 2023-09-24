@@ -7,13 +7,14 @@ import org.apache.maven.plugins.annotations.Mojo;
 /**
  * Queryable is maven plugin for filter defs.
  */
-@Mojo(name = "source",
+@Mojo(name = "sourcev4",
         defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
         threadSafe = true)
-public class SourceMojo extends QuerableBaseMojo {
+public class SourceV4Mojo extends QuerableBaseMojo {
 
     public void execute() {
         init(getLog());
-        MojoUtils.source(parameters, log);
+        this.parameters.sourceVersion = "v4";
+        MojoUtils.sourceV4(parameters, log);
     }
 }

@@ -1,8 +1,7 @@
-package it.ness.queryable.model;
+package it.ness.queryable.model.predicates;
 
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
-import it.ness.queryable.util.FilterUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -11,65 +10,44 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.util.HashSet;
 import java.util.Set;
 
-public class QLikeListFilterDef extends FilterDefBase {
+import static it.ness.queryable.builder.Constants.LIKE_PREFIX;
+import static it.ness.queryable.builder.Constants.QLIKELIST_ANNOTATION_NAME;
 
-    protected static String ANNOTATION_NAME = "QLikeList";
-    protected static String PREFIX = "like";
+public class QLikeListFilter extends FilterBase {
+
+
     protected String nameInPlural;
 
-    public QLikeListFilterDef(final Log log) {
+    public QLikeListFilter(final Log log) {
         super(log);
     }
 
     @Override
-    public void addAnnotationToModelClass(JavaClassSource javaClass) {
-        nameInPlural = null;
-        if (name.contains("_")) {
-            nameInPlural = stringUtil.getPlural(name.substring(name.indexOf("_") + 1));
-            nameInPlural = name.substring(0, name.indexOf("_")+1) + nameInPlural;
-        } else {
-            nameInPlural = stringUtil.getPlural(name);
-        }
-        filterName = entityName + "." + prefix + "." + nameInPlural;
-        queryName = prefix + "." + nameInPlural;
-        // remove existing annotation with same filtername
-        removeFilterDef(javaClass, filterName);
-
-        AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
-        FilterUtils.addParamDef(filterDefAnnotation, nameInPlural, "string");
-        if (null == condition) {
-            FilterUtils.addFilter(javaClass,filterName,  String.format("lower(%s) LIKE :%s", nameInPlural, nameInPlural) );
-        } else {
-            FilterUtils.addFilter(javaClass,filterName,  condition);
-        }
-    }
-
-    @Override
-    public QLikeListFilterDef parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
-        AnnotationSource<JavaClassSource> a = f.getAnnotation(ANNOTATION_NAME);
+    public QLikeListFilter parseQFilter(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation) {
+        AnnotationSource<JavaClassSource> a = f.getAnnotation(QLIKELIST_ANNOTATION_NAME);
         if (null == a) {
             return null;
         }
-        String prefix = getQAnnotationValue(a, "prefix", PREFIX);
+        String prefix = getQAnnotationValue(a, "prefix", LIKE_PREFIX);
         String name = getQAnnotationValue(a, "name", f.getName());
         String condition = getQAnnotationValue(a, "condition", null);
         String options = getQAnnotationValue(a, "options", null);
 
         String fieldType = f.getType().getName();
+        if (f.getAnnotation("Enumerated") != null) {
+            enumerated = true;
+        }
         Set<String> supportedTypes = getSupportedTypes();
-        // return null if type is not supported
-        if (!supportedTypes.contains(fieldType)) {
-            log.error(String.format("%s is not applicable for fieldType: %s fieldName: %s", ANNOTATION_NAME, fieldType, name));
+        if (!enumerated && !supportedTypes.contains(fieldType)) {
+            log.error(String.format("%s is not applicable for fieldType: %s fieldName: %s", QLIKELIST_ANNOTATION_NAME, fieldType, name));
             return null;
         }
 
-        QLikeListFilterDef fd = new QLikeListFilterDef(log);
+        QLikeListFilter fd = new QLikeListFilter(log);
         fd.entityName = entityName;
         fd.prefix = prefix;
         fd.name = name;
-        fd.fieldType = getTypeFromFieldType(fieldType);
-        fd.type = getTypeFromFieldType(fieldType);
-        fd.filterName = entityName + "." + prefix + "." + name;
+        fd.fieldType = fieldType;
         fd.queryName = prefix + "." + name;
         fd.condition = condition;
         if (null != options) {
@@ -81,7 +59,8 @@ public class QLikeListFilterDef extends FilterDefBase {
     @Override
     public String getSearchMethod() {
         String formatBody =
-                "if (nn(\"%s\")) {" +
+                " // NOT WELL SUPPORTED!!!!" +
+                        "if (nn(\"%s\")) {" +
                         "   String[] %s = get(\"%s\").split(\",\");" +
                         "   StringBuilder sb = new StringBuilder();" +
                         "   if (null == params) {" +
@@ -113,15 +92,6 @@ public class QLikeListFilterDef extends FilterDefBase {
     @Override
     public boolean overrideOnSameFilterName() {
         return true;
-    }
-
-    private String getTypeFromFieldType(final String fieldType) {
-        switch (fieldType) {
-            case "String":
-                return "string";
-        }
-        log.error("unknown getTypeFromFieldType from :" + fieldType);
-        return null;
     }
 
     private Set<String> getSupportedTypes() {

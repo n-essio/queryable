@@ -1,13 +1,13 @@
 package it.ness.queryable.builder;
 
-import it.ness.queryable.model.FilterDefBase;
-import it.ness.queryable.model.QLikeListFilterDef;
+import it.ness.queryable.model.filters.FilterDefBase;
+import it.ness.queryable.model.filters.QLikeListFilterDef;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.model.pojo.Data;
 import it.ness.queryable.model.pojo.Parameters;
 import it.ness.queryable.templates.FreeMarkerTemplates;
-import it.ness.queryable.util.GetSearchMethod;
-import it.ness.queryable.util.ModelFiles;
+import it.ness.queryable.util.GetSearchMethodV4;
+import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -19,12 +19,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
 
-import static it.ness.queryable.builder.Constants.*;
-
-public class QueryableBuilder {
+public class QueryableV4Builder {
 
 
-    public static void generateSources(ModelFiles mf, Log log, Parameters parameters) throws Exception {
+    public static void generateSources(ModelFilesV3 mf, Log log, Parameters parameters) throws Exception {
         String[] modelFiles = mf.getModelFileNames();
         for (String modelFileName : modelFiles) {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
@@ -33,7 +31,7 @@ public class QueryableBuilder {
                     createModel(log, mf, modelFileName, parameters);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    createRsService(mf, className, parameters.groupId, parameters.artifactId, orderBy, rsPath, parameters, log);
+                    createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId, orderBy, rsPath, parameters, log);
                 } catch (Exception e) {
                     log.error(e);
                 }
@@ -42,7 +40,7 @@ public class QueryableBuilder {
         if (log != null) log.info("Done generating sources");
     }
 
-    private static void createModel(Log log, ModelFiles mf, String modelFileName, Parameters parameters) throws Exception {
+    private static void createModel(Log log, ModelFilesV3 mf, String modelFileName, Parameters parameters) throws Exception {
         String className = StringUtil.getClassNameFromFileName(modelFileName);
         String path = parameters.modelPath;
         JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(path, modelFileName));
@@ -61,34 +59,34 @@ public class QueryableBuilder {
             if (log != null) log.debug("Not defined Q filterdefs for class : " + className);
             return;
         }
-        if (log != null) log.debug("Creating model for class : " + className);
+        if (log != null) log.debug("WE don't need to creating a new model for class : " + className);
 
-        javaClass.addImport(H_FILTER);
-        javaClass.addImport(H_FILTERDEF);
-        javaClass.addImport(H_PARAMDEF);
+//        javaClass.addImport(H_FILTER);
+//        javaClass.addImport(H_FILTERDEF);
+//        javaClass.addImport(H_PARAMDEF);
 
-        for (FilterDefBase fd : allFilderDefs) {
-            fd.addAnnotationToModelClass(javaClass);
-        }
+//        for (FilterDefBase fd : allFilderDefs) {
+//            fd.addAnnotationToModelClass(javaClass);
+//        }
 
-        // remove imports if has org.hibernate.annotations.*
-        if (javaClass.hasImport(H_ANNOTATIONS)) {
-            javaClass.removeImport(H_FILTER);
-            javaClass.removeImport(H_FILTERDEF);
-            javaClass.removeImport(H_PARAMDEF);
-        }
+//        // remove imports if has org.hibernate.annotations.*
+//        if (javaClass.hasImport(H_ANNOTATIONS)) {
+//            javaClass.removeImport(H_FILTER);
+//            javaClass.removeImport(H_FILTERDEF);
+//            javaClass.removeImport(H_PARAMDEF);
+//        }
 
-        String packagePath = getPathFromPackage(javaClass.getPackage());
-        File pd = new File(parameters.outputDirectory, packagePath);
-        pd.mkdirs();
-
-        FileWriter out = new FileWriter(new File(pd, modelFileName));
-        try {
-            out.append(replaceModelTypeAnnotations(javaClass.toString()));
-        } finally {
-            out.flush();
-            out.close();
-        }
+//        String packagePath = getPathFromPackage(javaClass.getPackage());
+//        File pd = new File(parameters.outputDirectory, packagePath);
+//        pd.mkdirs();
+//
+//        FileWriter out = new FileWriter(new File(pd, modelFileName));
+//        try {
+//            out.append(replaceModelTypeAnnotations(javaClass.toString()));
+//        } finally {
+//            out.flush();
+//            out.close();
+//        }
     }
 
     private static String replaceModelTypeAnnotations(String modelClazz) {
@@ -103,7 +101,7 @@ public class QueryableBuilder {
                 .replaceAll("@Long", "Long.class");
     }
 
-    private static void createRsService(ModelFiles mf, String className, String groupId, String artefactId, String
+    private static void createRsService(String version, ModelFilesV3 mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
         String idFieldName = mf.getIdFieldName();
@@ -113,24 +111,23 @@ public class QueryableBuilder {
                 .and("className", className)
                 .and("idFieldName", idFieldName)
                 .and("idFieldType", idFieldType);
-        if (orderBy!= null && !"NOT_SET".equals(orderBy)) {
+        if (orderBy != null && !"NOT_SET".equals(orderBy)) {
             data = data.and("defaultSort", orderBy);
         }
-        if (rsPath!= null && !"NOT_SET".equals(rsPath)) {
+        if (rsPath != null && !"NOT_SET".equals(rsPath)) {
             data = data.and("rsPath", rsPath);
         }
         Map<String, Object> map = data.map();
-
-        String serviceRsClass = FreeMarkerTemplates.processTemplate("servicers", map);
+        String serviceRsClass = FreeMarkerTemplates.processTemplate("servicersv4", map);
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
         Collection<FilterDefBase> preQueryFilters = mf.getFilterDef(className, FilterType.PREQUERY);
         Collection<FilterDefBase> postQueryFilters = mf.getFilterDef(className, FilterType.POSTQUERY);
 
-        GetSearchMethod getSearchMethod = new GetSearchMethod(log, preQueryFilters, postQueryFilters, className);
+        GetSearchMethodV4 getSearchMethodV4 = new GetSearchMethodV4(log, preQueryFilters, postQueryFilters, className);
         addImportsToClass(javaClassTemplate, preQueryFilters, groupId);
         addImportsToClass(javaClassTemplate, postQueryFilters, groupId);
         MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "getSearch");
-        templateMethod.setBody(getSearchMethod.create());
+        templateMethod.setBody(getSearchMethodV4.create());
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
         File pd = new File(parameters.outputDirectory, packagePath);

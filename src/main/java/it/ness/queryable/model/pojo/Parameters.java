@@ -10,6 +10,7 @@ import static it.ness.queryable.builder.Constants.TEST_FOLDER;
 public class Parameters {
 
     public boolean removeAnnotations;
+    public String sourceVersion = "v3";
     public String sourceModelDirectory;
     public String sourceRestDirectory;
     public String outputDirectory;
