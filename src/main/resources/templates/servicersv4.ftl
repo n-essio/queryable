@@ -5,6 +5,7 @@ import ${packageName}.model.${className};
 
 import jakarta.inject.Singleton;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.ws.rs.Consumes;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.List;
 
 <#if rsPathIsAppConstant>
 import static ${packageName}.management.AppConstants.${rsPath};
