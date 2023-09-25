@@ -24,6 +24,7 @@ public class ModelFilesV4 {
     private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
     private Map<String, String> idFieldNameMap = new LinkedHashMap<>();
     private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
+    private Map<String, String> tableNameMap = new LinkedHashMap<>();
 
     public ModelFilesV4(Log log, Parameters parameters) {
         isParsingSuccessful = false;
@@ -63,6 +64,9 @@ public class ModelFilesV4 {
     public String getIdFieldType(String className) {
         return idFieldTypeMap.get(className);
     }
+    public String getTableName(String className) {
+        return tableNameMap.get(className);
+    }
 
     public String getRsPath(final String className) {
         return rsPathMap.get(className);
@@ -84,7 +88,7 @@ public class ModelFilesV4 {
         for (String fileName : modelFileNames) {
             String className = StringUtil.getClassNameFromFileName(fileName);
             final String defaultRsPath = "NOT_SET";
-            final String defaultOrderBy = "not_set";
+            final String defaultOrderBy = "NOT_SET";
             String rsPath = defaultRsPath;
             String orderBy = defaultOrderBy;
             Boolean excludeClass = false;
@@ -104,6 +108,12 @@ public class ModelFilesV4 {
                 if (null != a) {
                     orderBy = a.getStringValue();
                     orderBy = StringUtil.removeQuotes(orderBy);
+                }
+                a = javaClass.getAnnotation("Table");
+                if (null != a) {
+                    String tableName = a.getStringValue("name");
+                    tableName = StringUtil.removeQuotes(tableName);
+                    tableNameMap.put(className, tableName);
                 }
                 String idFieldName = "NOT_SET";
                 String idFieldType = "String";
@@ -257,8 +267,9 @@ public class ModelFilesV4 {
                 ", defaultOrderByMap=" + defaultOrderByMap +
                 ", excludeClassMap=" + excludeClassMap +
                 ", qualifiedClassName=" + qualifiedClassName +
-                ", idFieldNameMap='" + idFieldNameMap + '\'' +
-                ", idFieldTypeMap='" + idFieldTypeMap + '\'' +
+                ", idFieldNameMap=" + idFieldNameMap +
+                ", idFieldTypeMap=" + idFieldTypeMap +
+                ", tableNameMap=" + tableNameMap +
                 '}';
     }
 }

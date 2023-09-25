@@ -13,12 +13,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 
-<#if rsPath??>
+<#if rsPathIsAppConstant>
 import static ${packageName}.management.AppConstants.${rsPath};
-@Path(${rsPath})
-<#else>
-@Path("NOT_SET")
 </#if>
+@Path(${rsPath})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton

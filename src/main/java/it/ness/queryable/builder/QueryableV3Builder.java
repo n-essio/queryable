@@ -108,16 +108,28 @@ public class QueryableV3Builder {
 
         String idFieldName = mf.getIdFieldName(className);
         String idFieldType = mf.getIdFieldType(className);
+        String tableName = mf.getTableName(className);
+
         Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
                 .and("className", className)
                 .and("idFieldName", idFieldName)
                 .and("idFieldType", idFieldType);
-        if (orderBy != null && !"NOT_SET".equals(orderBy)) {
-            data = data.and("defaultSort", orderBy);
+        if (orderBy != null) {
+            if (!"NOT_SET".equals(orderBy)) {
+                data = data.and("defaultSort", orderBy);
+            } else {
+                data = data.and("defaultSort", idFieldName + " ASC");
+            }
         }
-        if (rsPath != null && !"NOT_SET".equals(rsPath)) {
-            data = data.and("rsPath", rsPath);
+        if (rsPath != null) {
+            if (!"NOT_SET".equals(rsPath)) {
+                data = data.and("rsPath", rsPath);
+                data = data.and("rsPathIsAppConstant", true);
+            } else {
+                data = data.and("rsPath", "\"/api/v1/" + tableName + "\"");
+                data = data.and("rsPathIsAppConstant", false);
+            }
         }
         Map<String, Object> map = data.map();
         String serviceRsClass = FreeMarkerTemplates.processTemplate("servicersv3", map);
