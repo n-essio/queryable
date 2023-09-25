@@ -38,6 +38,7 @@ public class GetSearchMethodV4 {
             }
         }
         sb.append("return predicates.toArray(new Predicate[]{});");
+        log.info("query method body : " + sb.toString());
         return sb.toString();
     }
 

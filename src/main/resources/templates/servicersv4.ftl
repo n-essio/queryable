@@ -1,8 +1,5 @@
 package ${packageName}.service.rs;
 
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.panache.common.Parameters;
-import io.quarkus.panache.common.Sort;
 import ${groupId}.api.service.RsRepositoryServiceV4;
 import ${packageName}.model.${className};
 
@@ -14,6 +11,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import java.util.ArrayList;
 
 <#if rsPath??>
 import static ${packageName}.management.AppConstants.${rsPath};
