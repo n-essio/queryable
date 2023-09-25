@@ -28,6 +28,7 @@ public class QueryableV4Builder {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
+                    log.info(mf.toString());
                     createModel(log, mf, modelFileName, parameters);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
@@ -77,8 +78,9 @@ public class QueryableV4Builder {
     private static void createRsService(String version, ModelFilesV4 mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
-        String idFieldName = mf.getIdFieldName();
-        String idFieldType = mf.getIdFieldType();
+        String idFieldName = mf.getIdFieldName(className);
+        String idFieldType = mf.getIdFieldType(className);
+        System.out.println("idFieldName : " + idFieldName + " className : " + className);
         Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
                 .and("className", className)
@@ -99,7 +101,7 @@ public class QueryableV4Builder {
         GetSearchMethodV4 getSearchMethodV4 = new GetSearchMethodV4(log, preQueryFilters, postQueryFilters, className);
         addImportsToClass(javaClassTemplate, preQueryFilters, groupId);
         addImportsToClass(javaClassTemplate, postQueryFilters, groupId);
-        MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "getSearch");
+        MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "query");
         templateMethod.setBody(getSearchMethodV4.create());
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
@@ -110,12 +112,12 @@ public class QueryableV4Builder {
             // add imports to original
             addImportsToClass(javaClassOriginal, preQueryFilters, groupId);
             addImportsToClass(javaClassOriginal, postQueryFilters, groupId);
-            MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "getSearch");
+            MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "query");
             if (method != null) {
-                if (!excludeMethodByName(javaClassOriginal, "getSearch")) {
+                if (!excludeMethodByName(javaClassOriginal, "query")) {
                     method.setBody(templateMethod.getBody());
                 } else {
-                    log.info(String.format("getSearch in class %s is excluded from queryable plugin", className));
+                    log.info(String.format("query in class %s is excluded from queryable plugin", className));
                 }
             } else {
                 javaClassOriginal.addMethod(templateMethod);

@@ -22,8 +22,8 @@ public class ModelFilesV4 {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
     private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
-    private String idFieldName;
-    private String idFieldType;
+    private Map<String, String> idFieldNameMap = new LinkedHashMap<>();
+    private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
 
     public ModelFilesV4(Log log, Parameters parameters) {
         isParsingSuccessful = false;
@@ -56,12 +56,12 @@ public class ModelFilesV4 {
         return modelFileNames;
     }
 
-    public String getIdFieldName() {
-        return idFieldName;
+    public String getIdFieldName(String className) {
+        return idFieldNameMap.get(className);
     }
 
-    public String getIdFieldType() {
-        return idFieldType;
+    public String getIdFieldType(String className) {
+        return idFieldTypeMap.get(className);
     }
 
     public String getRsPath(final String className) {
@@ -105,16 +105,17 @@ public class ModelFilesV4 {
                     orderBy = a.getStringValue();
                     orderBy = StringUtil.removeQuotes(orderBy);
                 }
-                idFieldName = "NOT_SET";
-                idFieldType = "String";
+                String idFieldName = "NOT_SET";
+                String idFieldType = "String";
                 for (FieldSource<JavaClassSource> fieldSource : javaClass.getFields()) {
                     a = fieldSource.getAnnotation("Id");
                     if (null != a) {
                         idFieldName = fieldSource.getName();
                         idFieldType = fieldSource.getType().getName();
-                        System.out.println(className + ", id: " + idFieldName);
                     }
                 }
+                idFieldTypeMap.put(className, idFieldType);
+                idFieldNameMap.put(className, idFieldName);
                 qualifiedClassName.put(className, javaClass.getQualifiedName());
             } catch (Exception e) {
                 log.error(e);
@@ -145,7 +146,6 @@ public class ModelFilesV4 {
         FilterBases.add(new QNotNilFilter(log));
         FilterBases.add(new QLogicalDeleteFilter(log));
         FilterBases.add(new QListFilter(log));
-        FilterBases.add(new QLikeListFilter(log));
 
         // loop while in the resolvedModels all modelFile are resolved
         int i = 1;
@@ -245,5 +245,20 @@ public class ModelFilesV4 {
         }
         if (log != null) log.info("All model files parsed.");
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "ModelFilesV4{" +
+                "modelFileNames=" + Arrays.toString(modelFileNames) +
+                ", isParsingSuccessful=" + isParsingSuccessful +
+                ", filterMap=" + filterMap +
+                ", rsPathMap=" + rsPathMap +
+                ", defaultOrderByMap=" + defaultOrderByMap +
+                ", excludeClassMap=" + excludeClassMap +
+                ", qualifiedClassName=" + qualifiedClassName +
+                ", idFieldNameMap='" + idFieldNameMap + '\'' +
+                ", idFieldTypeMap='" + idFieldTypeMap + '\'' +
+                '}';
     }
 }
