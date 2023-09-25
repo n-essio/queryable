@@ -261,6 +261,8 @@ public class QFilter extends FilterBase {
                 return getIntegerSearchMethod();
             case "long":
                 return getLongSearchMethod();
+            case "Number":
+                return getLongSearchMethod();
         }
         log.error("not handled getSearchMethod for fieldType: " + fieldType + " name: " + name);
         return "";
