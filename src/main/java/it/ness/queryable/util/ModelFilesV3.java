@@ -22,8 +22,8 @@ public class ModelFilesV3 {
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
     private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
-    private String idFieldName;
-    private String idFieldType;
+    private Map<String, String> idFieldNameMap = new LinkedHashMap<>();
+    private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
 
     public ModelFilesV3(Log log, Parameters parameters) {
         isParsingSuccessful = false;
@@ -55,11 +55,12 @@ public class ModelFilesV3 {
     public String[] getModelFileNames() {
         return modelFileNames;
     }
-    public String getIdFieldName() {
-        return idFieldName;
+    public String getIdFieldName(String className) {
+        return idFieldNameMap.get(className);
     }
-    public String getIdFieldType() {
-        return idFieldType;
+
+    public String getIdFieldType(String className) {
+        return idFieldTypeMap.get(className);
     }
 
     public String getRsPath(final String className) {
@@ -102,8 +103,8 @@ public class ModelFilesV3 {
                     orderBy = a.getStringValue();
                     orderBy = StringUtil.removeQuotes(orderBy);
                 }
-                idFieldName = "NOT_SET";
-                idFieldType = "String";
+                String idFieldName = "NOT_SET";
+                String idFieldType = "String";
                 for (FieldSource<JavaClassSource> fieldSource : javaClass.getFields()) {
                     a = fieldSource.getAnnotation("Id");
                     if (null != a) {
@@ -111,6 +112,8 @@ public class ModelFilesV3 {
                         idFieldType = fieldSource.getType().getName();
                     }
                 }
+                idFieldTypeMap.put(className, idFieldType);
+                idFieldNameMap.put(className, idFieldName);
                 qualifiedClassName.put(className, javaClass.getQualifiedName());
             } catch (Exception e) {
                 log.error(e);

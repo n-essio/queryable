@@ -106,8 +106,8 @@ public class QueryableV3Builder {
     private static void createRsService(String version, ModelFilesV3 mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
 
-        String idFieldName = mf.getIdFieldName();
-        String idFieldType = mf.getIdFieldType();
+        String idFieldName = mf.getIdFieldName(className);
+        String idFieldType = mf.getIdFieldType(className);
         Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
                 .and("className", className)
