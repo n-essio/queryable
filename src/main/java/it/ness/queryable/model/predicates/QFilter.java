@@ -250,6 +250,7 @@ public class QFilter extends FilterBase {
         }
         switch (fieldType) {
             case "List":
+            case "Set":
                 return getElementCollectionSearchMethod();
             case "String":
                 return getStringSearchMethod();
@@ -340,6 +341,7 @@ public class QFilter extends FilterBase {
         supported.add("ZonedDateTime");
         supported.add("LocalDate");
         supported.add("Date");
+        supported.add("Set");
         supported.add("List");
         return supported;
     }
