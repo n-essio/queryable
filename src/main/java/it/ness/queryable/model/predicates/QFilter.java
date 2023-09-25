@@ -116,6 +116,16 @@ public class QFilter extends FilterBase {
         return String.format(formatBody4, queryName, queryName, condition);
     }
 
+    private String getElementCollectionSearchMethod() {
+        String formatBody4 = """
+                if (nn("%s")) {
+                    Expression<List<String>> tags = root.get("%s");
+                    predicates.add(criteriaBuilder.isMember(get("%s"), tags));
+                }
+                """;
+        return String.format(formatBody4, queryName, name, queryName);
+    }
+
     private String getBigDecimalSearchMethod() {
         String formatBody4 = """
                 if (nn("%s")) {
@@ -239,6 +249,8 @@ public class QFilter extends FilterBase {
             return getBooleanEqualsWithoutParameters();
         }
         switch (fieldType) {
+            case "List":
+                return getElementCollectionSearchMethod();
             case "String":
                 return getStringSearchMethod();
             case "LocalDateTime":
@@ -328,6 +340,7 @@ public class QFilter extends FilterBase {
         supported.add("ZonedDateTime");
         supported.add("LocalDate");
         supported.add("Date");
+        supported.add("List");
         return supported;
     }
 
