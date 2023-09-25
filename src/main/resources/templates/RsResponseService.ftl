@@ -152,7 +152,7 @@ public abstract class RsResponseService implements Serializable {
         return new BigInteger(value);
     }
 
-    public LocalDate _date(String key) {
+    public Date _date(String key) {
         String value = ui.getQueryParameters().getFirst(key);
         return DateUtils.parseDate(value);
     }
