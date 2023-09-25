@@ -40,7 +40,8 @@ public class QFilter extends FilterBase {
         Set<String> supportedTypes = getSupportedTypes();
         // return null if type is not supported
         if (!enumerated && !supportedTypes.contains(fieldType)) {
-            log.error(String.format("%s is not applicable for fieldType: %s fieldName: %s", Q_ANNOTATION_NAME, fieldType, name));
+            log.error(String.format("%s is not applicable for fieldType: %s fieldName: %s, supportedTypes : %s",
+                    Q_ANNOTATION_NAME, fieldType, name, supportedTypes.toString()));
             return null;
         }
 
