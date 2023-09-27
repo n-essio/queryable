@@ -1,14 +1,15 @@
 package it.ness.queryable.model.quex;
 
-import java.util.Arrays;
+import java.util.Map;
 
 public class QeexWebExceptionMethod {
 
-    public int id;
-    public int code;
-    public String methodName;
+    public Integer id;
+    public Integer code;
     public String message;
-    public String[] argumemnts;
+    public String methodName;
+    public Map<String, String> arguments;
+    public Map<String, String> msgMap;
 
     public QeexWebExceptionMethod() {
     }
@@ -22,9 +23,9 @@ public class QeexWebExceptionMethod {
         return "QeexWebExceptionMethod{" +
                 "id=" + id +
                 ", code=" + code +
-                ", methodName='" + methodName + '\'' +
                 ", message='" + message + '\'' +
-                ", argumemnts=" + Arrays.toString(argumemnts) +
+                ", arguments=" + arguments +
+                ", msgMap=" + msgMap +
                 '}';
     }
 }
