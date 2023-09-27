@@ -1,12 +1,12 @@
-package io.quarkus.qeex.api.rs;
+package ${groupId}.api.qeex.rs;
 
-import io.quarkus.qeex.api.exceptions.QeexWebException;
+import ${groupId}.api.qeex.exceptions.QeexWebException;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class QuarkusWebExceptionProvider implements ExceptionMapper<QeexWebException> {

@@ -1,4 +1,4 @@
-package package ${packageName}.exception;
+package ${groupId}.exception;
 
 import io.quarkus.qeex.api.annotations.QeexExceptionBundle;
 import io.quarkus.qeex.api.annotations.QeexMessage;
