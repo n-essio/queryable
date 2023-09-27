@@ -10,11 +10,7 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.logging.Log;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Map;
 
 import static it.ness.queryable.builder.Constants.*;
@@ -132,19 +128,17 @@ public class MojoUtils {
     public static void qeexsource(Parameters parameters, Log log) {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
-            ModelQuex modelQuexFromApplicationProperties = new ModelQuex(log, parameters, packageName);
-            QeexBuilder.readQexFromApplicationProperties(modelQuexFromApplicationProperties);
+            ModelQuex modelQuex = new ModelQuex(log, parameters, packageName);
+            QeexBuilder.readQexFromApplicationProperties(modelQuex);
             // find interfaces like ExceptionBundle.ftl
             //  interfaces annotated with: @QeexExceptionBundle - ie: @QeexExceptionBundle(project = "FLW", language = "it")
-            ModelFilesQeex modelFilesQeex = new ModelFilesQeex(parameters.logging ? log : null, parameters);
-            // generate implementations
-            QeexBuilder.generateClassesImplementsExceptionBundle(modelFilesQeex, modelQuexFromApplicationProperties);
+            QeexBuilder.generateClassesImplementsExceptionBundle(parameters, log, modelQuex);
+            // generate
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
     }
-
     public static Model parsePomXmlFileToMavenPomModel(String path) throws Exception {
         Model model = null;
         FileReader reader = null;
