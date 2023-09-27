@@ -1,4 +1,4 @@
-package io.quarkus.qeex.api.annotations;
+package ${groupId}.api.qeex.annotations;
 
 
 import io.smallrye.config.ConfigMapping;

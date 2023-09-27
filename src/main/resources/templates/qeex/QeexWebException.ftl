@@ -1,4 +1,4 @@
-package io.quarkus.qeex.api.exceptions;
+package ${groupId}.api.qeex.exceptions;
 
 public class QeexWebException extends Exception {
     public String projectName;
