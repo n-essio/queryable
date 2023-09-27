@@ -1,8 +1,8 @@
 package ${groupId}.api.qeex.interceptors;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 
