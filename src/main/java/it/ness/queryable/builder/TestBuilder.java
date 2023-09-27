@@ -146,7 +146,7 @@ public class TestBuilder {
                 }
             }
 
-            String serviceRsClass = FreeMarkerTemplates.processTemplate("TestShouldAdd", map);
+            String serviceRsClass = FreeMarkerTemplates.processTemplate("test", "TestShouldAdd", map);
             return serviceRsClass;
         }
         return null;
