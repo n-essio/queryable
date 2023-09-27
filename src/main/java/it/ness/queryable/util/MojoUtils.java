@@ -1,8 +1,8 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.builder.*;
-import it.ness.queryable.model.pojo.Data;
-import it.ness.queryable.model.pojo.Parameters;
+import it.ness.queryable.model.api.Data;
+import it.ness.queryable.model.api.Parameters;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -28,13 +28,13 @@ public class MojoUtils {
         File managementPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/management/", parameters.logging ? log : null);
         File servicePath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/service/", parameters.logging ? log : null);
         Map<String, Object> data = Data.with("groupId", parameters.groupId).map();
-        FileUtils.createJavaClassFromTemplate(filterPath, "CorsFilter", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(utilPath, "DateUtils", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(producerPath, "CorsExceptionMapper", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(managementPath, "AppConstants", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(servicePath, "RsRepositoryServiceV3", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(servicePath, "RsRepositoryServiceV4", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(servicePath, "RsResponseService", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(filterPath, "api", "CorsFilter", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(utilPath, "api", "DateUtils", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(producerPath, "api", "CorsExceptionMapper", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(managementPath, "api", "AppConstants", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(servicePath, "v3", "RsRepositoryServiceV3", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(servicePath, "v4", "RsRepositoryServiceV4", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(servicePath, "api", "RsResponseService", null, data, parameters.logging ? log : null);
     }
 
     public static void greeting(Parameters parameters, Log log) {
@@ -43,9 +43,9 @@ public class MojoUtils {
         File enumPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/model/enums/", parameters.logging ? log : null);
         File managementPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/management/", parameters.logging ? log : null);
         Map<String, Object> data = Data.with("groupId", parameters.groupId).and("artifactId", parameters.artifactId).map();
-        FileUtils.createJavaClassFromTemplate(managementPath, "AppConstantsApp", "AppConstants", data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(enumPath, "GreetingEnum", null, data, parameters.logging ? log : null);
-        FileUtils.createJavaClassFromTemplate(modelPath, "Greeting", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(managementPath, "greeting", "AppConstantsApp", "AppConstants", data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(enumPath, "greeting", "GreetingEnum", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(modelPath, "greeting", "Greeting", null, data, parameters.logging ? log : null);
     }
 
     public static void sourceV3(Parameters parameters, Log log) {
@@ -87,7 +87,6 @@ public class MojoUtils {
 
     public static void openapisource(Parameters parameters, Log log) {
         ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
-
         if (!mf.isParsingSuccessful) {
             return;
         }
@@ -100,10 +99,44 @@ public class MojoUtils {
         }
     }
 
+
+    public static void addqeexapi(Parameters parameters, Log log) {
+        FileUtils.createPath(parameters.outputDir, parameters.apiPath, parameters.logging ? log : null);
+        File annotationsPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/qeex/annotations/", parameters.logging ? log : null);
+        File exceptionsPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/qeex/exceptions/", parameters.logging ? log : null);
+        File interceptorsPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/qeex/interceptors/", parameters.logging ? log : null);
+        File rsPath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/qeex/rs/", parameters.logging ? log : null);
+        Map<String, Object> data = Data.with("groupId", parameters.groupId).map();
+        // annotationsPath: QeexConfig - QeexExceptionBundle - QeexMessage
+        FileUtils.createJavaClassFromTemplate(annotationsPath, "qeex", "QeexConfig", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(annotationsPath, "qeex", "QeexExceptionBundle", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(annotationsPath, "qeex", "QeexMessage", null, data, parameters.logging ? log : null);
+        // exceptionsPath: QeexWebException
+        FileUtils.createJavaClassFromTemplate(exceptionsPath, "qeex", "QeexWebException", null, data, parameters.logging ? log : null);
+        // interceptorsPath: LanguageInterceptor
+        FileUtils.createJavaClassFromTemplate(interceptorsPath, "qeex", "LanguageInterceptor", null, data, parameters.logging ? log : null);
+        // rsPath: QuarkusWebDefaultExceptionProvider - QuarkusWebExceptionProvider
+        FileUtils.createJavaClassFromTemplate(rsPath, "qeex", "QuarkusWebDefaultExceptionProvider", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(rsPath, "qeex", "QuarkusWebExceptionProvider", null, data, parameters.logging ? log : null);
+    }
+
+    public static void addqeexbundle(Parameters parameters, Log log) {
+        FileUtils.createPath(parameters.outputDir, parameters.apiPath, parameters.logging ? log : null);
+        File exceptionPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "/exception/", parameters.logging ? log : null);
+        // exceptionPath: ExceptionBundle
+        Map<String, Object> data = Data.with("groupId", parameters.groupId).map();
+        FileUtils.createJavaClassFromTemplate(exceptionPath, "qeex-bundle", "ExceptionBundle", null, data, parameters.logging ? log : null);
+    }
+
     public static void qeexsource(Parameters parameters, Log log) {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
-            QeexBuilder.generateSources(log, parameters, packageName);
+            ModelQuex modelQuex = new ModelQuex(log, parameters, packageName);
+            QeexBuilder.readQexFromApplicationProperties(modelQuex);
+            // find interfaces like ExceptionBundle.ftl
+            //  interfaces annotated with: @QeexExceptionBundle - ie: @QeexExceptionBundle(project = "FLW", language = "it")
+
+            // generate
         } catch (Exception e) {
             e.printStackTrace();
             return;

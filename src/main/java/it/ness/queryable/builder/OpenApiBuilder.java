@@ -2,8 +2,8 @@ package it.ness.queryable.builder;
 
 import it.ness.queryable.model.openapi.QApi;
 import it.ness.queryable.model.test.QMethodApi;
-import it.ness.queryable.model.pojo.ApiDataPojo;
-import it.ness.queryable.model.pojo.Parameters;
+import it.ness.queryable.model.api.ApiDataPojo;
+import it.ness.queryable.model.api.Parameters;
 import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;

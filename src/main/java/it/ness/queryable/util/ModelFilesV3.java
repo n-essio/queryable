@@ -1,8 +1,8 @@
 package it.ness.queryable.util;
 
 import it.ness.queryable.model.enums.FilterType;
-import it.ness.queryable.model.filters.*;
-import it.ness.queryable.model.pojo.Parameters;
+import it.ness.queryable.model.v3.*;
+import it.ness.queryable.model.api.Parameters;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;

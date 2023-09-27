@@ -1,6 +1,6 @@
 package it.ness.queryable.plugin;
 
-import it.ness.queryable.model.pojo.Parameters;
+import it.ness.queryable.model.api.Parameters;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -30,7 +30,7 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     String outputDirectory;
 
     @Parameter(property = "logging", defaultValue = "true")
-    boolean logging;
+    protected boolean logging;
 
     @Parameter(property = "overrideAnnotations", defaultValue = "true")
     boolean overrideAnnotations;
@@ -38,8 +38,8 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     @Parameter(property = "overrideSearchMethod", defaultValue = "true")
     boolean overrideSearchMethod;
 
-    Parameters parameters;
-    Log log;
+    protected Parameters parameters;
+    protected Log log;
 
     public void init(Log log) {
         this.log = log;

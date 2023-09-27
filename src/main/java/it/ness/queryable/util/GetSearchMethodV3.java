@@ -1,6 +1,6 @@
 package it.ness.queryable.util;
 
-import it.ness.queryable.model.filters.FilterDefBase;
+import it.ness.queryable.model.v3.FilterDefBase;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.Collection;

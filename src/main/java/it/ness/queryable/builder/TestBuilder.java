@@ -1,8 +1,8 @@
 package it.ness.queryable.builder;
 
 import it.ness.queryable.model.test.QT;
-import it.ness.queryable.model.pojo.Parameters;
-import it.ness.queryable.model.pojo.TestDataPojo;
+import it.ness.queryable.model.api.Parameters;
+import it.ness.queryable.model.api.TestDataPojo;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.FileUtils;
 import it.ness.queryable.util.ModelFilesV3;
@@ -12,6 +12,7 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
+
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,7 +54,7 @@ public class TestBuilder {
 
             File testfile = new File(parameters.testPath + "/");
             FileUtils.deleteJavaClassFromTemplate(testfile, "TestServiceRs", testClassName);
-            FileUtils.createJavaClassFromTemplate(testfile, "TestServiceRs", testClassName, map, log);
+            FileUtils.createJavaClassFromTemplate(testfile, "api", "TestServiceRs", testClassName, map, log);
         }
         if (log != null) log.info("Done generating sources");
     }
@@ -136,8 +137,8 @@ public class TestBuilder {
             map.put("deleteMethod", "shouldDelete" + className + "Item");
 
             map.put("addMethodOrder", order);
-            map.put("putMethodOrder", order+1);
-            map.put("deleteMethodOrder", order+2);
+            map.put("putMethodOrder", order + 1);
+            map.put("deleteMethodOrder", order + 2);
 
             for (QT tField : tFieldList) {
                 if (tField.isId) {

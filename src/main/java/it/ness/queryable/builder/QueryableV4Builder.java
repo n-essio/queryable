@@ -1,10 +1,10 @@
 package it.ness.queryable.builder;
 
 import it.ness.queryable.model.enums.FilterType;
-import it.ness.queryable.model.pojo.Data;
-import it.ness.queryable.model.pojo.Parameters;
-import it.ness.queryable.model.predicates.FilterBase;
-import it.ness.queryable.model.predicates.QLikeListFilter;
+import it.ness.queryable.model.api.Data;
+import it.ness.queryable.model.api.Parameters;
+import it.ness.queryable.model.v4.FilterBase;
+import it.ness.queryable.model.v4.QLikeListFilter;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.GetSearchMethodV4;
 import it.ness.queryable.util.ModelFilesV4;

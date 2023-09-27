@@ -19,8 +19,8 @@ public class FileUtils {
         return path;
     }
 
-    public static void createJavaClassFromTemplate(File dir, String templateName, String replaceWithName, final Map<String, Object> data, Log log) {
-        String apiClass = FreeMarkerTemplates.processTemplate(templateName, data);
+    public static void createJavaClassFromTemplate(File dir, String templateFolder, String templateName, String replaceWithName, final Map<String, Object> data, Log log) {
+        String apiClass = FreeMarkerTemplates.processTemplate(templateFolder, templateName, data);
         File filePath;
         if (replaceWithName != null) {
             filePath = new File(dir, replaceWithName + ".java");
