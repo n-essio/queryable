@@ -4,9 +4,9 @@ import io.quarkus.qeex.api.annotations.QeexConfig;
 import io.quarkus.qeex.api.exceptions.QeexWebException;
 import io.quarkus.qeex.api.interceptors.LanguageInterceptor;
 
-import javax.annotation.processing.Generated;
+import jakarta.annotation.processing.Generated;
 import jakarta.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 @Generated(value = "dev.queryable.QuexGenerator", date = "${creationDate}", comments = "don't touch please")
