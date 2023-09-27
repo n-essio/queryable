@@ -1,4 +1,4 @@
-package it.ness.queryable.util;
+package it.ness.queryable.model.quex;
 
 import it.ness.queryable.model.api.Parameters;
 import it.ness.queryable.model.quex.QeexWebExceptionMethod;

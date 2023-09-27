@@ -27,6 +27,7 @@ public class Parameters {
     public String projectPath;
     // path to groupId/artifactId/model
     public String modelPath;
+    public String exceptionPath;
     // path to groupId/artifactId/service/rs
     public String serviceRsPath;
     // path to groupId/api
@@ -36,6 +37,14 @@ public class Parameters {
 
     public Parameters(Log log, String groupId, String artifactId, boolean removeAnnotations, String sourceModelDirectory,
                       String sourceRestDirectory, String outputDirectory,
+                      boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod) {
+        this(log, groupId, artifactId, removeAnnotations, sourceModelDirectory,
+                sourceRestDirectory, outputDirectory, null,
+                logging, overrideAnnotations, overrideSearchMethod);
+    }
+
+    public Parameters(Log log, String groupId, String artifactId, boolean removeAnnotations, String sourceModelDirectory,
+                      String sourceRestDirectory, String outputDirectory, String sourceExceptionDirectory,
                       boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod) {
         this.removeAnnotations = removeAnnotations;
         this.sourceModelDirectory = sourceModelDirectory;
@@ -54,10 +63,11 @@ public class Parameters {
         log.info("projectPath:" + projectPath);
         this.outputDir = new File(outputDirectory);
         this.modelPath = JAVA_FOLDER + this.projectPath + sourceModelDirectory;
+        this.exceptionPath = JAVA_FOLDER + this.projectPath + sourceExceptionDirectory;
         this.serviceRsPath = JAVA_FOLDER + this.projectPath + sourceRestDirectory;
         log.info("modelPath:" + modelPath);
+        log.info("exceptionPath:" + exceptionPath);
         log.info("serviceRsPath:" + serviceRsPath);
-
         this.testPath = TEST_FOLDER + this.projectPath + sourceRestDirectory;
         log.info("testPath:" + testPath);
     }

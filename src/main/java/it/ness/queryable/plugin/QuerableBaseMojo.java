@@ -26,6 +26,9 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     @Parameter(property = "sourceRestDirectory", defaultValue = "service/rs")
     String sourceRestDirectory;
 
+    @Parameter(property = "sourceExceptionDirectory", defaultValue = "service/exception")
+    String sourceExceptionDirectory;
+
     @Parameter(property = "outputDirectory", defaultValue = JAVA_FOLDER)
     String outputDirectory;
 
@@ -44,6 +47,6 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     public void init(Log log) {
         this.log = log;
         this.parameters = new Parameters(log, groupId, artifactId, removeAnnotations, sourceModelDirectory, sourceRestDirectory,
-                outputDirectory, logging, overrideAnnotations, overrideSearchMethod);
+                outputDirectory, sourceExceptionDirectory, logging, overrideAnnotations, overrideSearchMethod);
     }
 }

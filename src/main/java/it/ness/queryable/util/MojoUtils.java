@@ -3,6 +3,7 @@ package it.ness.queryable.util;
 import it.ness.queryable.builder.*;
 import it.ness.queryable.model.api.Data;
 import it.ness.queryable.model.api.Parameters;
+import it.ness.queryable.model.quex.ModelQuex;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -131,12 +132,13 @@ public class MojoUtils {
     public static void qeexsource(Parameters parameters, Log log) {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
-            ModelQuex modelQuex = new ModelQuex(log, parameters, packageName);
-            QeexBuilder.readQexFromApplicationProperties(modelQuex);
+            ModelQuex modelQuexFromApplicationProperties = new ModelQuex(log, parameters, packageName);
+            QeexBuilder.readQexFromApplicationProperties(modelQuexFromApplicationProperties);
             // find interfaces like ExceptionBundle.ftl
             //  interfaces annotated with: @QeexExceptionBundle - ie: @QeexExceptionBundle(project = "FLW", language = "it")
-
-            // generate
+            ModelFilesQeex modelFilesQeex = new ModelFilesQeex(parameters.logging ? log : null, parameters);
+            // generate implementations
+            QeexBuilder.generateClassesImplementsExceptionBundle(modelFilesQeex, modelQuexFromApplicationProperties);
         } catch (Exception e) {
             e.printStackTrace();
             return;

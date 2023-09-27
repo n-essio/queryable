@@ -6,6 +6,7 @@ public class QeexWebExceptionMethod {
 
     public int id;
     public int code;
+    public String methodName;
     public String message;
     public String[] argumemnts;
 
@@ -21,6 +22,7 @@ public class QeexWebExceptionMethod {
         return "QeexWebExceptionMethod{" +
                 "id=" + id +
                 ", code=" + code +
+                ", methodName='" + methodName + '\'' +
                 ", message='" + message + '\'' +
                 ", argumemnts=" + Arrays.toString(argumemnts) +
                 '}';

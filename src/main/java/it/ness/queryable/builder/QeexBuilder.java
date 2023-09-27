@@ -1,7 +1,8 @@
 package it.ness.queryable.builder;
 
 import it.ness.queryable.model.quex.QeexWebExceptionMethod;
-import it.ness.queryable.util.ModelQuex;
+import it.ness.queryable.model.quex.ModelQuex;
+import it.ness.queryable.util.ModelFilesQeex;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -10,11 +11,8 @@ import java.util.*;
 
 public class QeexBuilder {
 
-    public static void findInterfacesAnnotatedWithQeexExceptionBundle(ModelQuex modelQuex) throws Exception {
 
-    }
-
-    public static void generateClassesImplementsExceptionBundle(ModelQuex modelQuex) throws Exception {
+    public static void generateClassesImplementsExceptionBundle(ModelFilesQeex modelFilesQeex, ModelQuex modelQuex) throws Exception {
 
     }
 
