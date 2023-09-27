@@ -1,8 +1,8 @@
 package ${groupId}.exception;
 
-import io.quarkus.qeex.api.annotations.QeexExceptionBundle;
-import io.quarkus.qeex.api.annotations.QeexMessage;
-import io.quarkus.qeex.api.exceptions.QeexWebException;
+import ${groupId}.api.qeex.annotations.QeexExceptionBundle;
+import ${groupId}.qeex.api.annotations.QeexMessage;
+import ${groupId}.qeex.api.exceptions.QeexWebException;
 
 @QeexExceptionBundle(project = "FLW", language = "it")
 public interface ExceptionBundle {
