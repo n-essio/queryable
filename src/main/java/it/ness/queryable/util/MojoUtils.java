@@ -10,6 +10,7 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.logging.Log;
+
 import java.io.*;
 import java.util.Map;
 
@@ -119,9 +120,9 @@ public class MojoUtils {
 
     public static void addqeexbundle(Parameters parameters, Log log) {
         FileUtils.createPath(parameters.outputDir, parameters.apiPath, parameters.logging ? log : null);
-        File exceptionPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "exception/", parameters.logging ? log : null);
+        File exceptionPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "service/exception/", parameters.logging ? log : null);
         // exceptionPath: ExceptionBundle
-        Map<String, Object> data = Data.with("groupId", parameters.groupId).map();
+        Map<String, Object> data = Data.with("groupId", parameters.groupId).and("artifactId", parameters.artifactId).map();
         FileUtils.createJavaClassFromTemplate(exceptionPath, "qeex-bundle", "ExceptionBundle", null, data, parameters.logging ? log : null);
     }
 
@@ -139,6 +140,7 @@ public class MojoUtils {
             return;
         }
     }
+
     public static Model parsePomXmlFileToMavenPomModel(String path) throws Exception {
         Model model = null;
         FileReader reader = null;

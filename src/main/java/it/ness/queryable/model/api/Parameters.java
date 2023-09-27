@@ -28,7 +28,7 @@ public class Parameters {
     // path to groupId/artifactId/model
     public String modelPath;
     public String exceptionPath;
-    // path to groupId/artifactId/service/rs
+    // path to groupId/artifactId/service/exception
     public String serviceRsPath;
     // path to groupId/api
     public String testPath;

@@ -19,7 +19,7 @@ public class QeexInstallMojo extends QuerableBaseMojo {
         init(getLog());
         if (logging) log.info(String.format("Begin install qeex api"));
         MojoUtils.addqeexapi(parameters, log);
-//        MojoUtils.addqeexbundle(parameters, log);
+        MojoUtils.addqeexbundle(parameters, log);
         if (logging) log.info("Done install  qeex api");
     }
 
