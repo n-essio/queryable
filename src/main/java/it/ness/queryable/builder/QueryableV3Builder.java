@@ -132,7 +132,7 @@ public class QueryableV3Builder {
             }
         }
         Map<String, Object> map = data.map();
-        String serviceRsClass = FreeMarkerTemplates.processTemplate("servicersv3", map);
+        String serviceRsClass = FreeMarkerTemplates.processTemplate("v3", "servicersv3", map);
 
         JavaClassSource javaClassTemplate = Roaster.parse(JavaClassSource.class, serviceRsClass);
         Collection<FilterDefBase> preQueryFilters = mf.getFilterDef(className, FilterType.PREQUERY);
