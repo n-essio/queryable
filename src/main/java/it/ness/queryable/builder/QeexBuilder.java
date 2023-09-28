@@ -104,15 +104,17 @@ public class QeexBuilder {
                 methodImplementations.add(methodImp);
             }
             String className = path.getFileName().toString().split("\\.")[0];
-            className = className + "Impl" + "1";
+            className = className + "Impl";
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("className", className);
+            data.put("interfaceName", javaInterfaceSource.getName());
             data.put("packageName", javaInterfaceSource.getPackage());
             data.put("creationDate", LocalDateTime.now().toString());
             data.put("methods", methodImplementations);
             data.put("groupId", parameters.groupId);
             data.put("project", project);
             data.put("language", language);
+            FileUtils.deleteJavaClassFromTemplate(path.getParent().toFile(), "ExceptionBundleImpl", className);
             FileUtils.createJavaClassFromTemplate(path.getParent().toFile(), "qeex-bundle", "ExceptionBundleImpl",
                     className, data, log);
         }

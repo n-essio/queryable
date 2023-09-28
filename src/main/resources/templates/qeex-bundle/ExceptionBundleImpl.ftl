@@ -10,7 +10,7 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 @Generated(value = "dev.queryable.QuexGenerator", date = "${creationDate}", comments = "don't touch please")
-public class ${className} implements ExceptionBundle {
+public class ${className} implements ${interfaceName} {
 
 // copied from application properties: qeex.project=FLW
 String classProjectName = "${project}";

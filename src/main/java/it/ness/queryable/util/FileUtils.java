@@ -2,6 +2,8 @@ package it.ness.queryable.util;
 
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import org.apache.maven.plugin.logging.Log;
+import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import java.io.File;
 import java.io.FileWriter;
