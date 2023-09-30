@@ -32,6 +32,7 @@ public class MojoUtils {
         FileUtils.createJavaClassFromTemplate(managementPath, "api", "AppConstants", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "v3", "RsRepositoryServiceV3", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "v4", "RsRepositoryServiceV4", null, data, parameters.logging ? log : null);
+        FileUtils.createJavaClassFromTemplate(servicePath, "api", "ValidationGroups", null, data, parameters.logging ? log : null);
         FileUtils.createJavaClassFromTemplate(servicePath, "api", "RsResponseService", null, data, parameters.logging ? log : null);
     }
 

@@ -18,6 +18,9 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import org.jboss.logging.Logger;
 
+validatiimport jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -34,6 +37,9 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    Validator validator;
 
     @Inject
     SecurityIdentity securityIdentity;
