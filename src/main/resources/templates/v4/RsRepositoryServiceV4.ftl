@@ -317,7 +317,7 @@ public abstract class RsRepositoryServiceV4<T extends PanacheEntityBase, U> exte
             if (list == null) {
                 list = new ArrayList<>();
             }
-
+            this.postList(list);
             return Response
                     .status(Status.OK)
                     .entity(list)
