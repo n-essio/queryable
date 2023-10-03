@@ -18,7 +18,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 import org.jboss.logging.Logger;
 
-validatiimport jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
 import java.io.Serializable;
