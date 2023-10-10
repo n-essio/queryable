@@ -110,7 +110,19 @@ public class ModelFilesV3 {
                 a = javaClass.getAnnotation("Table");
                 if (null != a) {
                     String tableName = a.getStringValue();
+                    if (tableName == null) {
+                        tableName = a.getStringValue("name");
+                    }
                     tableName = StringUtil.removeQuotes(tableName);
+                    if (tableName.contains(".")) {
+                        String fieldName = tableName.split("\\.")[1];
+                        for (FieldSource<JavaClassSource> fieldSource : javaClass.getFields()) {
+                            if (fieldName.equalsIgnoreCase(fieldSource.getName())) {
+                                tableName = fieldSource.getLiteralInitializer();
+                                tableName = StringUtil.removeQuotes(tableName);
+                            }
+                        }
+                    }
                     tableNameMap.put(className, tableName);
                 }
                 String idFieldName = "NOT_SET";

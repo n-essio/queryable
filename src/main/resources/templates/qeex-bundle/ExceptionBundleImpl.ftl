@@ -4,7 +4,7 @@ import  ${groupId}.api.qeex.annotations.QeexConfig;
 import  ${groupId}.api.qeex.exceptions.QeexWebException;
 import  ${groupId}.api.qeex.interceptors.LanguageInterceptor;
 
-import io.quarkus.Generated;
+import jakarta.annotation.Generated;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 

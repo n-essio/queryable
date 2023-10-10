@@ -112,8 +112,9 @@ public class QueryableV4Builder {
         GetSearchMethodV4 getSearchMethodV4 = new GetSearchMethodV4(log, preQueryFilters, postQueryFilters, className);
         addImportsToClass(javaClassTemplate, preQueryFilters, groupId);
         addImportsToClass(javaClassTemplate, postQueryFilters, groupId);
-        MethodSource<JavaClassSource> templateMethod = getMethodByName(javaClassTemplate, "query");
-        templateMethod.setBody(getSearchMethodV4.create());
+        MethodSource<JavaClassSource> getSearchTemplateMethod = getMethodByName(javaClassTemplate, "query");
+        MethodSource<JavaClassSource> getDefaultOrderByTemplateMethod = getMethodByName(javaClassTemplate, "getDefaultOrderBy");
+        getSearchTemplateMethod.setBody(getSearchMethodV4.create());
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
         File pd = new File(parameters.outputDirectory, packagePath);
@@ -126,13 +127,33 @@ public class QueryableV4Builder {
             MethodSource<JavaClassSource> method = getMethodByName(javaClassOriginal, "query");
             if (method != null) {
                 if (!excludeMethodByName(javaClassOriginal, "query")) {
-                    method.setBody(templateMethod.getBody());
+                    method.setBody(getSearchTemplateMethod.getBody());
                 } else {
                     log.info(String.format("query in class %s is excluded from queryable plugin", className));
                 }
             } else {
-                javaClassOriginal.addMethod(templateMethod);
+                javaClassOriginal.addMethod(getSearchTemplateMethod);
             }
+
+            method = getMethodByName(javaClassOriginal, "getDefaultOrderBy");
+            if (method != null) {
+                if (!excludeMethodByName(javaClassOriginal, "getDefaultOrderBy")) {
+                    method.setBody(getDefaultOrderByTemplateMethod.getBody());
+                } else {
+                    log.info(String.format("getDefaultOrderBy in class %s is excluded from queryable plugin", className));
+                }
+            } else {
+                javaClassOriginal.addMethod(getDefaultOrderByTemplateMethod);
+            }
+
+            AnnotationSource<JavaClassSource> existingPathAnno = javaClassOriginal.getAnnotation("Path");
+            if (existingPathAnno != null) {
+                existingPathAnno.setLiteralValue((String)map.get("rsPath"));
+            } else {
+                AnnotationSource<JavaClassSource> pathAnno = javaClassOriginal.addAnnotation("Path");
+                pathAnno.setLiteralValue((String)map.get("rsPath"));
+            }
+
             try (FileWriter out = new FileWriter(filePath)) {
                 out.append(javaClassOriginal.toString());
             }
