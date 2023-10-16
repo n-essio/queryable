@@ -62,7 +62,7 @@ public class QLikeFilter extends FilterBase {
         }
         String formatBody4 = """
                 if (nn("%s")) {
-                    predicates.add(criteriaBuilder.equal(root.get("%s"), likeParamToLowerCase("%s")));
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("%s")), likeParamToLowerCase("%s")));
                 }
                 """;
         return String.format(formatBody4, queryName, name, queryName);
@@ -70,7 +70,7 @@ public class QLikeFilter extends FilterBase {
 
     private String getStringEqualsAlways() {
         String formatBody4 = """
-                    predicates.add(criteriaBuilder.equal(root.get("%s"), likeParamToLowerCase("%s")));
+                    predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("%s")), likeParamToLowerCase("%s")));
                 """;
         return String.format(formatBody4, name, queryName);
     }
