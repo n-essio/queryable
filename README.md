@@ -245,6 +245,7 @@ We can attach them to classes or fields, annotations by themselves have no effec
 
 - Q (class or field level)
 - QExclude (class level)
+- QInclude (class level)
 - QLike (field level)
 - QLikeList (field level)
 - QList (field level)
@@ -628,6 +629,17 @@ and in rest service class will add to getSearch method
 ```
 search.filter("XXX.obj.active", Parameters.with("active", true));
 ```
+
+### QInclude annotation
+
+Used on class level to select a class for filterdef generation. 
+If QInclude is used, all other classes are ignored.
+If QInclude is not used, all classes are selected.
+
+### QExclude annotation
+
+Used on class level to deselect a class for filterdef generation.
+
 
 ## Test builder annotations
 
