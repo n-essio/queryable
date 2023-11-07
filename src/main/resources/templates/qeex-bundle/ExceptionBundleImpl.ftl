@@ -12,14 +12,14 @@ import jakarta.inject.Inject;
 @Generated(value = "dev.queryable.QuexGenerator", date = "${creationDate}", comments = "don't touch please")
 public class ${className} implements ${interfaceName} {
 
-// copied from application properties: qeex.project=FLW
-String classProjectName = "${project}";
+    // copied from application properties: qeex.project=FLW
+    String classProjectName = "${project}";
 
-@Inject
-QeexConfig qeexConfig;
+    @Inject
+    QeexConfig qeexConfig;
 
-@Inject
-LanguageInterceptor languageInterceptor;
+    @Inject
+    LanguageInterceptor languageInterceptor;
 
 <#list methods as method>
     @Override
