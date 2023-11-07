@@ -122,9 +122,12 @@ public class MojoUtils {
     public static void addqeexbundle(Parameters parameters, Log log) {
         FileUtils.createPath(parameters.outputDir, parameters.apiPath, parameters.logging ? log : null);
         File exceptionPath = FileUtils.createPath(parameters.outputDir, parameters.projectPath + "service/exception/", parameters.logging ? log : null);
+        File servicePath = FileUtils.createPath(parameters.outputDir, parameters.apiPath + "/service/", parameters.logging ? log : null);
         // exceptionPath: ExceptionBundle
         Map<String, Object> data = Data.with("groupId", parameters.groupId).and("artifactId", parameters.artifactId).map();
         FileUtils.createJavaClassFromTemplate(exceptionPath, "qeex-bundle", "ExceptionBundle", null, data, parameters.logging ? log : null);
+        FileUtils.deleteJavaClassFromTemplate(servicePath, "qeex-bundle", "RsResponseService");
+        FileUtils.createJavaClassFromTemplate(servicePath, "qeex-bundle", "RsResponseService", null, data, parameters.logging ? log : null);
     }
 
     public static void qeexsource(Parameters parameters, Log log) {

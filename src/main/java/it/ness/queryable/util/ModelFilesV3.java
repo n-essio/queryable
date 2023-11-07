@@ -21,6 +21,7 @@ public class ModelFilesV3 {
     private Map<String, String> rsPathMap = new LinkedHashMap<>();
     private Map<String, String> defaultOrderByMap = new LinkedHashMap<>();
     private Map<String, Boolean> excludeClassMap = new LinkedHashMap<>();
+    private Map<String, Boolean> includeClassMap = new LinkedHashMap<>();
     private Map<String, String> qualifiedClassName = new LinkedHashMap<>();
     private Map<String, String> idFieldNameMap = new LinkedHashMap<>();
     private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
@@ -54,7 +55,18 @@ public class ModelFilesV3 {
     }
 
     public String[] getModelFileNames() {
-        return modelFileNames;
+        if (includeClassMap.isEmpty()) {
+            return modelFileNames;
+        }
+        String[] filteredModelFiles = new String[includeClassMap.size()];
+        int i = 0;
+        for (String fileName : modelFileNames) {
+            String className = StringUtil.getClassNameFromFileName(fileName);
+            if (includeClassMap.containsKey(className)) {
+                filteredModelFiles[i++] = fileName;
+            }
+        }
+        return filteredModelFiles;
     }
     public String getIdFieldName(String className) {
         return idFieldNameMap.get(className);
@@ -90,12 +102,17 @@ public class ModelFilesV3 {
             String rsPath = defaultRsPath;
             String orderBy = defaultOrderBy;
             Boolean excludeClass = false;
+            Boolean includeClass = null;
             // override if annotation is present
             try {
                 JavaClassSource javaClass = Roaster.parse(JavaClassSource.class, new File(parameters.modelPath, fileName));
                 AnnotationSource<JavaClassSource> a = javaClass.getAnnotation("QExclude");
                 if (null != a) {
                     excludeClass = true;
+                }
+                a = javaClass.getAnnotation("QInclude");
+                if (null != a) {
+                    includeClass = true;
                 }
                 a = javaClass.getAnnotation("QRs");
                 if (null != a) {
@@ -143,6 +160,9 @@ public class ModelFilesV3 {
             rsPathMap.put(className, rsPath);
             defaultOrderByMap.put(className, orderBy);
             excludeClassMap.put(className, excludeClass);
+            if (includeClass != null) {
+                includeClassMap.put(className, excludeClass);
+            }
             if (!excludeClass) {
                 if (defaultOrderBy.equals(orderBy)) {
                     if (log != null) log.warn(String.format("orderBy for class %s : %s", className, orderBy));
