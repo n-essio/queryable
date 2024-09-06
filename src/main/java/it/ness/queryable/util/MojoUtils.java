@@ -130,6 +130,18 @@ public class MojoUtils {
         FileUtils.createJavaClassFromTemplate(servicePath, "qeex-bundle", "RsResponseService", null, data, parameters.logging ? log : null);
     }
 
+    public static void quarkus3conv(Parameters parameters, Log log) {
+        try {
+            String packageName = parameters.groupId + "." + parameters.artifactId;
+            ModelQuex modelQuex = new ModelQuex(log, parameters, packageName);
+            Quarkus3ConvBuilder.readAndConvert(modelQuex);
+            // generate
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
     public static void qeexsource(Parameters parameters, Log log) {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;
