@@ -293,8 +293,8 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
      * @return
      */
     protected Response handleObjectNotFoundRequest(U id) {
-        String errorMessage = String.format("Object [{0}] with id [{1}] not found",
-                entityClass.getCanonicalName(), id);
+        String errorMessage = String.format("Object [%s] with id [%s] not found",
+                entityClass.getCanonicalName(), String.valueOf(id));
         return jsonMessageResponse(Status.NOT_FOUND, errorMessage);
     }
 
@@ -332,10 +332,25 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
             }
         }
         if (getDefaultOrderBy() != null && !getDefaultOrderBy().trim().isEmpty()) {
-            if (getDefaultOrderBy().toLowerCase().contains("asc"))
-                return Sort.by(getDefaultOrderBy().toLowerCase().replace("asc", "").trim()).ascending();
-            if (getDefaultOrderBy().toLowerCase().contains("desc"))
-                return Sort.by(getDefaultOrderBy().toLowerCase().replace("desc", "").trim()).descending();
+            String[] tokens = getDefaultOrderBy().split(",");
+            Sort defaultSort = null;
+            for (String orderbyToken : tokens) {
+                if (orderbyToken.toLowerCase().contains(" asc")) {
+                    if (defaultSort == null) {
+                        defaultSort = Sort.by(orderbyToken.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
+                    } else {
+                        defaultSort = defaultSort.and(orderbyToken.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
+                    }
+                }
+                if (orderbyToken.toLowerCase().contains(" desc")) {
+                    if (defaultSort == null) {
+                        defaultSort = Sort.by(orderbyToken.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
+                    } else {
+                        defaultSort = defaultSort.and(orderbyToken.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
+                    }
+                }
+            }
+            return defaultSort;
         }
 
         return null;

@@ -800,3 +800,14 @@ public class SimpleServiceRsTest {
 }
 ```
 
+## Migrate to Quarkus3, from Quarkus1 and Quarkus2
+
+
+```
+To migrate to quarkus 3 run
+```
+./mvnw queryable:quarkus3conv
+```
+The plugin will replace javax imports with jakarta, and quarku2 filterdefs types with quarkus3 class types.
+The migration is not complete, pom.xml, application.properties needs to be updated too.
+quarkus version in pom.xml is not updated, must be done manually.
