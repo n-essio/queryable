@@ -46,6 +46,14 @@ public class FilterUtils {
             System.out.println("getClass for column : " + value + " as : LocalDate");
             return LocalDate.class;
         }
+        if ("Date".equalsIgnoreCase(value)) {
+            System.out.println("getClass for column : " + value + " as : Date");
+            return java.util.Date.class;
+        }
+        if ("java.util.Date".equalsIgnoreCase(value)) {
+            System.out.println("getClass for column : " + value + " as : Date");
+            return java.util.Date.class;
+        }
         else if ("big_decimal".equalsIgnoreCase(value)) {
             System.out.println("getClass for column : " + value + " as : BigDecimal");
             return BigDecimal.class;
