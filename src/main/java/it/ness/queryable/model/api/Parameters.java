@@ -34,18 +34,20 @@ public class Parameters {
     public String testPath;
     // ie. src/main/java
     public File outputDir;
+    public String google_translate_apikey;
 
     public Parameters(Log log, String groupId, String artifactId, boolean removeAnnotations, String sourceModelDirectory,
                       String sourceRestDirectory, String outputDirectory,
-                      boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod) {
+                      boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod, String google_translate_apikey) {
         this(log, groupId, artifactId, removeAnnotations, sourceModelDirectory,
                 sourceRestDirectory, outputDirectory, null,
-                logging, overrideAnnotations, overrideSearchMethod);
+                logging, overrideAnnotations, overrideSearchMethod, google_translate_apikey);
     }
 
     public Parameters(Log log, String groupId, String artifactId, boolean removeAnnotations, String sourceModelDirectory,
                       String sourceRestDirectory, String outputDirectory, String sourceExceptionDirectory,
-                      boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod) {
+                      boolean logging, boolean overrideAnnotations, boolean overrideSearchMethod,
+                      String google_translate_apikey) {
         this.removeAnnotations = removeAnnotations;
         this.sourceModelDirectory = sourceModelDirectory;
         this.sourceRestDirectory = sourceRestDirectory;
@@ -55,6 +57,7 @@ public class Parameters {
         this.overrideSearchMethod = overrideSearchMethod;
         this.groupId = groupId;
         this.artifactId = artifactId;
+        this.google_translate_apikey = google_translate_apikey;
         log.info("groupId:" + groupId);
         log.info("artifactId:" + artifactId);
         this.apiPath = groupId.replaceAll("\\.", "/") + "/api" + "/";

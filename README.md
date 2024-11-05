@@ -811,3 +811,22 @@ To migrate to quarkus 3 run
 The plugin will replace javax imports with jakarta, and quarku2 filterdefs types with quarkus3 class types.
 The migration is not complete, pom.xml, application.properties needs to be updated too.
 quarkus version in pom.xml is not updated, must be done manually.
+
+```
+To build qeex messages in app properties, setup plugin as
+```
+            <plugin>
+                <groupId>it.n-ess.queryable</groupId>
+                <artifactId>queryable-maven-plugin</artifactId>
+                <version>3.0.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>build-lang</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+```
+The plugin will generate qeex messages in app propeties, with translations to IT, DE.

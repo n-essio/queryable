@@ -357,34 +357,16 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     }
 
     private Sort single(Sort sort, String orderBy) throws Exception {
-        String[] orderByClause;
-        if (orderBy.contains(":")) {
-            orderByClause = orderBy.split(":");
-        } else {
-            orderByClause = orderBy.split(" ");
-        }
-        if (orderByClause.length > 1) {
-            if (orderByClause[1].toLowerCase().equals("asc")) {
-                if (sort != null) {
-                    return sort.and(orderByClause[0], Sort.Direction.Ascending);
-                } else {
-                    return Sort.by(orderByClause[0], Sort.Direction.Ascending);
-                }
-
-            } else if (orderByClause[1].toLowerCase().equals("desc")) {
-                if (sort != null) {
-                    return sort.and(orderByClause[0], Sort.Direction.Descending);
-                } else {
-                    return Sort.by(orderByClause[0], Sort.Direction.Descending);
-                }
+        if (sort != null) {
+            if (orderBy.toLowerCase().contains("desc")) {
+                return sort.and(orderBy.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
             }
-            throw new Exception("sort is not usable");
+            return sort.and(orderBy.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
         } else {
-            if (sort != null) {
-                return sort.and(orderBy).descending();
-            } else {
-                return Sort.by(orderBy).ascending();
+            if (orderBy.toLowerCase().contains("desc")) {
+                return Sort.by(orderBy.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
             }
+            return Sort.by(orderBy.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
         }
     }
 
