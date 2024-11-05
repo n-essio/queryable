@@ -142,6 +142,19 @@ public class MojoUtils {
         }
     }
 
+    public static void langtranslate(Parameters parameters, Log log) {
+        try {
+            String packageName = parameters.groupId + "." + parameters.artifactId;
+            String google_translate_apikey = parameters.google_translate_apikey;
+            ModelQuex modelQuex = new ModelQuex(log, parameters, packageName);
+            QeexPropertiesBuilder.readAndTranslate(modelQuex, google_translate_apikey);
+            // generate
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
     public static void qeexsource(Parameters parameters, Log log) {
         try {
             String packageName = parameters.groupId + "." + parameters.artifactId;

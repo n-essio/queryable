@@ -29,6 +29,9 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     @Parameter(property = "sourceExceptionDirectory", defaultValue = "service/exception")
     String sourceExceptionDirectory;
 
+    @Parameter(property = "google_translate_apikey", defaultValue = "AIzaSyDPKAdKDvTaSb_dmYSpYPy4MjxwCnXfuL4")
+    String google_translate_apikey;
+
     @Parameter(property = "outputDirectory", defaultValue = JAVA_FOLDER)
     String outputDirectory;
 
@@ -47,6 +50,7 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     public void init(Log log) {
         this.log = log;
         this.parameters = new Parameters(log, groupId, artifactId, removeAnnotations, sourceModelDirectory, sourceRestDirectory,
-                outputDirectory, sourceExceptionDirectory, logging, overrideAnnotations, overrideSearchMethod);
+                outputDirectory, sourceExceptionDirectory, logging,
+                overrideAnnotations, overrideSearchMethod, google_translate_apikey);
     }
 }
