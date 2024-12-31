@@ -12,7 +12,7 @@ public class Constants {
 
     public static final String Q_GROUPID = "it.n-ess.queryable";
     public static final String Q_ARTIFACTID = "queryable-maven-plugin";
-    public static final String Q_VERSION = "3.0.3";
+    public static final String Q_VERSION = "3.0.4";
 
     public static String Q_ANNOTATION_NAME = "Q";
     public static String OBJ_PREFIX = "obj";
