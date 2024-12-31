@@ -29,7 +29,7 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     @Parameter(property = "sourceExceptionDirectory", defaultValue = "service/exception")
     String sourceExceptionDirectory;
 
-    @Parameter(property = "google_translate_apikey", defaultValue = "AIzaSyDPKAdKDvTaSb_dmYSpYPy4MjxwCnXfuL4")
+    @Parameter(property = "google_translate_apikey")
     String google_translate_apikey;
 
     @Parameter(property = "outputDirectory", defaultValue = JAVA_FOLDER)
