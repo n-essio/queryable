@@ -107,7 +107,6 @@ Well!, we will try to start a maven project: https://quarkus.io/guides/getting-s
 mvn io.quarkus.platform:quarkus-maven-plugin:3.17.8:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
-        -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
         -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
         -Dpath="/awesomeproj" \
         -DnoCode
