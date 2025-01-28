@@ -108,17 +108,14 @@ mvn io.quarkus.platform:quarkus-maven-plugin:3.17.8:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -DclassName="it.queryable.awesomeproj.service.rs.GreetingResource" \
-        -Dpath="/awesomeproj"
+        -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
+        -Dpath="/awesomeproj" \
+        -DnoCode
 cd awesomeproj
 ```
 
-Following the guide: https://quarkus.io/guides/hibernate-orm-panache we will add to the pom.xml configuration the hibernate/panache/driver dependencies:
-
-```
-./mvnw quarkus:add-extension -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache"
-```
-
-or directly on the pom.xml: 
+Following the guide: https://quarkus.io/guides/hibernate-orm-panache we added to the pom.xml the extensions to use Hibernate with Panache with Postgresql driver.
+We will have inside the pom.xml: 
 
 ```xml
 
@@ -183,7 +180,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.4</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
