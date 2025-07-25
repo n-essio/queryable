@@ -132,6 +132,11 @@ public abstract class RsResponseService implements Serializable {
         return Integer.valueOf(value);
     }
 
+    public Double _double(String key) {
+        String value = ui.getQueryParameters().getFirst(key);
+        return Double.valueOf(value);
+    }
+
     public Long _long(String key) {
         String value = ui.getQueryParameters().getFirst(key);
         return Long.valueOf(value);

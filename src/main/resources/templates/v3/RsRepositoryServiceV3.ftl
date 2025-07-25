@@ -59,6 +59,10 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     protected void prePersist(T object) throws Exception {
     }
 
+    protected String replaceOrderByField(String field) {
+        return field;
+    }
+
     protected abstract U getId(T object);
 
     @POST
@@ -299,7 +303,7 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     }
 
     protected Response handleObjectNotFoundRequest(U id, String name) {
-        String errorMessage = String.format("Object [{0}] with id [{1}] not found",
+        String errorMessage = String.format("Object [[%s] with id [%s] not found",
                 name, id);
         return jsonMessageResponse(Status.NOT_FOUND, errorMessage);
     }
@@ -320,7 +324,6 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     protected Sort sort(String orderBy) throws Exception {
         Sort sort = null;
         if (orderBy != null && !orderBy.trim().isEmpty()) {
-            orderBy = orderBy.toLowerCase();
             if (orderBy != null && orderBy.contains(",")) {
                 String[] orderByClause = orderBy.split(",");
                 for (String pz : orderByClause) {
@@ -357,13 +360,14 @@ public abstract class RsRepositoryServiceV3<T extends PanacheEntityBase, U> exte
     }
 
     private Sort single(Sort sort, String orderBy) throws Exception {
+        orderBy = replaceOrderByField(orderBy);
         if (sort != null) {
-            if (orderBy.toLowerCase().contains("desc")) {
+            if (orderBy.toLowerCase().contains(" desc")) {
                 return sort.and(orderBy.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
             }
             return sort.and(orderBy.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
         } else {
-            if (orderBy.toLowerCase().contains("desc")) {
+            if (orderBy.toLowerCase().contains(" desc")) {
                 return Sort.by(orderBy.replaceAll("(?i) desc", "").trim(), Sort.Direction.Descending);
             }
             return Sort.by(orderBy.replaceAll("(?i) asc", "").trim(), Sort.Direction.Ascending);
