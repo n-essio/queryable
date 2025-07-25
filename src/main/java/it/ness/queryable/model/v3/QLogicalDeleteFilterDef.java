@@ -90,6 +90,8 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
         switch (fieldType) {
             case "boolean":
                 return "boolean";
+            case "Boolean":
+                return "Boolean";
         }
         log.error("unknown getTypeFromFieldType from :" + fieldType);
         return null;
@@ -98,6 +100,7 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
     private Set<String> getSupportedTypes() {
         Set<String> supported = new HashSet<>();
         supported.add("boolean");
+        supported.add("Boolean");
         return supported;
     }
 
