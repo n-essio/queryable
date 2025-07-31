@@ -4,6 +4,7 @@ import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -45,6 +46,10 @@ public class FilterUtils {
         if ("LocalDate".equalsIgnoreCase(value)) {
             System.out.println("getClass for column : " + value + " as : LocalDate");
             return LocalDate.class;
+        }
+        if ("Instant".equalsIgnoreCase(value)) {
+            System.out.println("getClass for column : " + value + " as : Instant");
+            return Instant.class;
         }
         if ("Date".equalsIgnoreCase(value)) {
             System.out.println("getClass for column : " + value + " as : Date");

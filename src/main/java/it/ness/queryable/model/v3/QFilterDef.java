@@ -22,7 +22,7 @@ public class QFilterDef extends FilterDefBase {
 
     @Override
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
-        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType)
+        if ("LocalDateTime".equals(fieldType) || "LocalDate".equals(fieldType) || "Instant".equals(fieldType)
                 || "ZonedDateTime".equals(fieldType) || "java.util.Date".equals(fieldType)) {
             addAnnotationToModelClass_date(javaClass);
             return;
@@ -229,6 +229,24 @@ public class QFilterDef extends FilterDefBase {
         return sb.toString();
     }
 
+    private String getInstantSearchMethod() {
+        StringBuilder sb = new StringBuilder();
+        String formatBody = "if (nn(\"%s\")) {" +
+                "Instant date = Instant.parse(get(\"%s\"));" +
+                "search.filter(\"%s\", Parameters.with(\"%s\", date));" +
+                "}";
+        String filterName = entityName + ".from." + name;
+        queryName = "from." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".to." + name;
+        queryName = "to." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        filterName = entityName + ".obj." + name;
+        queryName = "obj." + name;
+        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        return sb.toString();
+    }
+
     @Override
     public String getSearchMethod() {
         if (containsOption(QOption.EXECUTE_ALWAYS)) {
@@ -254,6 +272,8 @@ public class QFilterDef extends FilterDefBase {
                 return getZonedDateTimeSearchMethod();
             case "LocalDate":
                 return getLocalDateSearchMethod();
+            case "Instant":
+                return getInstantSearchMethod();
             case "java.util.Date":
                 return getDateSearchMethod();
             case "boolean":
@@ -323,6 +343,8 @@ public class QFilterDef extends FilterDefBase {
                 return "ZonedDateTime";
             case "LocalDate":
                 return "LocalDate";
+            case "Instant":
+                return "Instant";
             case "Date":
                 return "java.util.Date";
             case "Boolean":
@@ -357,6 +379,7 @@ public class QFilterDef extends FilterDefBase {
         supported.add("LocalDateTime");
         supported.add("ZonedDateTime");
         supported.add("LocalDate");
+        supported.add("Instant");
         supported.add("Date");
         return supported;
     }

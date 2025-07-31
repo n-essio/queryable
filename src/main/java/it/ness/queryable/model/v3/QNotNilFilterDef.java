@@ -89,6 +89,8 @@ public class QNotNilFilterDef extends FilterDefBase {
                 return "LocalDateTime";
             case "LocalDate":
                 return "LocalDate";
+            case "Instant":
+                return "Instant";
             case "Date":
                 return "Date";
             case "Boolean":
@@ -118,6 +120,7 @@ public class QNotNilFilterDef extends FilterDefBase {
         supported.add("BigInteger");
         supported.add("LocalDateTime");
         supported.add("LocalDate");
+        supported.add("Instant");
         supported.add("Date");
         return supported;
     }
