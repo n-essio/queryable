@@ -96,6 +96,7 @@ public class QueryableV3Builder {
                 .replaceAll("@java.time.LocalDateTime", "java.time.LocalDateTime.class")
                 .replaceAll("@java.time.ZonedDateTime", "java.time.ZonedDateTime.class")
                 .replaceAll("@java.time.LocalDate", "java.time.LocalDate.class")
+                .replaceAll("@java.time.Instant", "java.time.Instant.class")
                 .replaceAll("@java.util.Date", "java.util.Date.class")
                 .replaceAll("@Boolean", "Boolean.class")
                 .replaceAll("@java.math.BigDecimal", "java.math.BigDecimal.class")

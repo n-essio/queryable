@@ -68,6 +68,7 @@ public class QueryableV4Builder {
                 .replaceAll("@java.time.LocalDateTime", "java.time.LocalDateTime.class")
                 .replaceAll("@java.time.ZonedDateTime", "java.time.ZonedDateTime.class")
                 .replaceAll("@java.time.LocalDate", "java.time.LocalDate.class")
+                .replaceAll("@java.time.Instant", "java.time.Instant.class")
                 .replaceAll("@Boolean", "Boolean.class")
                 .replaceAll("@java.math.BigDecimal", "java.math.BigDecimal.class")
                 .replaceAll("@java.math.BigInteger", "java.math.BigInteger.class")
