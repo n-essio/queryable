@@ -104,7 +104,7 @@ The boring process is:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus.platform:quarkus-maven-plugin:3.17.8:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.25.3:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
