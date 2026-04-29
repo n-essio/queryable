@@ -82,15 +82,18 @@
 
       <main>
         <div class="content">
+
+          <!-- HERO -->
           <section class="hero">
             <div class="hero-main container">
               <div class="row">
                 <div class="hero-left col-lg-7">
                   <div class="hero-slogan">
-                    <h1>Queryable Tutorial</h1>
+                    <h1>Queryable</h1>
                     <p class="hero-description">
-                      Guida rapida in stile homepage per configurare Queryable,
-                      annotare le entity e generare le REST API.
+                      A Maven plugin to generate quickly Java classes for <strong>JAX-RS</strong> controllers
+                      using <strong>Quarkus</strong> and <strong>Hibernate Panache</strong>,
+                      with Hibernate @filters on @entity classes annotated.
                     </p>
                   </div>
                   <div class="hero-buttons">
@@ -111,7 +114,8 @@
   -DprojectArtifactId=awesomeproj \
   -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
   -Dpath="/awesomeproj" \
-  -DnoCode</code></pre>
+  -DnoCode
+cd awesomeproj</code></pre>
                     </div>
                   </div>
                 </div>
@@ -119,50 +123,402 @@
             </div>
           </section>
 
+          <!-- SCENARIO -->
+          <section class="container py-5">
+            <h2 class="mb-4">Scenario</h2>
+            <p>
+              Normally we use the following paradigm to develop a Quarkus REST app
+              (see our <a href="https://github.com/n-essio/queryable/blob/main/API.MD">API rules</a>).
+            </p>
+
+            <h5 class="mt-4">1 – Write entities with Hibernate filters</h5>
+            <p>
+              Official documentation:
+              <a href="https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#pc-filter" target="_blank">Hibernate_User_Guide#pc-filter</a> &nbsp;|&nbsp;
+              <a href="https://thorben-janssen.com/hibernate-filter/" target="_blank">Hibernate @Filter (Thorben Janssen)</a>
+            </p>
+            <pre><code class="hljs java">@Entity
+@Table(name = "customers")
+
+@FilterDef(name = "Customer.obj.code", parameters = @ParamDef(name = "code", type = String.class))
+@Filter(name = "Customer.obj.code", condition = "code = :code")
+
+@FilterDef(name = "Customer.like.name", parameters = @ParamDef(name = "name", type = String.class))
+@Filter(name = "Customer.like.name", condition = "lower(name) LIKE :name")
+
+@FilterDef(name = "Customer.obj.active", parameters = @ParamDef(name = "active", type = Boolean.class))
+@Filter(name = "Customer.obj.active", condition = "active = :active")
+
+public class Customer extends PanacheEntityBase {
+
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uuid", unique = true)
+    @Id
+    public String uuid;
+    public String code;
+    public String name;
+    public boolean active;
+    public String ldap_group;
+    public String mail;
+}</code></pre>
+
+            <h5 class="mt-4">2 – Write one REST controller per entity</h5>
+            <pre><code class="hljs java">@Path("/api/v1/customers")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Singleton
+public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String&gt; {
+
+    public CustomerServiceRs() {
+        super(Customer.class);
+    }
+
+    @Override
+    protected String getDefaultOrderBy() {
+        return "name asc";
+    }
+
+    @Override
+    public PanacheQuery&lt;Customer&gt; getSearch(String orderBy) throws Exception {
+        PanacheQuery&lt;Customer&gt; search;
+        Sort sort = sort(orderBy);
+
+        if (sort != null) {
+            search = Customer.find(null, sort);
+        } else {
+            search = Customer.find(null);
+        }
+        if (nn("obj.code")) {
+            search.filter("Customer.obj.code", Map.of("code", get("obj.code")));
+        }
+        if (nn("like.name")) {
+            search.filter("Customer.like.name", Map.of("name", likeParamToLowerCase("like.name")));
+        }
+        search.filter("Customer.obj.active", Map.of("active", true));
+        return search;
+    }
+}</code></pre>
+
+            <h5 class="mt-4">3 – Query the API</h5>
+            <pre><code class="hljs bash">https://prj.n-ess.it/api/v1/customers?obj.code=xxxx&amp;like.name=yyyy</code></pre>
+            <p>You can find more examples in the <a href="https://github.com/n-essio/queryable/blob/main/API.MD" target="_blank">API rules page</a>.</p>
+            <p>The boring process that Queryable automates:</p>
+            <ul>
+              <li>the writing of Hibernate filters</li>
+              <li>the writing of search conditions using query parameters — with our annotation set, generated at request using a Maven goal!</li>
+            </ul>
+          </section>
+
+          <!-- QUARKUS PROJECT SETUP -->
           <section class="characteristics">
             <div class="characteristics-main container">
+              <h2 class="mb-4">Quarkus Project Setup</h2>
+              <p><strong>Prerequisites:</strong> JDK 21</p>
+              <p>Start a Maven project: <a href="https://quarkus.io/guides/getting-started" target="_blank">https://quarkus.io/guides/getting-started</a></p>
+              <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
+        -DprojectGroupId=it.queryable \
+        -DprojectArtifactId=awesomeproj \
+        -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
+        -Dpath="/awesomeproj" \
+        -DnoCode
+cd awesomeproj</code></pre>
+
+              <p>Following the <a href="https://quarkus.io/guides/hibernate-orm-panache" target="_blank">Hibernate + Panache guide</a>, add these dependencies to your <code>pom.xml</code>:</p>
+              <pre><code class="hljs xml">&lt;!-- Jackson Mapper --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+  &lt;artifactId&gt;quarkus-resteasy-jackson&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Hibernate ORM specific dependencies --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-hibernate-orm-panache&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- JDBC driver dependencies --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-jdbc-postgresql&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+              <h4 class="mt-4">Add Queryable to your project</h4>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.5:add</code></pre>
+              <p>or directly in <code>pom.xml</code>:</p>
+              <pre><code class="hljs xml">&lt;dependency&gt;
+    &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
+    &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;3.0.5&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+
+              <p>In the build section add the plugin:</p>
+              <pre><code class="hljs xml">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
+            &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.0.5&lt;/version&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+
+              <h5 class="mt-4">Available configuration options</h5>
+              <pre><code class="hljs xml">&lt;configuration&gt;
+    &lt;!-- default is false --&gt;
+    &lt;removeAnnotations&gt;false&lt;/removeAnnotations&gt;
+    &lt;!-- default is {groupId}/model --&gt;
+    &lt;sourceModelDirectory&gt;model&lt;/sourceModelDirectory&gt;
+    &lt;!-- default is {groupId}/service/rs --&gt;
+    &lt;sourceRestDirectory&gt;service/rs&lt;/sourceRestDirectory&gt;
+    &lt;!-- default is src/main/java --&gt;
+    &lt;outputDirectory&gt;src/main/java&lt;/outputDirectory&gt;
+    &lt;!-- default is true --&gt;
+    &lt;logging&gt;true|false&lt;/logging&gt;
+    &lt;!-- default is true --&gt;
+    &lt;overrideAnnotations&gt;true|false&lt;/overrideAnnotations&gt;
+    &lt;!-- default is true --&gt;
+    &lt;overrideSearchMethod&gt;true|false&lt;/overrideSearchMethod&gt;
+&lt;/configuration&gt;</code></pre>
+            </div>
+          </section>
+
+          <!-- START WRITING ENTITIES -->
+          <section class="container py-5">
+            <h2 class="mb-4">And then?! Start to write your entities!</h2>
+            <p>Before editing your entities, run:</p>
+            <pre><code class="hljs bash">./mvnw queryable:install</code></pre>
+            <p>
+              This adds our minimal API and creates a sample entity class in <code>{groupId}.{artifactId}.model.Greeting</code>
+              (e.g. <code>it.queryable.awesomeproj.model.Greeting</code>).
+            </p>
+            <p>After creating your annotated entities, run:</p>
+            <pre><code class="hljs bash">./mvnw queryable:source</code></pre>
+            <p>
+              This adds <code>@FilterDef</code> on your model classes and adds/updates the <code>getSearch</code> method
+              on your REST API controllers (one per entity).
+            </p>
+
+            <div class="row mt-4">
+              <div class="col-md-6">
+                <h5>JPA @Entity classes location</h5>
+                <p>The plugin searches for classes extending <code>PanacheEntityBase</code> in <code>{groupId}.{artifactId}.model</code>.</p>
+              </div>
+              <div class="col-md-6">
+                <h5>JAX-RS classes location</h5>
+                <p>The plugin searches for <code>@Path @Singleton</code> classes in <code>{groupId}.{artifactId}.service.rs</code> following the pattern <code>{EntityName}ServiceRs</code>.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ANNOTATIONS -->
+          <section class="characteristics">
+            <div class="characteristics-main container">
+              <h2 class="mb-4">Q Annotations</h2>
+              <p>Annotations can be applied to classes or fields; by themselves they have no effect at runtime — they are used by the Maven plugin for code generation.</p>
+
               <div class="row">
                 <div class="characteristic-item col-lg-4">
-                  <span class="characteristic-item-icon"
-                    ><i class="las la-project-diagram la-2x"></i
-                  ></span>
-                  <h5>Step 1: Setup</h5>
-                  <p>Crea il progetto Quarkus e aggiungi il plugin nel pom.</p>
+                  <span class="characteristic-item-icon"><i class="las la-tag la-2x"></i></span>
+                  <h5>Field-level</h5>
+                  <p>Q, QLike, QLikeList, QList, QLogicalDelete, QNil, QNotNil, QT</p>
                 </div>
-
                 <div class="characteristic-item col-lg-4">
-                  <span class="characteristic-item-icon"
-                    ><i class="las la-tags la-2x"></i
-                  ></span>
-                  <h5>Step 2: Annotazioni</h5>
-                  <p>Usa Q, QLike, QList, QLogicalDelete sulle entity.</p>
+                  <span class="characteristic-item-icon"><i class="las la-layer-group la-2x"></i></span>
+                  <h5>Class-level</h5>
+                  <p>Q, QExclude, QInclude, QOrderBy, QRs</p>
                 </div>
-
                 <div class="characteristic-item col-lg-4">
-                  <span class="characteristic-item-icon"
-                    ><i class="las la-cogs la-2x"></i
-                  ></span>
-                  <h5>Step 3: Generazione</h5>
-                  <p>Esegui queryable:install e queryable:source.</p>
+                  <span class="characteristic-item-icon"><i class="las la-cogs la-2x"></i></span>
+                  <h5>Test</h5>
+                  <p>QT — describe test values for generated test stubs.</p>
                 </div>
               </div>
             </div>
           </section>
 
-          <section class="container pb-5">
-            <div class="row">
-              <div class="col-lg-12">
-                <h3>Esempio filtro aggiornato</h3>
-                <pre><code class="hljs java">if (nn("obj.code")) {
-  search.filter("Customer.obj.code", Map.of("code", get("obj.code")));
+          <!-- ANNOTATION DETAILS -->
+          <section class="container py-5">
+
+            <h3>@Q annotation</h3>
+            <p>Can be used on: <code>String</code>, enums, <code>LocalDateTime</code>, <code>LocalDate</code>, <code>Date</code>, <code>Boolean</code>, <code>boolean</code>, <code>BigDecimal</code>, <code>Integer</code>, <code>Long</code>.</p>
+
+            <h5 class="mt-4">String</h5>
+            <pre><code class="hljs java">@Q
+public String code;</code></pre>
+            <p>Generates in model:</p>
+            <pre><code class="hljs java">@FilterDef(name = "XXX.obj.code", parameters = @ParamDef(name = "code", type = String.class))
+@Filter(name = "XXX.obj.code", condition = "code = :code")</code></pre>
+            <p>Generates in REST controller:</p>
+            <pre><code class="hljs java">if (nn("obj.code")) {
+    search.filter("XXX.obj.code", Map.of("code", get("obj.code")));
+}</code></pre>
+
+            <h5 class="mt-4">Enum</h5>
+            <pre><code class="hljs java">@Enumerated(EnumType.STRING)
+@Q
+public MovementReason movementReason;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.movementReason")) {
+    search.filter("XXX.obj.movementReason", Map.of("movementReason", get("obj.movementReason")));
+}</code></pre>
+            <p>With <code>QOption.EXECUTE_ALWAYS</code>:</p>
+            <pre><code class="hljs java">@Enumerated(EnumType.STRING)
+@Q(condition = "BLANK_DELIVERY", options = {QOption.EXECUTE_ALWAYS})
+public OperationType operationType;</code></pre>
+            <pre><code class="hljs java">search.filter("XXX.obj.operationType", Map.of("operationType", "BLANK_DELIVERY"));</code></pre>
+
+            <h5 class="mt-4">LocalDateTime / LocalDate / Date</h5>
+            <pre><code class="hljs java">@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Rome")
+@Q
+public LocalDateTime execution_date;</code></pre>
+            <p>Generates two FilterDefs (<code>from.</code> and <code>to.</code>):</p>
+            <pre><code class="hljs java">if (nn("from.execution_date")) {
+    LocalDateTime date = LocalDateTime.parse(get("from.execution_date"));
+    search.filter("XXX.from.execution_date", Map.of("execution_date", date));
 }
-if (nn("like.name")) {
-  search.filter("Customer.like.name", Map.of("name", likeParamToLowerCase("like.name")));
+if (nn("to.execution_date")) {
+    LocalDateTime date = LocalDateTime.parse(get("to.execution_date"));
+    search.filter("XXX.to.execution_date", Map.of("execution_date", date));
+}</code></pre>
+
+            <h5 class="mt-4">BigDecimal</h5>
+            <pre><code class="hljs java">@Q
+public BigDecimal weight;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.weight")) {
+    BigDecimal numberof = new BigDecimal(get("obj.weight"));
+    search.filter("XXX.obj.weight", Map.of("weight", numberof));
+}</code></pre>
+
+            <h5 class="mt-4">Integer</h5>
+            <pre><code class="hljs java">@Q
+public Integer quantity;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.quantity")) {
+    Integer numberof = _integer("obj.quantity");
+    search.filter("XXX.obj.quantity", Map.of("quantity", numberof));
+}</code></pre>
+
+            <h5 class="mt-4">Long</h5>
+            <pre><code class="hljs java">@Q
+public Long quantity;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.quantity")) {
+    Long numberof = _long("obj.quantity");
+    search.filter("XXX.obj.quantity", Map.of("quantity", numberof));
+}</code></pre>
+
+            <h5 class="mt-4">Boolean</h5>
+            <pre><code class="hljs java">@Q(prefix = "not")
+public boolean default_template;</code></pre>
+            <pre><code class="hljs java">if (nn("not.default_template")) {
+    Boolean valueof = _boolean("not.default_template");
+    search.filter("XXX.not.default_template", Map.of("default_template", valueof));
+}</code></pre>
+            <p>With a fixed condition:</p>
+            <pre><code class="hljs java">@Q(prefix = "not", condition = "false")
+public boolean default_template;</code></pre>
+            <pre><code class="hljs java">if (nn("not.default_template")) {
+    search.filter("XXX.not.default_template", Map.of("not.default_template", false));
+}</code></pre>
+
+            <hr class="my-5" />
+
+            <h3>@QNil / @QNotNil</h3>
+            <pre><code class="hljs java">@QNil
+@QNotNil
+public String executor;</code></pre>
+            <pre><code class="hljs java">@FilterDef(name = "XXX.nil.executor")
+@Filter(name = "XXX.nil.executor", condition = "executor IS NULL")
+@FilterDef(name = "XXX.notNil.executor")
+@Filter(name = "XXX.notNil.executor", condition = "executor IS NOT NULL")</code></pre>
+            <pre><code class="hljs java">if (nn("nil.executor")) {
+    search.filter("XXX.nil.executor");
 }
-search.filter("Customer.obj.active", Map.of("active", true));</code></pre>
-              </div>
-            </div>
+if (nn("notNil.executor")) {
+    search.filter("XXX.notNil.executor");
+}</code></pre>
+
+            <hr class="my-5" />
+
+            <h3>@QList</h3>
+            <h5>String field</h5>
+            <pre><code class="hljs java">@QList
+public String uuid;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.uuids")) {
+    search.filter("XXX.obj.uuids", Map.of("uuids", asList("obj.uuids")));
+}</code></pre>
+            <h5>Integer field</h5>
+            <pre><code class="hljs java">@QList
+public Integer id;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.uuids")) {
+    search.filter("XXX.obj.uuids", Map.of("uuids", asIntegerList("obj.uuids")));
+}</code></pre>
+            <h5>Long field</h5>
+            <pre><code class="hljs java">@QList
+public Long id;</code></pre>
+            <pre><code class="hljs java">if (nn("obj.uuids")) {
+    search.filter("XXX.obj.uuids", Map.of("uuids", asLongList("obj.uuids")));
+}</code></pre>
+
+            <hr class="my-5" />
+
+            <h3>@QLikeList</h3>
+            <pre><code class="hljs java">@QLikeList
+public String tags;</code></pre>
+            <pre><code class="hljs java">String query = null;
+Map&lt;String, Object&gt; params = null;
+if (nn("like.tags")) {
+    String[] tags = get("like.tags").split(",");
+    StringBuilder sb = new StringBuilder();
+    if (null == params) { params = new HashMap&lt;&gt;(); }
+    for (int i = 0; i &lt; tags.length; i++) {
+        final String paramName = String.format("tags%d", i);
+        sb.append(String.format("tags LIKE :%s", paramName));
+        params.put(paramName, tags[i]);
+        if (i &lt; tags.length - 1) { sb.append(" OR "); }
+    }
+    query = (null == query) ? sb.toString() : query + " OR " + sb.toString();
+}
+PanacheQuery&lt;CostCenter&gt; search;
+Sort sort = sort(orderBy);
+if (sort != null) {
+    search = CostCenter.find(query, sort, params);
+} else {
+    search = CostCenter.find(query, params);
+}</code></pre>
+
+            <hr class="my-5" />
+
+            <h3>@QLogicalDelete</h3>
+            <pre><code class="hljs java">@QLogicalDelete
+public boolean active = true;</code></pre>
+            <pre><code class="hljs java">search.filter("XXX.obj.active", Map.of("active", true));</code></pre>
+
+            <hr class="my-5" />
+
+            <h3>@QInclude / @QExclude (class level)</h3>
+            <p>
+              <strong>@QInclude</strong> — used on class level to select a class for FilterDef generation. If used, all other classes are ignored.<br/>
+              <strong>@QExclude</strong> — used on class level to deselect a class from FilterDef generation.
+            </p>
+
+            <hr class="my-5" />
+
+            <h3>@QT — Test Builder</h3>
+            <p>Use <code>@QT</code> to describe test values and override defaults for generated test stub classes.</p>
+            <pre><code class="hljs java">@QT(defaultValue = "default_fiscal_code", updatedValue = "updated_fiscal_code")
+public String fiscal_code;</code></pre>
+            <p>Generate test classes with:</p>
+            <pre><code class="hljs bash">./mvnw queryable:testsources</code></pre>
+            <p>Default values used when <code>@QT</code> is not applied:</p>
+            <ul>
+              <li><code>String</code>: <code>"defaultValue_" + fieldName</code> / <code>"updatedValue_" + fieldName</code></li>
+              <li><code>int</code>, <code>Integer</code>, <code>long</code>, <code>Long</code>: <code>0</code> / <code>1</code></li>
+              <li><code>boolean</code>, <code>Boolean</code>: <code>false</code> / <code>true</code></li>
+              <li><code>LocalDateTime</code>: <code>LocalDateTime.now()</code> / <code>LocalDateTime.now().plusDays(1)</code></li>
+              <li><code>LocalDate</code>: <code>LocalDate.now()</code> / <code>LocalDate.now().plusDays(1)</code></li>
+              <li><code>BigDecimal</code>: <code>0</code> / <code>1</code></li>
+            </ul>
           </section>
+
         </div>
       </main>
 
@@ -173,7 +529,7 @@ search.filter("Customer.obj.active", Map.of("active", true));</code></pre>
               <p>
                 Queryable is an open source project. All the code from this
                 project is available under the
-                <a href="https://raw.githubusercontent.com/queryable/master/LICENSE"
+                <a href="https://raw.githubusercontent.com/n-essio/queryable/master/LICENSE"
                   >Apache Software License 2.0</a
                 >.
               </p>
