@@ -101,10 +101,13 @@ The boring process is:
 
 ## Quarkus Project Setup
 
+Prerequisites:
+- JDK 21
+
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus.platform:quarkus-maven-plugin:3.25.3:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
@@ -141,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.4:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.5:add
 ```
 
 or directly on the pom.xml:
@@ -151,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5</version>
 </dependency>
 ```
 
@@ -164,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.4</version>
+            <version>3.0.5</version>
         </plugin>
     </plugins>
 </build>
@@ -179,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.4</version>
+            <version>3.0.5</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -814,7 +817,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.4</version>
+                <version>3.0.5</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

@@ -68,9 +68,9 @@ public class QLogicalDeleteFilterDef extends FilterDefBase {
     public String getSearchMethod() {
         String formatBody = "if (nn(\"%s\")) {" +
                  "Boolean valueof = _boolean(\"%s\");" +
-                 "search.filter(\"%s\", Parameters.with(\"%s\", valueof));" +
+                 "search.filter(\"%s\", Map.of(\"%s\", valueof));" +
                  "} else {" +
-                 "search.filter(\"%s\", Parameters.with(\"%s\", true));" +
+                 "search.filter(\"%s\", Map.of(\"%s\", true));" +
                  "}";
 
         return String.format(formatBody, queryName, queryName, filterName, name, filterName, name);

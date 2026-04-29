@@ -73,13 +73,13 @@ public class QLikeFilterDef extends FilterDefBase {
             return getStringEqualsWithoutParameters();
         }
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));" +
+                "search.filter(\"%s\", Map.of(\"%s\", likeParamToLowerCase(\"%s\")));" +
                 "}";
         return String.format(formatBody, queryName, filterName, name, queryName);
     }
 
     private String getStringEqualsAlways() {
-        String formatBody = "search.filter(\"%s\", Parameters.with(\"%s\", likeParamToLowerCase(\"%s\")));";
+        String formatBody = "search.filter(\"%s\", Map.of(\"%s\", likeParamToLowerCase(\"%s\")));";
         return String.format(formatBody, filterName, name, queryName);
     }
 

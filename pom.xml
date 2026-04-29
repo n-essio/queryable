@@ -7,7 +7,7 @@
 
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.4</version>
+    <version>3.0.5</version>
     <packaging>maven-plugin</packaging>
     <name>Queryable Maven Plugin</name>
     <description>Queryable Maven Plugin.</description>
@@ -50,14 +50,15 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.version>3.9.3</maven.version>
         <maven-plugin-annotations.version>3.9.0</maven-plugin-annotations.version>
-        <version.roaster>2.29.0.Final</version.roaster>
-        <version.freemarker>2.3.32</version.freemarker>
+        <version.roaster>2.31.0.Final</version.roaster>
+        <version.freemarker>2.3.34</version.freemarker>
         <version.org.atteo>1.3</version.org.atteo>
-        <version.google.translate>2.48.0</version.google.translate>
+        <version.google.translate>2.91.0</version.google.translate>
         <version.google.client>1.45.0</version.google.client>
         <version.junit>4.13.2</version.junit>
     </properties>
@@ -142,7 +143,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>1.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -194,7 +195,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.6.0</version>
+                        <version>3.12.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -207,7 +208,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

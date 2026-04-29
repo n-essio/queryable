@@ -106,19 +106,19 @@ public class QListFilterDef extends FilterDefBase {
 
     /*
      if (nn("obj.uuids")) {
-            search.filter("obj.uuids", Parameters.with("uuids", asList("obj.uuids")));
+             search.filter("obj.uuids", Map.of("uuids", asList("obj.uuids")));
         }
      */
 
     private String getStringSearchMethod() {
         if (null == condition) {
             String formatBody = "if (nn(\"%s\")) {" +
-                    "search.filter(\"%s\", Parameters.with(\"%s\", asList(\"%s\")));" +
+                "search.filter(\"%s\", Map.of(\"%s\", asList(\"%s\")));" +
                     "}";
             return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+            "search.filter(\"%s\", Map.of(\"%s\", \"%s\"));" +
                 "}";
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
@@ -126,12 +126,12 @@ public class QListFilterDef extends FilterDefBase {
     private String getLongSearchMethod() {
         if (null == condition) {
             String formatBody = "if (nn(\"%s\")) {" +
-                    "search.filter(\"%s\", Parameters.with(\"%s\", asLongList(\"%s\")));" +
+                "search.filter(\"%s\", Map.of(\"%s\", asLongList(\"%s\")));" +
                     "}";
             return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+            "search.filter(\"%s\", Map.of(\"%s\", \"%s\"));" +
                 "}";
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
@@ -139,12 +139,12 @@ public class QListFilterDef extends FilterDefBase {
     private String getIntegerSearchMethod() {
         if (null == condition) {
             String formatBody = "if (nn(\"%s\")) {" +
-                    "search.filter(\"%s\", Parameters.with(\"%s\", asIntegerList(\"%s\")));" +
+                "search.filter(\"%s\", Map.of(\"%s\", asIntegerList(\"%s\")));" +
                     "}";
             return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+            "search.filter(\"%s\", Map.of(\"%s\", \"%s\"));" +
                 "}";
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
@@ -152,12 +152,12 @@ public class QListFilterDef extends FilterDefBase {
     private String getBigIntegerSearchMethod() {
         if (null == condition) {
             String formatBody = "if (nn(\"%s\")) {" +
-                    "search.filter(\"%s\", Parameters.with(\"%s\", Arrays.stream(get(\"%s\").split(\",\")).map(number -> BigInteger.valueOf(Long.parseLong(number))).toList()));" +
+                "search.filter(\"%s\", Map.of(\"%s\", Arrays.stream(get(\"%s\").split(\",\")).map(number -> BigInteger.valueOf(Long.parseLong(number))).toList()));" +
                     "}";
             return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
         }
         String formatBody = "if (nn(\"%s\")) {" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", \"%s\"));" +
+            "search.filter(\"%s\", Map.of(\"%s\", \"%s\"));" +
                 "}";
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }

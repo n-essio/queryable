@@ -76,10 +76,6 @@ public class QFilter extends FilterBase {
     }
 
     private String getIntegerSearchMethod() {
-        String formatBody = "if (nn(\"%s\")) {" +
-                "Integer numberof = _integer(\"%s\");" +
-                "search.filter(\"%s\", Parameters.with(\"%s\", numberof));" +
-                "}";
         String formatBody4 = """
                 if (nn("%s")) {
                     Integer numberof = _integer("%s");
