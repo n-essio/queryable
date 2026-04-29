@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Queryable</title>
+    <title>Queryable Tutorial</title>
 
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="Queryable" />
+    <meta name="description" content="Queryable tutorial" />
 
-    <link rel="canonical" href="/" />
+    <link rel="canonical" href="/docs/tutorial.html" />
     <link
       rel="stylesheet"
       href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.1/styles/default.min.css"
@@ -21,18 +21,14 @@
       integrity="sha512-8Tb+T7SKUFQWOPIQCaLDWWe1K/SY8hvHl7brOH8Nz5z1VT8fnf8B+9neoUzmFY3OzkWMMs3OjrwZALgB1oXFBg=="
       crossorigin="anonymous"
     />
-    <link
-      rel="shortcut icon"
-      type="image/png"
-      href="assets/images/favicon.ico"
-    />
+    <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.ico" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
       integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="/assets/css/main.css" />
     <link
       rel="stylesheet"
       href="https://maxst.icons8.com/vue-static/landings/line-awesome/font-awesome-line-awesome/css/all.min.css"
@@ -49,7 +45,7 @@
         <div class="container">
           <nav class="navbar navbar-dark navbar-expand-lg">
             <a class="navbar-brand brand mutiny" href="/index.html"
-              ><img src="assets/images/logo.svg"
+              ><img src="/assets/images/logo.svg" alt="Queryable"
             /></a>
             <button
               class="navbar-toggler"
@@ -66,13 +62,16 @@
             <div class="collapse navbar-collapse" id="toggler">
               <ul class="navbar-nav ml-auto mr-0 mt-2 mt-lg-0">
                 <li class="nav-item">
-                  <a class="nav-link active" href="/index.html">Home</a>
+                  <a class="nav-link" href="/index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link active" href="/docs/tutorial.html">Tutorial</a>
                 </li>
                 <li class="nav-item">
                   <a
-                    class="nav-link active"
-                    href="/docs/tutorial.html"
-                    >Getting Started</a
+                    class="nav-link"
+                    href="https://github.com/n-essio/queryable"
+                    >GitHub</a
                   >
                 </li>
               </ul>
@@ -80,45 +79,39 @@
           </nav>
         </div>
       </header>
+
       <main>
         <div class="content">
           <section class="hero">
             <div class="hero-main container">
               <div class="row">
-                <div class="hero-left col-lg-6">
+                <div class="hero-left col-lg-7">
                   <div class="hero-slogan">
-                    <h1>
-                      Queryable is a Maven plugin to generate quickly Java
-                      classes for JAX-RS controllers
-                    </h1>
+                    <h1>Queryable Tutorial</h1>
                     <p class="hero-description">
-                      using with Quarkus and Hibernate Panache, with Hibernate
-                      @filters on @entity classes annotated.
+                      Guida rapida in stile homepage per configurare Queryable,
+                      annotare le entity e generare le REST API.
                     </p>
                   </div>
                   <div class="hero-buttons">
                     <a
-                      href="https://search.maven.org/remotecontent?filepath=it/n-ess/queryable/queryable-maven-plugin/3.0.4/queryable-maven-plugin-3.0.4.jar"
+                      href="https://github.com/n-essio/queryable"
                       target="_blank"
                       class="btn btn-rounded button button-dark button-rounded"
                     >
-                      Last release: 3.0.4</a
-                    >
-                    &nbsp; &nbsp;
-                    <!-- <a href="/getting-started/download" class="btn btn-rounded button button-dark button-rounded">
-                Let's get started&nbsp;<i class="las la-arrow-right"></i></a> -->
+                      Open GitHub repo
+                    </a>
                   </div>
                 </div>
-                <div class="hero-right col-lg-6">
+                <div class="hero-right col-lg-5">
                   <div class="hero-code">
                     <div class="code-examples">
-                      <pre><code class="hljs xml">
-&#60;dependency&#62;
-    &#60;groupId&#62;it.n-ess.queryable&#60;/groupId&#62;
-    &#60;artifactId>queryable-maven-plugin&#60;/artifactId&#62;
-    &#60;version&#62;3.0.4&#60;/version&#62;
-&#60;/dependency&#62;
-                    </code></pre>
+                      <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
+  -DprojectGroupId=it.queryable \
+  -DprojectArtifactId=awesomeproj \
+  -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
+  -Dpath="/awesomeproj" \
+  -DnoCode</code></pre>
                     </div>
                   </div>
                 </div>
@@ -131,32 +124,48 @@
               <div class="row">
                 <div class="characteristic-item col-lg-4">
                   <span class="characteristic-item-icon"
-                    ><i class="las la-bolt la-2x"></i
+                    ><i class="las la-project-diagram la-2x"></i
                   ></span>
-                  <h5>Quarkus</h5>
-                  <p>Queryable places <em>events</em></p>
+                  <h5>Step 1: Setup</h5>
+                  <p>Crea il progetto Quarkus e aggiungi il plugin nel pom.</p>
                 </div>
 
                 <div class="characteristic-item col-lg-4">
                   <span class="characteristic-item-icon"
-                    ><i class="las la-route la-2x"></i
+                    ><i class="las la-tags la-2x"></i
                   ></span>
-                  <h5>Hibernate</h5>
-                  <p>Queryable</p>
+                  <h5>Step 2: Annotazioni</h5>
+                  <p>Usa Q, QLike, QList, QLogicalDelete sulle entity.</p>
                 </div>
 
                 <div class="characteristic-item col-lg-4">
                   <span class="characteristic-item-icon"
                     ><i class="las la-cogs la-2x"></i
                   ></span>
-                  <h5>Rest API</h5>
-                  <p>Queryable</p>
+                  <h5>Step 3: Generazione</h5>
+                  <p>Esegui queryable:install e queryable:source.</p>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="container pb-5">
+            <div class="row">
+              <div class="col-lg-12">
+                <h3>Esempio filtro aggiornato</h3>
+                <pre><code class="hljs java">if (nn("obj.code")) {
+  search.filter("Customer.obj.code", Map.of("code", get("obj.code")));
+}
+if (nn("like.name")) {
+  search.filter("Customer.like.name", Map.of("name", likeParamToLowerCase("like.name")));
+}
+search.filter("Customer.obj.active", Map.of("active", true));</code></pre>
               </div>
             </div>
           </section>
         </div>
       </main>
+
       <footer class="footer">
         <div class="container">
           <div class="row">
@@ -164,15 +173,14 @@
               <p>
                 Queryable is an open source project. All the code from this
                 project is available under the
-                <a
-                  href="https://raw.githubusercontent.com/queryable/master/LICENSE"
+                <a href="https://raw.githubusercontent.com/queryable/master/LICENSE"
                   >Apache Software License 2.0</a
                 >.
               </p>
             </div>
           </div>
         </div>
-        <!-- Javascript-->
+
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.1/highlight.min.js"></script>
         <script
           src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -184,9 +192,7 @@
           integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
           crossorigin="anonymous"
         ></script>
-        <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@4/dist/gumshoe.polyfills.min.js"></script>
-        <script src="assets/js/hl.js" type="text/javascript"></script>
-        <script src="assets/js/scrollspy.js" type="text/javascript"></script>
+        <script src="/assets/js/hl.js" type="text/javascript"></script>
       </footer>
     </div>
   </body>
