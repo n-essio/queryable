@@ -3,6 +3,8 @@ package it.ness.queryable.util;
 import org.apache.maven.plugin.logging.Log;
 import org.atteo.evo.inflector.English;
 
+import java.io.File;
+
 public class StringUtil {
 
     protected Log log;
@@ -18,7 +20,16 @@ public class StringUtil {
 
 
     public static String getClassNameFromFileName(final String modelFileName) {
-        return modelFileName.substring(0, modelFileName.indexOf(".java"));
+        String fileName = new File(modelFileName).getName();
+        return fileName.substring(0, fileName.indexOf(".java"));
+    }
+
+    public static String toJavaGroupId(final String groupId) {
+        return groupId.replaceAll("[^A-Za-z0-9.]", "");
+    }
+
+    public static String toJavaArtifactId(final String artifactId) {
+        return artifactId.replaceAll("[^A-Za-z0-9]", "");
     }
 
     public static String getPlural(String str) {

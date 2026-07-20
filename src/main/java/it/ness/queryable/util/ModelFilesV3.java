@@ -36,7 +36,7 @@ public class ModelFilesV3 {
             log.error(String.format("Path %s doesn't exist.", parameters.modelPath));
             return;
         }
-        modelFileNames = f.list((f1, name) -> name.endsWith(".java"));
+        modelFileNames = ModelFileUtils.findJavaFiles(f);
         if (modelFileNames != null && modelFileNames.length > 0) {
             if (log != null) log.info("Total model classes found : " + modelFileNames.length);
             if (log != null) log.info("model class file names : " + Arrays.toString(modelFileNames));

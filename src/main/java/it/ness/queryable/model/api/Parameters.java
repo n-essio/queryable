@@ -6,6 +6,8 @@ import java.io.File;
 
 import static it.ness.queryable.builder.Constants.JAVA_FOLDER;
 import static it.ness.queryable.builder.Constants.TEST_FOLDER;
+import static it.ness.queryable.util.StringUtil.toJavaArtifactId;
+import static it.ness.queryable.util.StringUtil.toJavaGroupId;
 
 public class Parameters {
 
@@ -55,13 +57,13 @@ public class Parameters {
         this.logging = logging;
         this.overrideAnnotations = overrideAnnotations;
         this.overrideSearchMethod = overrideSearchMethod;
-        this.groupId = groupId;
-        this.artifactId = artifactId;
+        this.groupId = toJavaGroupId(groupId);
+        this.artifactId = toJavaArtifactId(artifactId);
         this.google_translate_apikey = google_translate_apikey;
-        log.info("groupId:" + groupId);
-        log.info("artifactId:" + artifactId);
-        this.apiPath = groupId.replaceAll("\\.", "/") + "/api" + "/";
-        this.projectPath = groupId.replaceAll("\\.", "/") + "/" + artifactId + "/";
+        log.info("groupId:" + this.groupId);
+        log.info("artifactId:" + this.artifactId);
+        this.apiPath = this.groupId.replaceAll("\\.", "/") + "/api" + "/";
+        this.projectPath = this.groupId.replaceAll("\\.", "/") + "/" + this.artifactId + "/";
         log.info("apiPath:" + apiPath);
         log.info("projectPath:" + projectPath);
         this.outputDir = new File(outputDirectory);

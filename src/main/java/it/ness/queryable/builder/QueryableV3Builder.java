@@ -82,7 +82,7 @@ public class QueryableV3Builder {
         File pd = new File(parameters.outputDirectory, packagePath);
         pd.mkdirs();
 
-        FileWriter out = new FileWriter(new File(pd, modelFileName));
+        FileWriter out = new FileWriter(new File(pd, className + ".java"));
         try {
             out.append(replaceModelTypeAnnotations(javaClass.toString()));
         } finally {
