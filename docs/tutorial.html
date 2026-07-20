@@ -105,7 +105,7 @@
                 <div class="hero-right col-lg-5">
                   <div class="hero-code">
                     <div class="code-examples">
-                      <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
+                      <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.37.3:create \
   -DprojectGroupId=it.queryable \
   -DprojectArtifactId=awesomeproj \
   -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
@@ -212,7 +212,7 @@ public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String
               <h2 class="mb-4">Quarkus Project Setup</h2>
               <p><strong>Prerequisites:</strong> JDK 21</p>
               <p>Start a Maven project: <a href="https://quarkus.io/guides/getting-started" target="_blank">https://quarkus.io/guides/getting-started</a></p>
-              <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
+              <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.37.3:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
@@ -240,12 +240,12 @@ cd awesomeproj</code></pre>
 &lt;/dependency&gt;</code></pre>
 
               <h4 class="mt-4">Add Queryable to your project</h4>
-              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.5:add</code></pre>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.6:add</code></pre>
               <p>or directly in <code>pom.xml</code>:</p>
               <pre><code class="hljs xml">&lt;dependency&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;3.0.5&lt;/version&gt;
+    &lt;version&gt;3.0.6&lt;/version&gt;
 &lt;/dependency&gt;</code></pre>
 
               <p>In the build section add the plugin:</p>
@@ -254,7 +254,7 @@ cd awesomeproj</code></pre>
         &lt;plugin&gt;
             &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
             &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-            &lt;version&gt;3.0.5&lt;/version&gt;
+            &lt;version&gt;3.0.6&lt;/version&gt;
         &lt;/plugin&gt;
     &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
