@@ -83,164 +83,16 @@
       <main>
         <div class="content">
 
-          <!-- HERO -->
-          <section class="hero">
-            <div class="hero-main container">
-              <div class="row">
-                <div class="hero-left col-lg-7">
-                  <div class="hero-slogan">
-                    <h1>Queryable Documentation</h1>
-                    <p class="hero-description">
-                      Install Queryable, generate JAX-RS controllers and Hibernate filters,
-                      and use its annotations with Quarkus and Hibernate Panache.
-                    </p>
-                  </div>
-                  <div class="hero-buttons">
-                    <a
-                      href="https://github.com/n-essio/queryable"
-                      target="_blank"
-                      class="btn btn-rounded button button-dark button-rounded"
-                    >
-                      Open GitHub repo
-                    </a>
-                  </div>
-                </div>
-                <div class="hero-right col-lg-5">
-                  <div class="hero-code">
-                    <div class="code-examples">
-                      <pre><code class="hljs bash">./mvnw queryable:source
-
-./mvnw queryable:source \
-  -Dclasses=Customer,Order</code></pre>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- DOCUMENTATION INDEX -->
-          <section class="container py-5" id="documentation-index">
-            <h2 class="mb-4">Documentation</h2>
-            <p>
-              Current versions: <strong>Queryable 3.0.7</strong>, <strong>Quarkus 3.39.5</strong>,
-              and <strong>JDK 21</strong>.
-            </p>
-            <div class="row">
-              <div class="col-md-4">
-                <h3><a href="#installation">Installation</a></h3>
-                <p>Add Queryable to an existing Quarkus project and configure its directories.</p>
-              </div>
-              <div class="col-md-4">
-                <h3><a href="#source-generation">Source generation</a></h3>
-                <p>Process every model class or select classes by simple name.</p>
-              </div>
-              <div class="col-md-4">
-                <h3><a href="#annotations">Annotations</a></h3>
-                <p>Choose filters, matching rules, class inclusion, ordering, and generated tests.</p>
-              </div>
-            </div>
-            <p>
-              AI agents and automated tools should start with <a href="/llms.txt">llms.txt</a>
-              and the repository <a href="https://github.com/n-essio/queryable/blob/main/AGENTS.md">AGENTS.md</a>.
-              It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
-            </p>
-            <p>Creating a Quarkus application from scratch? Follow <a href="/docs/getting-started.html">Getting Started</a>.</p>
-          </section>
-
-          <!-- SCENARIO -->
-          <section class="container py-5" id="concepts">
-            <h2 class="mb-4">Scenario</h2>
-            <p>
-              Normally we use the following paradigm to develop a Quarkus REST app
-              (see our <a href="https://github.com/n-essio/queryable/blob/main/API.MD">API rules</a>).
-            </p>
-
-            <h5 class="mt-4">1 – Write entities with Hibernate filters</h5>
-            <p>
-              Official documentation:
-              <a href="https://docs.jboss.org/hibernate/orm/6.2/userguide/html_single/Hibernate_User_Guide.html#pc-filter" target="_blank">Hibernate_User_Guide#pc-filter</a> &nbsp;|&nbsp;
-              <a href="https://thorben-janssen.com/hibernate-filter/" target="_blank">Hibernate @Filter (Thorben Janssen)</a>
-            </p>
-            <pre><code class="hljs java">@Entity
-@Table(name = "customers")
-
-@FilterDef(name = "Customer.obj.code", parameters = @ParamDef(name = "code", type = String.class))
-@Filter(name = "Customer.obj.code", condition = "code = :code")
-
-@FilterDef(name = "Customer.like.name", parameters = @ParamDef(name = "name", type = String.class))
-@Filter(name = "Customer.like.name", condition = "lower(name) LIKE :name")
-
-@FilterDef(name = "Customer.obj.active", parameters = @ParamDef(name = "active", type = Boolean.class))
-@Filter(name = "Customer.obj.active", condition = "active = :active")
-
-public class Customer extends PanacheEntityBase {
-
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "uuid", unique = true)
-    @Id
-    public String uuid;
-    public String code;
-    public String name;
-    public boolean active;
-    public String ldap_group;
-    public String mail;
-}</code></pre>
-
-            <h5 class="mt-4">2 – Write one REST controller per entity</h5>
-            <pre><code class="hljs java">@Path("/api/v1/customers")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Singleton
-public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String&gt; {
-
-    public CustomerServiceRs() {
-        super(Customer.class);
-    }
-
-    @Override
-    protected String getDefaultOrderBy() {
-        return "name asc";
-    }
-
-    @Override
-    public PanacheQuery&lt;Customer&gt; getSearch(String orderBy) throws Exception {
-        PanacheQuery&lt;Customer&gt; search;
-        Sort sort = sort(orderBy);
-
-        if (sort != null) {
-            search = Customer.find(null, sort);
-        } else {
-            search = Customer.find(null);
-        }
-        if (nn("obj.code")) {
-            search.filter("Customer.obj.code", Map.of("code", get("obj.code")));
-        }
-        if (nn("like.name")) {
-            search.filter("Customer.like.name", Map.of("name", likeParamToLowerCase("like.name")));
-        }
-        search.filter("Customer.obj.active", Map.of("active", true));
-        return search;
-    }
-}</code></pre>
-
-            <h5 class="mt-4">3 – Query the API</h5>
-            <pre><code class="hljs bash">https://prj.n-ess.it/api/v1/customers?obj.code=xxxx&amp;like.name=yyyy</code></pre>
-            <p>You can find more examples in the <a href="https://github.com/n-essio/queryable/blob/main/API.MD" target="_blank">API rules page</a>.</p>
-            <p>The boring process that Queryable automates:</p>
-            <ul>
-              <li>the writing of Hibernate filters</li>
-              <li>the writing of search conditions using query parameters — with our annotation set, generated at request using a Maven goal!</li>
-            </ul>
-          </section>
-
           <!-- QUARKUS PROJECT SETUP -->
           <section class="characteristics" id="installation">
             <div class="characteristics-main container">
               <h2 class="mb-4">Install Queryable</h2>
               <p><strong>Prerequisites:</strong> an existing Quarkus project using JDK 21 and Hibernate ORM with Panache.</p>
               <p>For a new project, begin with the complete <a href="/docs/getting-started.html">Getting Started guide</a>.</p>
+              <p>
+                AI agents and automated tools should start with <a href="/llms.txt">llms.txt</a>.
+                It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
+              </p>
               <h3>Add the plugin</h3>
               <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.7:add</code></pre>
               <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
