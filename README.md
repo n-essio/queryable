@@ -107,7 +107,7 @@ Prerequisites:
 Well!, we will try to start a maven project: https://quarkus.io/guides/getting-started
 
 ```
-mvn io.quarkus.platform:quarkus-maven-plugin:3.34.6:create \
+mvn io.quarkus.platform:quarkus-maven-plugin:3.39.5:create \
         -DprojectGroupId=it.queryable \
         -DprojectArtifactId=awesomeproj \
         -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.6:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.7:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.6</version>
+    <version>3.0.7</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.7</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.7</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -225,6 +225,14 @@ After creating your annotated entities, run the following maven command:
 ./mvnw queryable:source
 ```
 That command will add @FilterDef on your model classes and will add the "getSearch" method on existent rest api controllers, or will generate the non existent rest api controllers (one for each model class). 
+
+To process only specific model classes, pass their simple names separated by commas:
+
+```
+./mvnw queryable:source -Dclasses=Customer,Order
+```
+
+When `classes` is omitted, all eligible model classes are processed as before. Classes annotated with `@QExclude` remain excluded.
 
 ## JPA @Entity classes location
 
@@ -817,7 +825,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.6</version>
+                <version>3.0.7</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

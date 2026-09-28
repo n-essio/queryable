@@ -33,4 +33,33 @@ public class ParametersTest {
                 parameters.modelPath
         );
     }
+
+    @Test
+    public void parsesClassesToProcess() {
+        Parameters parameters = createParameters();
+
+        parameters.setClasses("Customer, Order,Customer,, Invoice ");
+
+        assertEquals(
+                java.util.Set.of("Customer", "Order", "Invoice"),
+                parameters.getClasses()
+        );
+    }
+
+    private Parameters createParameters() {
+        return new Parameters(
+                new SystemStreamLog(),
+                "it.n-ess.queryable",
+                "queryable-maven_plugin",
+                false,
+                "model",
+                "service/rs",
+                "target/generated-sources",
+                "service/exception",
+                false,
+                true,
+                true,
+                null
+        );
+    }
 }

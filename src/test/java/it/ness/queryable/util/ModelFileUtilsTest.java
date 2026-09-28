@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -49,5 +50,18 @@ public class ModelFileUtilsTest {
     @Test
     public void extractsClassNameFromNestedModelPath() {
         assertEquals("Egg", StringUtil.getClassNameFromFileName("eggs" + File.separator + "Egg.java"));
+    }
+
+    @Test
+    public void filtersJavaFilesByClassName() {
+        String nestedEgg = "eggs" + File.separator + "Egg.java";
+
+        assertArrayEquals(
+                new String[]{"Customer.java", nestedEgg},
+                ModelFileUtils.filterByClassName(
+                        new String[]{"Customer.java", nestedEgg, "Order.java"},
+                        Set.of("Customer", "Egg", "Missing")
+                )
+        );
     }
 }

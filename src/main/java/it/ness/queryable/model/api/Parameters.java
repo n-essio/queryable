@@ -3,6 +3,10 @@ package it.ness.queryable.model.api;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static it.ness.queryable.builder.Constants.JAVA_FOLDER;
 import static it.ness.queryable.builder.Constants.TEST_FOLDER;
@@ -19,6 +23,7 @@ public class Parameters {
     public boolean logging;
     public boolean overrideAnnotations;
     public boolean overrideSearchMethod;
+    private Set<String> classes = new LinkedHashSet<>();
 
     public String groupId;
     public String artifactId;
@@ -75,5 +80,20 @@ public class Parameters {
         log.info("serviceRsPath:" + serviceRsPath);
         this.testPath = TEST_FOLDER + this.projectPath + sourceRestDirectory;
         log.info("testPath:" + testPath);
+    }
+
+    public void setClasses(String classes) {
+        if (classes == null || classes.isBlank()) {
+            this.classes = new LinkedHashSet<>();
+            return;
+        }
+        this.classes = Arrays.stream(classes.split(","))
+                .map(String::trim)
+                .filter(className -> !className.isEmpty())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public Set<String> getClasses() {
+        return classes;
     }
 }

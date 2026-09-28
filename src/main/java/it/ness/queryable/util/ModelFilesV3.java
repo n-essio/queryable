@@ -26,9 +26,11 @@ public class ModelFilesV3 {
     private Map<String, String> idFieldNameMap = new LinkedHashMap<>();
     private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
     private Map<String, String> tableNameMap = new LinkedHashMap<>();
+    private Set<String> requestedClasses;
 
     public ModelFilesV3(Log log, Parameters parameters) {
         isParsingSuccessful = false;
+        requestedClasses = parameters.getClasses();
 
         if (log != null) log.info("path = " + parameters.modelPath);
         File f = new File(parameters.modelPath);
@@ -55,18 +57,11 @@ public class ModelFilesV3 {
     }
 
     public String[] getModelFileNames() {
-        if (includeClassMap.isEmpty()) {
+        if (requestedClasses.isEmpty() && includeClassMap.isEmpty()) {
             return modelFileNames;
         }
-        String[] filteredModelFiles = new String[includeClassMap.size()];
-        int i = 0;
-        for (String fileName : modelFileNames) {
-            String className = StringUtil.getClassNameFromFileName(fileName);
-            if (includeClassMap.containsKey(className)) {
-                filteredModelFiles[i++] = fileName;
-            }
-        }
-        return filteredModelFiles;
+        Set<String> includedClasses = requestedClasses.isEmpty() ? includeClassMap.keySet() : requestedClasses;
+        return ModelFileUtils.filterByClassName(modelFileNames, includedClasses);
     }
     public String getIdFieldName(String className) {
         return idFieldNameMap.get(className);

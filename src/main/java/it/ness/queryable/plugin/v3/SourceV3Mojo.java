@@ -4,6 +4,7 @@ import it.ness.queryable.plugin.QuerableBaseMojo;
 import it.ness.queryable.util.MojoUtils;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * Queryable is maven plugin for filter defs.
@@ -13,9 +14,13 @@ import org.apache.maven.plugins.annotations.Mojo;
         threadSafe = true)
 public class SourceV3Mojo extends QuerableBaseMojo {
 
+    @Parameter(property = "classes")
+    String classes;
+
     public void execute() {
         init(getLog());
         this.parameters.sourceVersion = "v3";
+        this.parameters.setClasses(classes);
         MojoUtils.sourceV3(parameters, log);
     }
 }
