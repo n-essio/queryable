@@ -9,6 +9,7 @@ Current supported examples:
 
 ## Primary documentation
 
+- [Getting Started](https://queryable.dev/docs/getting-started.html): Create and configure a Quarkus project with Queryable from scratch.
 - [Documentation](https://queryable.dev/docs/): Installation, source generation, configuration, and annotation reference.
 - [Agent guide](https://queryable.dev/AGENTS.md): Deterministic commands, repository layout, validation, and behavioral constraints in AGENTS.md format.
 - [Agent guide source](https://github.com/n-essio/queryable/blob/main/AGENTS.md): Version-controlled source of the agent guide.

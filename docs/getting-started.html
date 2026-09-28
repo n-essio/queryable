@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Queryable Documentation</title>
+    <title>Queryable Getting Started</title>
 
     <meta charset="utf-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="Queryable installation, source generation, and annotation reference" />
+    <meta name="description" content="Create and configure a Quarkus project with Queryable from scratch" />
 
-    <link rel="canonical" href="/docs/" />
-    <link rel="alternate" type="text/plain" href="/llms.txt" title="Queryable documentation for AI agents" />
+    <link rel="canonical" href="/docs/getting-started.html" />
     <link
       rel="stylesheet"
       href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.1/styles/default.min.css"
@@ -66,10 +65,10 @@
                   <a class="nav-link" href="/index.html">Home</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/docs/getting-started.html">Getting Started</a>
+                  <a class="nav-link active" href="/docs/getting-started.html">Getting Started</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link active" href="/docs/">Documentation</a>
+                  <a class="nav-link" href="/docs/">Documentation</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="https://github.com/n-essio/queryable">GitHub</a>
@@ -89,10 +88,11 @@
               <div class="row">
                 <div class="hero-left col-lg-7">
                   <div class="hero-slogan">
-                    <h1>Queryable Documentation</h1>
+                    <h1>Queryable</h1>
                     <p class="hero-description">
-                      Install Queryable, generate JAX-RS controllers and Hibernate filters,
-                      and use its annotations with Quarkus and Hibernate Panache.
+                      A Maven plugin to generate quickly Java classes for <strong>JAX-RS</strong> controllers
+                      using <strong>Quarkus</strong> and <strong>Hibernate Panache</strong>,
+                      with Hibernate @filters on @entity classes annotated.
                     </p>
                   </div>
                   <div class="hero-buttons">
@@ -108,10 +108,13 @@
                 <div class="hero-right col-lg-5">
                   <div class="hero-code">
                     <div class="code-examples">
-                      <pre><code class="hljs bash">./mvnw queryable:source
-
-./mvnw queryable:source \
-  -Dclasses=Customer,Order</code></pre>
+                      <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.39.5:create \
+  -DprojectGroupId=it.queryable \
+  -DprojectArtifactId=awesomeproj \
+  -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
+  -Dpath="/awesomeproj" \
+  -DnoCode
+cd awesomeproj</code></pre>
                     </div>
                   </div>
                 </div>
@@ -119,37 +122,8 @@
             </div>
           </section>
 
-          <!-- DOCUMENTATION INDEX -->
-          <section class="container py-5" id="documentation-index">
-            <h2 class="mb-4">Documentation</h2>
-            <p>
-              Current versions: <strong>Queryable 3.0.7</strong>, <strong>Quarkus 3.39.5</strong>,
-              and <strong>JDK 21</strong>.
-            </p>
-            <div class="row">
-              <div class="col-md-4">
-                <h3><a href="#installation">Installation</a></h3>
-                <p>Add Queryable to an existing Quarkus project and configure its directories.</p>
-              </div>
-              <div class="col-md-4">
-                <h3><a href="#source-generation">Source generation</a></h3>
-                <p>Process every model class or select classes by simple name.</p>
-              </div>
-              <div class="col-md-4">
-                <h3><a href="#annotations">Annotations</a></h3>
-                <p>Choose filters, matching rules, class inclusion, ordering, and generated tests.</p>
-              </div>
-            </div>
-            <p>
-              AI agents and automated tools should start with <a href="/llms.txt">llms.txt</a>
-              and the repository <a href="https://github.com/n-essio/queryable/blob/main/AGENTS.md">AGENTS.md</a>.
-              It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
-            </p>
-            <p>Creating a Quarkus application from scratch? Follow <a href="/docs/getting-started.html">Getting Started</a>.</p>
-          </section>
-
           <!-- SCENARIO -->
-          <section class="container py-5" id="concepts">
+          <section class="container py-5">
             <h2 class="mb-4">Scenario</h2>
             <p>
               Normally we use the following paradigm to develop a Quarkus REST app
@@ -236,22 +210,56 @@ public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String
           </section>
 
           <!-- QUARKUS PROJECT SETUP -->
-          <section class="characteristics" id="installation">
+          <section class="characteristics">
             <div class="characteristics-main container">
-              <h2 class="mb-4">Install Queryable</h2>
-              <p><strong>Prerequisites:</strong> an existing Quarkus project using JDK 21 and Hibernate ORM with Panache.</p>
-              <p>For a new project, begin with the complete <a href="/docs/getting-started.html">Getting Started guide</a>.</p>
-              <h3>Add the plugin</h3>
+              <h2 class="mb-4">Quarkus Project Setup</h2>
+              <p><strong>Prerequisites:</strong> JDK 21</p>
+              <p>Start a Maven project: <a href="https://quarkus.io/guides/getting-started" target="_blank">https://quarkus.io/guides/getting-started</a></p>
+              <pre><code class="hljs bash">mvn io.quarkus.platform:quarkus-maven-plugin:3.39.5:create \
+        -DprojectGroupId=it.queryable \
+        -DprojectArtifactId=awesomeproj \
+        -Dextensions="jdbc-postgresql,resteasy-jackson,hibernate-orm-panache" \
+        -Dpath="/awesomeproj" \
+        -DnoCode
+cd awesomeproj</code></pre>
+
+              <p>Following the <a href="https://quarkus.io/guides/hibernate-orm-panache" target="_blank">Hibernate + Panache guide</a>, add these dependencies to your <code>pom.xml</code>:</p>
+              <pre><code class="hljs xml">&lt;!-- Jackson Mapper --&gt;
+&lt;dependency&gt;
+  &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+  &lt;artifactId&gt;quarkus-resteasy-jackson&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- Hibernate ORM specific dependencies --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-hibernate-orm-panache&lt;/artifactId&gt;
+&lt;/dependency&gt;
+
+&lt;!-- JDBC driver dependencies --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;io.quarkus&lt;/groupId&gt;
+    &lt;artifactId&gt;quarkus-jdbc-postgresql&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+
+              <h4 class="mt-4">Add Queryable to your project</h4>
               <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.7:add</code></pre>
-              <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
-              <pre><code class="hljs xml">&lt;build&gt;
-  &lt;plugins&gt;
-    &lt;plugin&gt;
+              <p>or directly in <code>pom.xml</code>:</p>
+              <pre><code class="hljs xml">&lt;dependency&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
     &lt;version&gt;3.0.7&lt;/version&gt;
-    &lt;/plugin&gt;
-  &lt;/plugins&gt;
+&lt;/dependency&gt;</code></pre>
+
+              <p>In the build section add the plugin:</p>
+              <pre><code class="hljs xml">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
+            &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;3.0.7&lt;/version&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
 
               <h5 class="mt-4">Available configuration options</h5>
@@ -275,31 +283,22 @@ public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String
           </section>
 
           <!-- START WRITING ENTITIES -->
-          <section class="container py-5" id="source-generation">
-            <h2 class="mb-4">Generate sources</h2>
-            <p>Initialize the minimal Queryable API and sample entity once:</p>
+          <section class="container py-5">
+            <h2 class="mb-4">And then?! Start to write your entities!</h2>
+            <p>Before editing your entities, run:</p>
             <pre><code class="hljs bash">./mvnw queryable:install</code></pre>
             <p>
               This adds our minimal API and creates a sample entity class in <code>{groupId}.{artifactId}.model.Greeting</code>
               (e.g. <code>it.queryable.awesomeproj.model.Greeting</code>).
             </p>
-            <h3>Process all model classes</h3>
-            <p>After creating or changing annotated entities, run:</p>
+            <p>After creating your annotated entities, run:</p>
             <pre><code class="hljs bash">./mvnw queryable:source</code></pre>
             <p>
               This adds <code>@FilterDef</code> on your model classes and adds/updates the <code>getSearch</code> method
               on your REST API controllers (one per entity).
             </p>
-            <h3>Process selected model classes</h3>
-            <p>Pass one or more simple class names separated by commas:</p>
+            <p>To process only selected model classes, pass their simple names separated by commas:</p>
             <pre><code class="hljs bash">./mvnw queryable:source -Dclasses=Customer,Order</code></pre>
-            <ul>
-              <li>Use simple Java class names, without package names or <code>.java</code>.</li>
-              <li>Whitespace and duplicate names are ignored.</li>
-              <li>Unknown names are ignored.</li>
-              <li>An explicit <code>classes</code> list takes precedence over <code>@QInclude</code>.</li>
-              <li><code>@QExclude</code> is always respected.</li>
-            </ul>
 
             <div class="row mt-4">
               <div class="col-md-6">
@@ -314,7 +313,7 @@ public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String
           </section>
 
           <!-- ANNOTATIONS -->
-          <section class="characteristics" id="annotations">
+          <section class="characteristics">
             <div class="characteristics-main container">
               <h2 class="mb-4">Q Annotations</h2>
               <p>Annotations can be applied to classes or fields; by themselves they have no effect at runtime — they are used by the Maven plugin for code generation.</p>
@@ -340,7 +339,7 @@ public class CustomerServiceRs extends RsRepositoryServiceV3&lt;Customer, String
           </section>
 
           <!-- ANNOTATION DETAILS -->
-          <section class="container py-5" id="annotation-reference">
+          <section class="container py-5">
 
             <h3>@Q annotation</h3>
             <p>Can be used on: <code>String</code>, enums, <code>LocalDateTime</code>, <code>LocalDate</code>, <code>Date</code>, <code>Boolean</code>, <code>boolean</code>, <code>BigDecimal</code>, <code>Integer</code>, <code>Long</code>.</p>
