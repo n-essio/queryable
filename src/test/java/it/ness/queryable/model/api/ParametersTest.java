@@ -46,6 +46,18 @@ public class ParametersTest {
         );
     }
 
+    @Test
+    public void parsesClassesToExclude() {
+        Parameters parameters = createParameters();
+
+        parameters.setExcludedClasses("Customer, Order,Customer,, Invoice ");
+
+        assertEquals(
+                java.util.Set.of("Customer", "Order", "Invoice"),
+                parameters.getExcludedClasses()
+        );
+    }
+
     private Parameters createParameters() {
         return new Parameters(
                 new SystemStreamLog(),

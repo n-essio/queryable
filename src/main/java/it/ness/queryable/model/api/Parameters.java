@@ -24,6 +24,7 @@ public class Parameters {
     public boolean overrideAnnotations;
     public boolean overrideSearchMethod;
     private Set<String> classes = new LinkedHashSet<>();
+    private Set<String> excludedClasses = new LinkedHashSet<>();
 
     public String groupId;
     public String artifactId;
@@ -83,17 +84,28 @@ public class Parameters {
     }
 
     public void setClasses(String classes) {
-        if (classes == null || classes.isBlank()) {
-            this.classes = new LinkedHashSet<>();
-            return;
-        }
-        this.classes = Arrays.stream(classes.split(","))
-                .map(String::trim)
-                .filter(className -> !className.isEmpty())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        this.classes = parseClassNames(classes);
     }
 
     public Set<String> getClasses() {
         return classes;
+    }
+
+    public void setExcludedClasses(String excludedClasses) {
+        this.excludedClasses = parseClassNames(excludedClasses);
+    }
+
+    public Set<String> getExcludedClasses() {
+        return excludedClasses;
+    }
+
+    private Set<String> parseClassNames(String classNames) {
+        if (classNames == null || classNames.isBlank()) {
+            return new LinkedHashSet<>();
+        }
+        return Arrays.stream(classNames.split(","))
+                .map(String::trim)
+                .filter(className -> !className.isEmpty())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

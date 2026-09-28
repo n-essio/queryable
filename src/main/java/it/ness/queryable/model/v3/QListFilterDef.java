@@ -3,6 +3,7 @@ package it.ness.queryable.model.v3;
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.util.FilterUtils;
+import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -25,17 +26,17 @@ public class QListFilterDef extends FilterDefBase {
     public void addAnnotationToModelClass(JavaClassSource javaClass) {
         nameInPlural = null;
         if (name.contains("_")) {
-            nameInPlural = stringUtil.getPlural(name.substring(name.indexOf("_") + 1));
+            nameInPlural = StringUtil.getPlural(name.substring(name.indexOf("_") + 1));
             nameInPlural = name.substring(0, name.indexOf("_") + 1) + nameInPlural;
         } else {
-            nameInPlural = stringUtil.getPlural(name);
+            nameInPlural = StringUtil.getPlural(name);
         }
         filterName = entityName + "." + prefix + "." + nameInPlural;
         queryName = prefix + "." + nameInPlural;
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);
-        FilterUtils.addParamDef(filterDefAnnotation, nameInPlural, "string");
+        FilterUtils.addParamDef(filterDefAnnotation, nameInPlural, type);
         if (null == condition) {
             FilterUtils.addFilter(javaClass, filterName, String.format("%s IN (:%s)", name, nameInPlural));
         } else {
@@ -93,7 +94,7 @@ public class QListFilterDef extends FilterDefBase {
         switch (fieldType) {
             case "string":
                 return getStringSearchMethod();
-            case "integer":
+            case "int":
                 return getIntegerSearchMethod();
             case "long":
                 return getLongSearchMethod();

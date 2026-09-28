@@ -17,9 +17,9 @@ public class MojoUtilsTest {
 
         assertEquals("it.n-ess.queryable", model.getDependencies().get(0).getGroupId());
         assertEquals("queryable-maven-plugin", model.getDependencies().get(0).getArtifactId());
-        assertEquals("3.0.7", model.getDependencies().get(0).getVersion());
+        assertEquals("3.0.8", model.getDependencies().get(0).getVersion());
         assertEquals("it.n-ess.queryable", model.getBuild().getPlugins().get(0).getGroupId());
         assertEquals("queryable-maven-plugin", model.getBuild().getPlugins().get(0).getArtifactId());
-        assertEquals("3.0.7", model.getBuild().getPlugins().get(0).getVersion());
+        assertEquals("3.0.8", model.getBuild().getPlugins().get(0).getVersion());
     }
 }

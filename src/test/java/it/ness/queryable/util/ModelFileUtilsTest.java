@@ -35,8 +35,8 @@ public class ModelFileUtilsTest {
         );
     }
 
-        @Test
-        public void findsJavaFilesWhenModelRootContainsOnlyPackages() throws Exception {
+    @Test
+    public void findsJavaFilesWhenModelRootContainsOnlyPackages() throws Exception {
         File modelPath = temporaryFolder.newFolder("nested-only-model");
         temporaryFolder.newFolder("nested-only-model", "eggs");
         temporaryFolder.newFile("nested-only-model/eggs/Egg.java");
@@ -45,7 +45,7 @@ public class ModelFileUtilsTest {
             new String[]{"eggs" + File.separator + "Egg.java"},
             ModelFileUtils.findJavaFiles(modelPath)
         );
-        }
+    }
 
     @Test
     public void extractsClassNameFromNestedModelPath() {
@@ -64,4 +64,28 @@ public class ModelFileUtilsTest {
                 )
         );
     }
+
+    @Test
+    public void excludesClassesFromExplicitSelection() {
+        assertArrayEquals(
+                new String[]{"Customer.java"},
+                ModelFileUtils.filterByClassName(
+                    new String[]{"Customer.java", "Order.java", "Invoice.java"},
+                    Set.of("Customer", "Order"),
+                    Set.of("Order")
+                )
+        );
+    }
+
+    @Test
+    public void excludesClassesWithoutExplicitSelection() {
+        assertArrayEquals(
+                new String[]{"Customer.java", "Invoice.java"},
+                ModelFileUtils.filterByClassName(
+                    new String[]{"Customer.java", "Order.java", "Invoice.java"},
+                    Set.of(),
+                    Set.of("Order")
+                )
+            );
+            }
 }

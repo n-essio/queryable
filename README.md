@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.7:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.8:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.7</version>
+    <version>3.0.8</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.7</version>
+            <version>3.0.8</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.7</version>
+            <version>3.0.8</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -232,7 +232,13 @@ To process only specific model classes, pass their simple names separated by com
 ./mvnw queryable:source -Dclasses=Customer,Order
 ```
 
-When `classes` is omitted, all eligible model classes are processed as before. Classes annotated with `@QExclude` remain excluded.
+To process all eligible model classes except specific ones:
+
+```
+./mvnw queryable:source -DexcludeClasses=Customer,Order
+```
+
+`classes` and `excludeClasses` accept comma-separated simple class names. Explicitly excluded classes are not parsed or regenerated. Exclusions take precedence over explicit inclusions and `@QInclude`. Classes annotated with `@QExclude` remain excluded.
 
 ## JPA @Entity classes location
 
@@ -825,7 +831,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.7</version>
+                <version>3.0.8</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

@@ -27,10 +27,12 @@ public class ModelFilesV3 {
     private Map<String, String> idFieldTypeMap = new LinkedHashMap<>();
     private Map<String, String> tableNameMap = new LinkedHashMap<>();
     private Set<String> requestedClasses;
+    private Set<String> requestedExcludedClasses;
 
     public ModelFilesV3(Log log, Parameters parameters) {
         isParsingSuccessful = false;
         requestedClasses = parameters.getClasses();
+        requestedExcludedClasses = parameters.getExcludedClasses();
 
         if (log != null) log.info("path = " + parameters.modelPath);
         File f = new File(parameters.modelPath);
@@ -57,11 +59,8 @@ public class ModelFilesV3 {
     }
 
     public String[] getModelFileNames() {
-        if (requestedClasses.isEmpty() && includeClassMap.isEmpty()) {
-            return modelFileNames;
-        }
         Set<String> includedClasses = requestedClasses.isEmpty() ? includeClassMap.keySet() : requestedClasses;
-        return ModelFileUtils.filterByClassName(modelFileNames, includedClasses);
+        return ModelFileUtils.filterByClassName(modelFileNames, includedClasses, requestedExcludedClasses);
     }
     public String getIdFieldName(String className) {
         return idFieldNameMap.get(className);
@@ -86,12 +85,16 @@ public class ModelFilesV3 {
     }
 
     public Boolean excludeClass(final String className) {
-        return excludeClassMap.get(className);
+        return requestedExcludedClasses.contains(className) || Boolean.TRUE.equals(excludeClassMap.get(className));
     }
 
     private void resolveConstant(Log log, Parameters parameters) {
         for (String fileName : modelFileNames) {
             String className = StringUtil.getClassNameFromFileName(fileName);
+            if (requestedExcludedClasses.contains(className)) {
+                if (log != null) log.info(String.format("Class %s is excluded from metadata parsing", className));
+                continue;
+            }
             final String defaultRsPath = "NOT_SET";
             final String defaultOrderBy = "NOT_SET";
             String rsPath = defaultRsPath;

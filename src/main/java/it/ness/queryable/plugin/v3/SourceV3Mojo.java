@@ -17,10 +17,14 @@ public class SourceV3Mojo extends QuerableBaseMojo {
     @Parameter(property = "classes")
     String classes;
 
+    @Parameter(property = "excludeClasses")
+    String excludeClasses;
+
     public void execute() {
         init(getLog());
         this.parameters.sourceVersion = "v3";
         this.parameters.setClasses(classes);
+        this.parameters.setExcludedClasses(excludeClasses);
         MojoUtils.sourceV3(parameters, log);
     }
 }

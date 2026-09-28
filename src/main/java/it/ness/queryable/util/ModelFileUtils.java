@@ -19,10 +19,14 @@ final class ModelFileUtils {
     }
 
     static String[] filterByClassName(String[] modelFileNames, Set<String> classNames) {
+        return filterByClassName(modelFileNames, classNames, Collections.emptySet());
+    }
+
+    static String[] filterByClassName(String[] modelFileNames, Set<String> classNames, Set<String> excludedClassNames) {
         List<String> filteredModelFiles = new ArrayList<>();
         for (String fileName : modelFileNames) {
             String className = StringUtil.getClassNameFromFileName(fileName);
-            if (classNames.contains(className)) {
+            if ((classNames.isEmpty() || classNames.contains(className)) && !excludedClassNames.contains(className)) {
                 filteredModelFiles.add(fileName);
             }
         }
