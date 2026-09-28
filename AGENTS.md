@@ -4,7 +4,7 @@ This file is the machine-oriented entry point for agents working on Queryable or
 
 ## Supported baseline
 
-- Queryable Maven plugin: `3.0.7`
+- Queryable Maven plugin: `3.0.8`
 - Quarkus examples: `3.39.5`
 - Java: `21`
 - Maven coordinates: `it.n-ess.queryable:queryable-maven-plugin`
@@ -40,7 +40,7 @@ Add the plugin to the consuming project's `pom.xml`:
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.7</version>
+    <version>3.0.8</version>
 </plugin>
 ```
 
@@ -66,14 +66,22 @@ Process one or more selected model classes:
 ./mvnw queryable:source -Dclasses=Customer,Order
 ```
 
-Rules for `classes`:
+Exclude selected model classes:
+
+```bash
+./mvnw queryable:source -DexcludeClasses=Customer,Order
+```
+
+Rules for `classes` and `excludeClasses`:
 
 - Pass comma-separated simple Java class names, without package names or `.java`.
 - Whitespace and duplicate names are ignored.
 - Unknown names are ignored.
 - An explicit list takes precedence over `@QInclude`.
+- `excludeClasses` takes precedence over `classes` and `@QInclude`.
+- Explicitly excluded classes are not parsed or regenerated.
 - `@QExclude` is always respected.
-- Omitting `classes` preserves the normal all-eligible-classes behavior.
+- Omitting both parameters preserves the normal all-eligible-classes behavior.
 
 ## Annotation selection
 

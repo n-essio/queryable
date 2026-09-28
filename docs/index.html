@@ -94,14 +94,14 @@
                 It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
               </p>
               <h3>Add the plugin</h3>
-              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.7:add</code></pre>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.8:add</code></pre>
               <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
               <pre><code class="hljs xml">&lt;build&gt;
   &lt;plugins&gt;
     &lt;plugin&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;3.0.7&lt;/version&gt;
+    &lt;version&gt;3.0.8&lt;/version&gt;
     &lt;/plugin&gt;
   &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
@@ -145,11 +145,16 @@
             <h3>Process selected model classes</h3>
             <p>Pass one or more simple class names separated by commas:</p>
             <pre><code class="hljs bash">./mvnw queryable:source -Dclasses=Customer,Order</code></pre>
+            <h3>Exclude selected model classes</h3>
+            <p>Process all eligible model classes except the listed simple class names:</p>
+            <pre><code class="hljs bash">./mvnw queryable:source -DexcludeClasses=Customer,Order</code></pre>
             <ul>
               <li>Use simple Java class names, without package names or <code>.java</code>.</li>
               <li>Whitespace and duplicate names are ignored.</li>
               <li>Unknown names are ignored.</li>
               <li>An explicit <code>classes</code> list takes precedence over <code>@QInclude</code>.</li>
+              <li><code>excludeClasses</code> takes precedence over <code>classes</code> and <code>@QInclude</code>.</li>
+              <li>Explicitly excluded classes are not parsed or regenerated.</li>
               <li><code>@QExclude</code> is always respected.</li>
             </ul>
 
@@ -293,6 +298,7 @@ if (nn("notNil.executor")) {
             <hr class="my-5" />
 
             <h3>@QList</h3>
+            <p>The generated <code>@ParamDef</code> uses the field's effective type: <code>String</code>, <code>Integer</code>, <code>Long</code>, or <code>BigInteger</code>.</p>
             <h5>String field</h5>
             <pre><code class="hljs java">@QList
 public String uuid;</code></pre>
@@ -311,6 +317,9 @@ public Long id;</code></pre>
             <pre><code class="hljs java">if (nn("obj.uuids")) {
     search.filter("XXX.obj.uuids", Map.of("uuids", asLongList("obj.uuids")));
 }</code></pre>
+            <h5>BigInteger field</h5>
+            <pre><code class="hljs java">@QList
+      public BigInteger id;</code></pre>
 
             <hr class="my-5" />
 
