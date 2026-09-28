@@ -1,0 +1,38 @@
+# Queryable
+
+> Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controller code for Quarkus applications using Hibernate Panache.
+
+Current supported examples:
+- Queryable: 3.0.7
+- Quarkus: 3.39.5
+- Java: 21
+
+## Primary documentation
+
+- [Documentation](https://queryable.dev/docs/): Installation, source generation, configuration, and annotation reference.
+- [Agent guide](https://github.com/n-essio/queryable/blob/main/AGENTS.md): Deterministic commands, repository layout, validation, and behavioral constraints.
+- [API rules](https://github.com/n-essio/queryable/blob/main/API.MD): Generated query parameter rules and examples.
+- [Source repository](https://github.com/n-essio/queryable): Plugin implementation and templates.
+
+## Essential commands
+
+Initialize Queryable in a consuming project:
+
+    ./mvnw queryable:install
+
+Process every eligible model class:
+
+    ./mvnw queryable:source
+
+Process selected model classes by simple name:
+
+    ./mvnw queryable:source -Dclasses=Customer,Order
+
+The classes option accepts comma-separated simple class names. Whitespace and duplicates are ignored. Explicit selection takes precedence over @QInclude; @QExclude remains authoritative.
+
+## Authoritative locations
+
+- Maven goal: src/main/java/it/ness/queryable/plugin/v3/SourceV3Mojo.java
+- Source selection: src/main/java/it/ness/queryable/util/ModelFilesV3.java
+- Annotation definitions: src/main/java/it/ness/queryable/annotations/
+- Generated templates: src/main/resources/templates/
