@@ -12,6 +12,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Release on Maven Central
@@ -19,6 +22,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Apache Maven Central
         uses: actions/setup-java@v4
@@ -33,7 +38,25 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
 
       - name: Build with Maven
-        run: mvn -B package -D skipTests
+        run: mvn -B -ntp verify
+
+      - name: Create missing GitHub releases
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for release_tag in 3.0.7 3.0.8 "$GITHUB_REF_NAME"; do
+            if gh release view "$release_tag" >/dev/null 2>&1; then
+              echo "Release $release_tag already exists."
+              continue
+            fi
+            if [[ "$release_tag" == "$GITHUB_REF_NAME" ]]; then
+              gh release create "$release_tag" --verify-tag --generate-notes --title "$release_tag" --latest
+            else
+              gh release create "$release_tag" --verify-tag --generate-notes --title "$release_tag" --latest=false
+            fi
+          done
 
       - name: Validate Central credentials
         shell: bash
@@ -47,7 +70,7 @@ jobs:
           fi
          
       - name: Publish to Apache Maven Central
-        run: mvn -Prelease deploy
+        run: mvn -B -ntp -Prelease deploy
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}

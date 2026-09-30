@@ -10,8 +10,14 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.logging.Log;
+import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.source.FieldSource;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 
 import static it.ness.queryable.builder.Constants.*;
@@ -48,6 +54,15 @@ public class MojoUtils {
     }
 
     public static void sourceV3(Parameters parameters, Log log) {
+        sourceV3(parameters, log, false);
+    }
+
+    public static void sourceV3(Parameters parameters, Log log, boolean oidcEnabled) {
+        try {
+            updateV3SecurityIdentity(parameters, oidcEnabled);
+        } catch (Exception e) {
+            throw new IllegalStateException("Cannot update RsRepositoryServiceV3 security identity", e);
+        }
         ModelFilesV3 mf = new ModelFilesV3(parameters.logging ? log : null, parameters);
         if (!mf.isParsingSuccessful) return;
         try {
@@ -66,6 +81,51 @@ public class MojoUtils {
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    public static boolean hasOidcDependency(List<Dependency> dependencies) {
+        return dependencies.stream().anyMatch(dependency ->
+                "io.quarkus".equals(dependency.getGroupId())
+                        && "quarkus-oidc".equals(dependency.getArtifactId())
+                        && !"test".equals(dependency.getScope()));
+    }
+
+    static void updateV3SecurityIdentity(Parameters parameters, boolean oidcEnabled) throws Exception {
+        File apiFile = new File(parameters.outputDir, parameters.apiPath + "service/RsRepositoryServiceV3.java");
+        if (!oidcEnabled || !apiFile.isFile()) {
+            return;
+        }
+        JavaClassSource api = Roaster.parse(JavaClassSource.class, apiFile);
+        String original = api.toString();
+        api.addImport("io.quarkus.security.identity.SecurityIdentity");
+        api.addImport("jakarta.inject.Inject");
+        FieldSource<JavaClassSource> identity = api.getField("securityIdentity");
+        if (identity == null) {
+            identity = api.addField("SecurityIdentity securityIdentity;");
+        }
+        if (!identity.hasAnnotation("Inject")) {
+            identity.addAnnotation("jakarta.inject.Inject");
+        }
+        MethodSource<JavaClassSource> currentUser = api.getMethod("getCurrentUser");
+        if (currentUser == null) {
+            api.addMethod("protected SecurityIdentity getCurrentUser() { return securityIdentity; }");
+        } else if (!currentUser.hasAnnotation("QExclude")
+                && currentUser.getBody().replaceAll("\\s+", "").equals("returnnull;")) {
+            currentUser.setBody("return securityIdentity;");
+        }
+        if (api.getMethod("getCurrentUsername") == null) {
+            api.addMethod("""
+                    protected String getCurrentUsername() {
+                        return securityIdentity != null && securityIdentity.getPrincipal() != null
+                                ? securityIdentity.getPrincipal().getName()
+                                : "system";
+                    }
+                    """);
+        }
+        String updated = api.toString();
+        if (!original.equals(updated)) {
+            Files.writeString(apiFile.toPath(), updated);
         }
     }
 

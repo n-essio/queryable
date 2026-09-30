@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.8:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.9:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.8</version>
+    <version>3.0.9</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.8</version>
+            <version>3.0.9</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.8</version>
+            <version>3.0.9</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -239,6 +239,30 @@ To process all eligible model classes except specific ones:
 ```
 
 `classes` and `excludeClasses` accept comma-separated simple class names. Explicitly excluded classes are not parsed or regenerated. Exclusions take precedence over explicit inclusions and `@QInclude`. Classes annotated with `@QExclude` remain excluded.
+
+### Optional OIDC Identity In V3 APIs
+
+When the effective Maven project includes `io.quarkus:quarkus-oidc` (excluding test-scope dependencies), `./mvnw queryable:source` selectively updates the existing `{groupId}.api.service.RsRepositoryServiceV3`:
+
+```java
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.inject.Inject;
+
+@Inject
+SecurityIdentity securityIdentity;
+
+protected SecurityIdentity getCurrentUser() {
+    return securityIdentity;
+}
+
+protected String getCurrentUsername() {
+    return securityIdentity != null && securityIdentity.getPrincipal() != null
+            ? securityIdentity.getPrincipal().getName()
+            : "system";
+}
+```
+
+Inherited dependencies and active Maven profiles are considered; `dependencyManagement` alone does not enable this update. Run `./mvnw queryable:install` first if the API is missing. Existing custom identity methods and `@QExclude` methods are preserved. Repeated generation does not duplicate fields, methods, or imports. Without OIDC, the API is left unchanged, including any previously enabled identity support. V4 APIs are not modified.
 
 ## JPA @Entity classes location
 
@@ -831,7 +855,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.8</version>
+                <version>3.0.9</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>
