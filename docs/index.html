@@ -170,6 +170,63 @@
             </div>
           </section>
 
+          <section class="container py-5" id="qeex">
+            <h2 class="mb-4">QEEX: REST Error Catalogs</h2>
+            <p>QEEX is an optional source generator for typed REST exceptions, separate from entity filters. An annotated interface becomes an application-scoped CDI implementation. Inject the interface and throw a returned <code>QeexWebException</code> to expose a structured JSON error.</p>
+            <p>Follow the <a href="/docs/getting-started.html#qeex">complete customer-error example</a> for a catalog, endpoint, curl request and expected HTTP 404 response.</p>
+
+            <h3>Installation and generation</h3>
+            <p>After initializing the minimal API with <code>queryable:install</code>, install QEEX support:</p>
+            <pre><code class="hljs bash">./mvnw queryable:qeexinstall</code></pre>
+            <p><strong>Warning:</strong> installation deletes and replaces <code>{groupId}.api.service.RsResponseService</code>. Preserve customizations before running or rerunning it.</p>
+            <p>The goal creates <code>QeexConfig</code>, <code>QeexExceptionBundle</code>, <code>QeexMessage</code>, <code>QeexWebException</code>, <code>LanguageInterceptor</code> and the two exception mappers under <code>{groupId}.api.qeex</code>, plus a sample <code>{groupId}.{artifactId}.service.exception.ExceptionBundle</code>.</p>
+            <p>After editing the catalog, generate its implementation:</p>
+            <pre><code class="hljs bash">./mvnw queryable:qeexsource</code></pre>
+            <p>This scans annotated interfaces under <code>src/main/java</code> and generates <code>{InterfaceName}Impl</code> alongside each interface. Edit the interface, not the generated implementation. Rerun after catalog changes; <code>queryable:source</code> does not perform this generation.</p>
+
+            <h3>Configuration</h3>
+            <p>Keep <code>src/main/resources/application.properties</code> present during generation and explicitly configure the defaults read by the catch-all mapper:</p>
+            <pre><code class="hljs properties">qeex.project=AWESOME
+qeex.default.id=100
+qeex.default.code=500
+qeex.default.message=Unexpected application error
+qeex.default.language=en</code></pre>
+            <ul>
+              <li><code>qeex.project</code> overrides the project name declared on the interface.</li>
+              <li><code>qeex.default.code</code>, <code>qeex.default.message</code> and <code>qeex.default.language</code> control the catch-all mapper. Several values are read using <code>Optional.get()</code>; do not leave them unset.</li>
+              <li><code>qeex.default.id</code> is parsed but is not assigned by the catch-all mapper, whose current ID is 0.</li>
+              <li>Although <code>QeexConfig</code> defines <code>qeex.messages[...]</code> overrides and translation helpers, generated catalog methods do not call them. Their messages and statuses come directly from annotations.</li>
+            </ul>
+
+            <h3>Annotation reference</h3>
+            <p>These annotations are generated in the consuming application's <code>{groupId}.api.qeex.annotations</code> package, not in <code>it.ness.queryable.annotations</code>.</p>
+            <h4><code>@QeexExceptionBundle</code></h4>
+            <p>Apply to an interface. Required attributes: <code>project</code> and <code>language</code>. Other declared attributes: <code>id</code> (default 100), <code>code</code> (default 400), <code>message</code> (default empty).</p>
+            <p>Generation uses <code>project</code> and the starting <code>id</code>; it does not apply the bundle's <code>code</code>, <code>message</code> or <code>language</code> as runtime defaults.</p>
+            <h4><code>@QeexMessage</code></h4>
+            <p>Apply to methods returning <code>QeexWebException</code>. Use explicit <code>id</code>, HTTP <code>code</code> and <code>message</code>. Parameters are interpolated using Java <code>String.format</code>, in declaration order.</p>
+            <pre><code class="hljs java">@QeexMessage(id = 101, code = 404, message = "Customer %s not found")
+QeexWebException customerNotFound(String customerCode);</code></pre>
+            <p>The annotation declares defaults of <code>id = -1</code>, <code>code = 400</code> and an empty message. The source generator reads explicit literals: an omitted ID is allocated starting at the bundle's <code>id + 1</code>, and an omitted method status generates 500. Explicit IDs avoid changes to the client contract when methods are reordered.</p>
+
+            <h3>HTTP contract and current limitations</h3>
+            <p><code>QeexWebException</code> is a checked exception. Let it propagate out of a REST endpoint (declare <code>throws QeexWebException</code>) so <code>QuarkusWebExceptionProvider</code> returns its HTTP <code>code</code> and these JSON fields:</p>
+            <pre><code class="hljs json">{
+  "projectName": "AWESOME",
+  "id": 101,
+  "code": 404,
+  "message": "Customer C001 not found",
+  "language": "en"
+}</code></pre>
+            <ul>
+              <li>QEEX-aware <code>RsResponseService.jsonErrorMessageResponse</code> and <code>jsonMessageResponse</code> instead return HTTP 500 for QEEX errors, regardless of the payload's <code>code</code>.</li>
+              <li>The custom <code>language</code> header is not <code>Accept-Language</code> and does not automatically translate messages. Generated methods fall back to <code>en</code>.</li>
+              <li><code>LanguageInterceptor</code> retains mutable language state in an application-scoped bean and does not clear it for requests without a header. It is unsafe for per-request language isolation, including concurrent requests.</li>
+              <li>The exception mapper concatenates JSON without escaping message arguments. Quotes, backslashes and control characters can produce invalid JSON; address serialization before using arbitrary user input.</li>
+              <li><code>QuarkusWebDefaultExceptionProvider</code> handles non-QEEX exceptions using the configured default status and message, with error ID 0. Review this global policy before enabling QEEX in an existing application.</li>
+            </ul>
+          </section>
+
           <!-- ANNOTATIONS -->
           <section class="characteristics" id="annotations">
             <div class="characteristics-main container">

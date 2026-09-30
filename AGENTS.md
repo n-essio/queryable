@@ -83,6 +83,33 @@ Rules for `classes` and `excludeClasses`:
 - `@QExclude` is always respected.
 - Omitting both parameters preserves the normal all-eligible-classes behavior.
 
+## Optional QEEX error catalog
+
+QEEX generates REST exception catalogs, independently of entity filters. See the [website example](https://queryable.dev/docs/getting-started.html#qeex) and [QEEX reference](https://queryable.dev/docs/#qeex).
+
+After `queryable:install`, install QEEX support:
+
+```bash
+./mvnw queryable:qeexinstall
+```
+
+**Destructive installation:** this goal deletes and replaces `{groupId}.api.service.RsResponseService`. Preserve customizations before running or rerunning it.
+
+Define an interface using the generated `{groupId}.api.qeex.annotations.QeexExceptionBundle` and `QeexMessage` annotations. Give each method an explicit stable `id`, HTTP `code` and `message`; arguments use `String.format` placeholders. Generate its CDI implementation with:
+
+```bash
+./mvnw queryable:qeexsource
+```
+
+- Keep `src/main/resources/application.properties` present. Configure `qeex.project`, `qeex.default.id`, `qeex.default.code`, `qeex.default.message` and `qeex.default.language` explicitly.
+- Interfaces are scanned under `src/main/java`; implementations are generated alongside them. Edit the interface, not the generated implementation. Rerun `qeexsource` after catalog changes; `queryable:source` does not generate QEEX implementations.
+- Inject the catalog and throw its checked `QeexWebException` out of the endpoint to use the exception's HTTP status. QEEX-aware `RsResponseService` error helpers instead return HTTP 500.
+- Do not promise automatic translations or per-message configuration overrides: generated methods do not call the corresponding `QeexConfig` helpers. Omitted method statuses currently generate 500; generated language falls back to `en`.
+- The custom `language` header is not `Accept-Language`. Its application-scoped filter retains mutable state between requests and is unsafe for per-request language isolation.
+- The exception mapper concatenates JSON without escaping message values. Do not treat arbitrary user-supplied message arguments as safely serialized.
+- The catch-all mapper uses default configuration but leaves the error ID at 0; `qeex.default.id` is not assigned there.
+- Authoritative code on the plugin's `main` branch: `src/main/java/it/ness/queryable/plugin/qeex/`, `src/main/java/it/ness/queryable/builder/QeexBuilder.java`, `src/main/resources/templates/qeex/` and `src/main/resources/templates/qeex-bundle/`.
+
 ## Annotation selection
 
 Use annotations from `it.ness.queryable.annotations` and verify exact attributes in their Java definitions.

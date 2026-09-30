@@ -11,6 +11,8 @@ Current supported examples:
 
 - [Getting Started](https://queryable.dev/docs/getting-started.html): Create and configure a Quarkus project with Queryable from scratch.
 - [Documentation](https://queryable.dev/docs/): Installation, source generation, configuration, and annotation reference.
+- [QEEX reference](https://queryable.dev/docs/#qeex): Optional REST error catalogs, generation commands, configuration and current limitations.
+- [QEEX example](https://queryable.dev/docs/getting-started.html#qeex): Customer error catalog, CDI injection, endpoint and expected HTTP 404 response.
 - [Agent guide](https://queryable.dev/AGENTS.md): Deterministic commands, repository layout, validation, and behavioral constraints in AGENTS.md format.
 - [Agent guide source](https://github.com/n-essio/queryable/blob/main/AGENTS.md): Version-controlled source of the agent guide.
 - [API rules](https://github.com/n-essio/queryable/blob/main/API.MD): Generated query parameter rules and examples.
@@ -35,6 +37,22 @@ Exclude selected model classes:
     ./mvnw queryable:source -DexcludeClasses=Customer,Order
 
 The classes options accept comma-separated simple class names. Whitespace and duplicates are ignored. Explicitly excluded classes are not parsed or regenerated. excludeClasses takes precedence over classes and @QInclude; @QExclude remains authoritative.
+
+## Optional QEEX
+
+After queryable:install, install exception support:
+
+    ./mvnw queryable:qeexinstall
+
+Warning: this deletes and replaces {groupId}.api.service.RsResponseService. Preserve customizations first.
+
+Define an interface annotated with the generated QeexExceptionBundle and QeexMessage annotations, using explicit stable IDs and HTTP statuses, then generate its CDI implementation:
+
+    ./mvnw queryable:qeexsource
+
+Keep src/main/resources/application.properties present and configure qeex.project, qeex.default.id, qeex.default.code, qeex.default.message and qeex.default.language. Edit the interface, not the generated implementation.
+
+Throw QeexWebException out of the endpoint to preserve its HTTP status; RsResponseService error helpers return HTTP 500. Generated methods do not apply per-message overrides or automatic translations. The mutable application-scoped language filter is not request-isolated, and the exception mapper does not escape JSON message values. The catch-all mapper leaves the error ID at 0. See the QEEX reference before production use.
 
 ## Authoritative locations
 
