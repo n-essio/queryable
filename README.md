@@ -240,6 +240,129 @@ To process all eligible model classes except specific ones:
 
 `classes` and `excludeClasses` accept comma-separated simple class names. Explicitly excluded classes are not parsed or regenerated. Exclusions take precedence over explicit inclusions and `@QInclude`. Classes annotated with `@QExclude` remain excluded.
 
+### Optional QEEX: REST Error Catalog
+
+QEEX is the optional exception-generation part of Queryable. It does not generate entity filters: it turns an annotated Java interface into a CDI bean whose methods create `QeexWebException` instances. REST exception mappers expose these exceptions as JSON with a project name, stable error ID, HTTP status, message and language label.
+
+#### 1. Install The Support Classes
+
+From the `awesomeproj` directory created above, after `queryable:install`, run:
+
+```bash
+./mvnw queryable:qeexinstall
+```
+
+This creates annotations, configuration, a request filter and exception mappers under `it.queryable.api.qeex`, plus a sample `it.queryable.awesomeproj.service.exception.ExceptionBundle`.
+
+**Warning:** `qeexinstall` deletes and replaces `it.queryable.api.service.RsResponseService` with the QEEX-aware template. Review or back up local customizations before running it, including on subsequent installations.
+
+#### 2. Configure The Application
+
+Add these entries to `src/main/resources/application.properties`, preserving the database configuration from your Quarkus setup:
+
+```properties
+qeex.project=AWESOME
+qeex.default.id=100
+qeex.default.code=500
+qeex.default.message=Unexpected application error
+qeex.default.language=en
+```
+
+Keep this file present when generating sources. Set the default values explicitly: the catch-all exception mapper reads several of them using `Optional.get()`. `qeex.project` overrides the project name declared on the bundle.
+
+#### 3. Define An Error Catalog
+
+Replace the installed sample interface at `src/main/java/it/queryable/awesomeproj/service/exception/ExceptionBundle.java` with:
+
+```java
+package it.queryable.awesomeproj.service.exception;
+
+import it.queryable.api.qeex.annotations.QeexExceptionBundle;
+import it.queryable.api.qeex.annotations.QeexMessage;
+import it.queryable.api.qeex.exceptions.QeexWebException;
+
+@QeexExceptionBundle(project = "AWESOME", language = "en")
+public interface ExceptionBundle {
+
+        @QeexMessage(id = 101, code = 404, message = "Customer %s not found")
+        QeexWebException customerNotFound(String customerCode);
+
+        @QeexMessage(id = 102, code = 409, message = "Customer %s is inactive")
+        QeexWebException customerInactive(String customerCode);
+}
+```
+
+`id` is the application error identifier; `code` is the HTTP status. Message arguments use Java `String.format` placeholders in method-parameter order. Use explicit IDs and statuses for a stable client contract: omitted IDs are assigned starting at the bundle's `id + 1` (101 by default), while an omitted method `code` currently generates 500, not the annotation's declared default of 400.
+
+Generate the implementation:
+
+```bash
+./mvnw queryable:qeexsource
+```
+
+The goal scans interfaces annotated with `@QeexExceptionBundle` under `src/main/java` and creates `ExceptionBundleImpl` next to the interface. Edit the interface, not the generated implementation, and rerun `qeexsource` after changing the catalog. This is a separate goal from `queryable:source`.
+
+#### 4. Throw An Error From A REST Endpoint
+
+Create `src/main/java/it/queryable/awesomeproj/service/rs/CustomerErrorDemoRs.java`:
+
+```java
+package it.queryable.awesomeproj.service.rs;
+
+import it.queryable.api.qeex.exceptions.QeexWebException;
+import it.queryable.awesomeproj.service.exception.ExceptionBundle;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+
+@Path("/api/v1/qeex-demo/customers")
+@Produces(MediaType.APPLICATION_JSON)
+public class CustomerErrorDemoRs {
+
+        @Inject
+        ExceptionBundle errors;
+
+        @GET
+        @Path("/{code}")
+        public void findCustomer(@PathParam("code") String customerCode)
+                        throws QeexWebException {
+                throw errors.customerNotFound(customerCode);
+        }
+}
+```
+
+This endpoint deliberately always throws an error, without querying the database. In a real service, throw it only when the lookup fails. The separate demo path avoids conflicts with generated customer endpoints.
+
+Start the application with `./mvnw quarkus:dev`, then call:
+
+```bash
+curl -i -H 'language: en' \
+    http://localhost:8080/api/v1/qeex-demo/customers/C001
+```
+
+Expected HTTP status: **404**. Expected JSON body:
+
+```json
+{
+    "projectName": "AWESOME",
+    "id": 101,
+    "code": 404,
+    "message": "Customer C001 not found",
+    "language": "en"
+}
+```
+
+#### Current Limitations
+
+- Throw the exception out of the endpoint to use its HTTP status through `QuarkusWebExceptionProvider`. Existing controller paths that catch exceptions and call `RsResponseService.jsonErrorMessageResponse` or `jsonMessageResponse` return HTTP 500 for QEEX errors, even when the JSON `code` is 404 or 409.
+- The generated methods use annotation messages and statuses directly. Although `QeexConfig` defines per-message overrides and translations, those methods do not call its `get_message`, `get_code` or `get_language` helpers. Do not expect `qeex.messages[...]` overrides or automatic translation to change this example.
+- The filter reads the custom `language` header, not `Accept-Language`. Generated methods fall back to `en`, not the bundle's `language` or `qeex.default.language`. The current filter stores mutable language state in an application-scoped bean and does not clear it when the header is missing; it is not safe for per-request language isolation. The example sends `language: en` explicitly, but that does not fix concurrent-request isolation.
+- The QEEX exception mapper builds JSON by string concatenation without escaping message values. Quotes, backslashes and control characters in arguments can produce invalid JSON; use controlled values for this demo and address serialization before using arbitrary user input.
+- The catch-all mapper also handles non-QEEX exceptions using the configured default status and message. It does not assign `qeex.default.id`, so its current error ID is 0. Review this global error policy before enabling QEEX in an existing application.
+
 ### Optional OIDC Identity In V3 APIs
 
 When the effective Maven project includes `io.quarkus:quarkus-oidc` (excluding test-scope dependencies), `./mvnw queryable:source` selectively updates the existing `{groupId}.api.service.RsRepositoryServiceV3`:
