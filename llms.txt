@@ -3,7 +3,7 @@
 > Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controller code for Quarkus applications using Hibernate Panache.
 
 Current supported examples:
-- Queryable: 3.0.8
+- Queryable: 3.0.9
 - Quarkus: 3.39.5
 - Java: 21
 
