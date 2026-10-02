@@ -3,7 +3,7 @@
 > Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controller code for Quarkus applications using Hibernate Panache.
 
 Current supported examples:
-- Queryable: 3.0.9
+- Queryable: 3.0.10
 - Quarkus: 3.39.5
 - Java: 21
 
@@ -37,6 +37,8 @@ Exclude selected model classes:
     ./mvnw queryable:source -DexcludeClasses=Customer,Order
 
 The classes options accept comma-separated simple class names. Whitespace and duplicates are ignored. Explicitly excluded classes are not parsed or regenerated. excludeClasses takes precedence over classes and @QInclude; @QExclude remains authoritative.
+
+Since 3.0.10, REST V3 entity imports use the package declared in the entity source, including model subpackages and custom model packages. Rerun queryable:source after upgrading to repair legacy entity imports in existing services; REST resource packages and application constant imports remain unchanged.
 
 ## Optional QEEX
 

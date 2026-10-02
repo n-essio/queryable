@@ -94,14 +94,14 @@
                 It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
               </p>
               <h3>Add the plugin</h3>
-              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.9:add</code></pre>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.10:add</code></pre>
               <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
               <pre><code class="hljs xml">&lt;build&gt;
   &lt;plugins&gt;
     &lt;plugin&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;3.0.9&lt;/version&gt;
+    &lt;version&gt;3.0.10&lt;/version&gt;
     &lt;/plugin&gt;
   &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
@@ -142,6 +142,12 @@
               This adds <code>@FilterDef</code> on your model classes and adds/updates the <code>getSearch</code> method
               on your REST API controllers (one per entity).
             </p>
+            <p>
+              Since 3.0.10, REST V3 entity imports use the package declared in the entity source, including model subpackages
+              and custom model packages. Upgrade the plugin and rerun <code>./mvnw queryable:source</code> to repair legacy
+              entity imports in existing services. REST resource packages and application constant imports remain unchanged.
+              See the <a href="https://github.com/n-essio/queryable/releases/tag/3.0.10">3.0.10 release notes</a>.
+            </p>
             <h3>Process selected model classes</h3>
             <p>Pass one or more simple class names separated by commas:</p>
             <pre><code class="hljs bash">./mvnw queryable:source -Dclasses=Customer,Order</code></pre>
@@ -161,7 +167,7 @@
             <div class="row mt-4">
               <div class="col-md-6">
                 <h5>JPA @Entity classes location</h5>
-                <p>The plugin searches for classes extending <code>PanacheEntityBase</code> in <code>{groupId}.{artifactId}.model</code>.</p>
+                <p>The plugin searches for classes extending <code>PanacheEntityBase</code> in <code>{groupId}.{artifactId}.model</code> and its subpackages, or the configured model directory.</p>
               </div>
               <div class="col-md-6">
                 <h5>JAX-RS classes location</h5>
