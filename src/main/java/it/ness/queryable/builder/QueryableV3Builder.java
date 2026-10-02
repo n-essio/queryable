@@ -111,10 +111,12 @@ public class QueryableV3Builder {
         String idFieldName = mf.getIdFieldName(className);
         String idFieldType = mf.getIdFieldType(className);
         String tableName = mf.getTableName(className);
+        String entityQualifiedName = mf.getQualifiedClassName(className);
 
         Data data = Data.with("packageName", groupId + "." + artefactId)
                 .and("groupId", groupId)
                 .and("className", className)
+            .and("entityQualifiedName", entityQualifiedName)
                 .and("idFieldName", idFieldName)
                 .and("idFieldType", idFieldType);
         if (orderBy != null) {
@@ -152,6 +154,11 @@ public class QueryableV3Builder {
         File filePath = new File(pd, className + "ServiceRs.java");
         if (filePath.exists()) {
             JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
+            String legacyEntityQualifiedName = groupId + "." + artefactId + ".model." + className;
+            if (!legacyEntityQualifiedName.equals(entityQualifiedName)) {
+                javaClassOriginal.removeImport(legacyEntityQualifiedName);
+            }
+            javaClassOriginal.addImport(entityQualifiedName);
             // add imports to original
             addImportsToClass(javaClassOriginal, preQueryFilters, groupId);
             addImportsToClass(javaClassOriginal, postQueryFilters, groupId);

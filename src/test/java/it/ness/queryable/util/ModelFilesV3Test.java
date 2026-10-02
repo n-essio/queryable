@@ -14,6 +14,7 @@ import java.nio.file.Files;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +56,55 @@ public class ModelFilesV3Test {
 
         assertEquals("return \"surname asc, name asc\";", service.getMethod("getDefaultOrderBy").getBody().trim());
         assertTrue(service.getMethod("getSearch", String.class).getBody().contains("sort(orderBy)"));
+        assertTrue(service.hasImport("example.application.model.Student"));
         }
+
+    @Test
+    public void generatesAndRepairsEntityImportFromDeclaredSubpackage() throws Exception {
+        File modelPath = temporaryFolder.newFolder("badge-model");
+        File nestedModelPath = new File(modelPath, "personale");
+        assertTrue(nestedModelPath.mkdirs());
+        File outputPath = temporaryFolder.newFolder("badge-output");
+        Files.writeString(new File(nestedModelPath, "TipologiaBadge.java").toPath(), """
+            package example.application.model.personale;
+            import jakarta.persistence.Entity;
+            import jakarta.persistence.Id;
+            import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+            import it.ness.queryable.annotations.QRs;
+            @Entity
+            @QRs("BADGE_PATH")
+            public class TipologiaBadge extends PanacheEntityBase {
+                @Id public String uuid;
+            }
+            """);
+        SystemStreamLog log = new SystemStreamLog();
+        Parameters parameters = new Parameters(log, "example", "application", false,
+            "model", "service/rs", outputPath.getAbsolutePath(), false, true, true, null);
+        parameters.modelPath = modelPath.getAbsolutePath();
+        ModelFilesV3 modelFiles = new ModelFilesV3(log, parameters);
+        String entityQualifiedName = "example.application.model.personale.TipologiaBadge";
+        String wrongEntityQualifiedName = "example.application.model.TipologiaBadge";
+        File serviceFile = new File(outputPath, "example/application/service/rs/TipologiaBadgeServiceRs.java");
+
+        assertTrue(modelFiles.isParsingSuccessful);
+        assertEquals(entityQualifiedName, modelFiles.getQualifiedClassName("TipologiaBadge"));
+        QueryableV3Builder.generateSources(modelFiles, log, parameters);
+        JavaClassSource service = Roaster.parse(JavaClassSource.class, serviceFile);
+
+        assertTrue(service.hasImport(entityQualifiedName));
+        assertFalse(service.hasImport(wrongEntityQualifiedName));
+        assertEquals("example.application.service.rs", service.getPackage());
+        assertTrue(Files.readString(serviceFile.toPath())
+            .contains("import static example.application.management.AppConstants.BADGE_PATH;"));
+
+        Files.writeString(serviceFile.toPath(), Files.readString(serviceFile.toPath())
+            .replace(entityQualifiedName, wrongEntityQualifiedName));
+        QueryableV3Builder.generateSources(modelFiles, log, parameters);
+        JavaClassSource regeneratedService = Roaster.parse(JavaClassSource.class, serviceFile);
+
+        assertTrue(regeneratedService.hasImport(entityQualifiedName));
+        assertFalse(regeneratedService.hasImport(wrongEntityQualifiedName));
+    }
 
     @Test
     public void doesNotParseMetadataForExplicitlyExcludedClasses() throws Exception {

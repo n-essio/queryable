@@ -3,7 +3,7 @@ package ${packageName}.service.rs;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;
 import ${groupId}.api.service.RsRepositoryServiceV3;
-import ${packageName}.model.${className};
+import ${entityQualifiedName};
 import java.util.Map;
 
 import jakarta.inject.Singleton;

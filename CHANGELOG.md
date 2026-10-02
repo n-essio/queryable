@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.0.10
+
+### V3 Entity Imports In Subpackages
+
+- REST V3 services now import entities using the fully qualified name parsed from their declared source package, including entities in model subpackages or a custom model package.
+- Regenerating an existing REST service removes the incorrect legacy entity import and adds the declared entity import.
+- REST resource packages and application constant imports are unchanged; V4 generation is unchanged.
+- Added regression coverage for root-package entities, subpackage entities, existing service regeneration, and unchanged REST and constant packages.
+- Verified with `mvn verify` on Java 21, including the Quarkus integration tests with and without OIDC.
+
+**Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.9...3.0.10
+
 ## 3.0.9
 
 ### Selective OIDC Identity Support
