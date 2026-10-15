@@ -3,7 +3,7 @@
 > Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controller code for Quarkus applications using Hibernate Panache.
 
 Current supported examples:
-- Queryable: 3.0.11
+- Queryable: 3.0.12
 - Quarkus: 3.39.5
 - Java: 21
 
@@ -39,6 +39,21 @@ Exclude selected model classes:
 The classes options accept comma-separated simple class names. Whitespace and duplicates are ignored. Explicitly excluded classes are not parsed or regenerated. excludeClasses takes precedence over classes and @QInclude; @QExclude remains authoritative.
 
 Since 3.0.10, REST V3 entity imports use the package declared in the entity source, including model subpackages and custom model packages. Rerun queryable:source after upgrading to repair legacy entity imports in existing services; REST resource packages and application constant imports remain unchanged.
+
+## Model subpackages (since 3.0.12)
+
+For V3 queryable:source and V4 queryable:sourcev4, enable useModelSubPackage in the
+plugin configuration or pass -DuseModelSubPackage=true. Default false keeps REST
+services flat. True mirrors the entire entity directory relative to the configured
+model root beneath the REST root, with arbitrary names and multiple levels.
+Example: xxx.model.finance.monthly.Report -> xxx.service.rs.finance.monthly.ReportServiceRs.
+Custom sourceModelDirectory and sourceRestDirectory are supported. Root entities,
+HTTP URLs, entity packages and application constants remain unchanged.
+Switching the option relocates existing services in either direction, preserving
+manual methods, QExclude and V3 preserved-filter hooks. Two existing copies cause an
+error. Update consuming-code imports and package-local dependencies yourself.
+Duplicate simple entity names remain unsupported.
+Guide: https://queryable.dev/docs/#model-subpackages
 
 ## Manual V3 filters (since 3.0.11)
 

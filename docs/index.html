@@ -94,14 +94,14 @@
                 It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
               </p>
               <h3>Add the plugin</h3>
-              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.11:add</code></pre>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.12:add</code></pre>
               <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
               <pre><code class="hljs xml">&lt;build&gt;
   &lt;plugins&gt;
     &lt;plugin&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;3.0.11&lt;/version&gt;
+    &lt;version&gt;3.0.12&lt;/version&gt;
     &lt;/plugin&gt;
   &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
@@ -114,6 +114,8 @@
     &lt;sourceModelDirectory&gt;model&lt;/sourceModelDirectory&gt;
     &lt;!-- default is {groupId}/service/rs --&gt;
     &lt;sourceRestDirectory&gt;service/rs&lt;/sourceRestDirectory&gt;
+    &lt;!-- default is false; V3 and V4 --&gt;
+    &lt;useModelSubPackage&gt;false&lt;/useModelSubPackage&gt;
     &lt;!-- default is src/main/java --&gt;
     &lt;outputDirectory&gt;src/main/java&lt;/outputDirectory&gt;
     &lt;!-- default is true --&gt;
@@ -146,7 +148,7 @@
               Since 3.0.10, REST V3 entity imports use the package declared in the entity source, including model subpackages
               and custom model packages. Upgrade the plugin and rerun <code>./mvnw queryable:source</code> to repair legacy
               entity imports in existing services. REST resource packages and application constant imports remain unchanged.
-              See the <a href="https://github.com/n-essio/queryable/releases/tag/3.0.11">3.0.11 release notes</a>.
+              See the <a href="https://github.com/n-essio/queryable/releases/tag/3.0.12">3.0.12 release notes</a>.
             </p>
             <h3>Process selected model classes</h3>
             <p>Pass one or more simple class names separated by commas:</p>
@@ -174,6 +176,47 @@
                 <p>The plugin searches for <code>@Path @Singleton</code> classes in <code>{groupId}.{artifactId}.service.rs</code> following the pattern <code>{EntityName}ServiceRs</code>.</p>
               </div>
             </div>
+          </section>
+
+          <section class="container py-5" id="model-subpackages">
+            <h2>Mirror model subpackages (V3 and V4, since 3.0.12)</h2>
+            <p>Enable this option in the consuming project's plugin configuration:</p>
+            <pre><code class="hljs xml">&lt;plugin&gt;
+    &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
+    &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;3.0.12&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;useModelSubPackage&gt;true&lt;/useModelSubPackage&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+            <p>Run <code>./mvnw queryable:source</code> for V3 or
+              <code>./mvnw queryable:sourcev4</code> for V4.
+              The CLI equivalent is <code>-DuseModelSubPackage=true</code>.
+              The default is <code>false</code>.</p>
+            <table class="table">
+              <thead><tr><th>Entity</th><th>Omitted / false</th><th>true</th></tr></thead>
+              <tbody>
+                <tr><td>xxx.model.Report</td><td>xxx.service.rs.ReportServiceRs</td><td>xxx.service.rs.ReportServiceRs</td></tr>
+                <tr><td>xxx.model.personale.Report</td><td>xxx.service.rs.ReportServiceRs</td><td>xxx.service.rs.personale.ReportServiceRs</td></tr>
+                <tr><td>xxx.model.finance.monthly.Report</td><td>xxx.service.rs.ReportServiceRs</td><td>xxx.service.rs.finance.monthly.ReportServiceRs</td></tr>
+              </tbody>
+            </table>
+            <p>The complete relative entity directory under the configured model root is mirrored;
+              no subpackage name is hard-coded. Sources must follow the usual Java package/directory layout.
+              Class names remain <code>{EntityName}ServiceRs</code>. Root entities, REST URLs,
+              entity packages and application constant imports are unchanged.</p>
+            <p>Custom roots work too: with <code>sourceModelDirectory=domain/entities</code> and
+              <code>sourceRestDirectory=web/rest</code>, an entity in
+              <code>xxx.domain.entities.archive.annual</code> produces a service in
+              <code>xxx.web.rest.archive.annual</code>.</p>
+            <p>Switching the option automatically relocates an existing service in either direction.
+              Manual methods, <code>@QExclude</code> controls and V3 <code>@QPreservedFilter</code>
+              hooks survive. The old source is removed only after the destination is successfully written.
+              If both locations already contain a service, generation fails without overwriting either copy.</p>
+            <p><strong>Migration:</strong> review the diff. Update imports or fully qualified references in
+              other classes, and dependencies on old package-local helpers, in the consuming project.
+              The generator relocates the service, not arbitrary application code.
+              Discovery still uses simple entity names; duplicate entity simple names are not newly supported.</p>
           </section>
 
           <section class="container py-5" id="qeex">
