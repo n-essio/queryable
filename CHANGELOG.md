@@ -11,6 +11,7 @@
 - V3 generation errors now fail the Maven goal instead of only printing a stack trace and reporting success.
 - Added repeat-generation regression tests and real Quarkus/H2 HTTP coverage combining a preserved case-insensitive filter with an automatically generated filter, with and without OIDC.
 - Updated README and GitHub Pages installation and annotation documentation to 3.0.11.
+- Updated the Central publishing plugin to 0.12.0 to exclude Maven staging metadata that caused bundle validation to reject the release.
 
 **Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.10...3.0.11
 
