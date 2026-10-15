@@ -78,8 +78,7 @@ public class MojoUtils {
         try {
             QueryableV4Builder.generateSources(mf, parameters.logging ? log : null, parameters);
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new IllegalStateException("Cannot generate V4 sources", e);
         }
     }
 

@@ -10,6 +10,7 @@ import it.ness.queryable.util.GetSearchMethodV3;
 import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.PreservedFilters;
 import it.ness.queryable.util.StringUtil;
+import it.ness.queryable.util.ServiceRsLocation;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -18,6 +19,7 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.*;
 
 import static it.ness.queryable.builder.Constants.*;
@@ -35,9 +37,8 @@ public class QueryableV3Builder {
                             new File(parameters.modelPath, modelFileName));
                     Set<String> preservedFilters = PreservedFilters.names(entity);
                     PreservedFilters.validateDefinitions(entity, preservedFilters);
-                    File serviceFile = new File(parameters.outputDirectory,
-                            getPathFromPackage(parameters.groupId + "." + parameters.artifactId)
-                                    + "/service/rs/" + className + "ServiceRs.java");
+                    ServiceRsLocation serviceLocation = new ServiceRsLocation(parameters, modelFileName);
+                    File serviceFile = serviceLocation.getExisting();
                     List<String> hooks = serviceFile.exists()
                             ? PreservedFilters.hooks(Roaster.parse(JavaClassSource.class, serviceFile),
                                     preservedFilters, mf.getQualifiedClassName(className))
@@ -50,7 +51,7 @@ public class QueryableV3Builder {
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
                     createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId,
-                            orderBy, rsPath, parameters, log, preservedFilters, hooks);
+                            orderBy, rsPath, parameters, log, preservedFilters, hooks, serviceLocation);
                 } catch (Exception e) {
                     if (log != null) log.error(e);
                     throw e;
@@ -125,7 +126,7 @@ public class QueryableV3Builder {
 
     private static void createRsService(String version, ModelFilesV3 mf, String className, String groupId, String artefactId, String
             orderBy, String rsPath, Parameters parameters, Log log, Set<String> preservedFilters,
-                                        List<String> hooks) throws Exception {
+                                        List<String> hooks, ServiceRsLocation serviceLocation) throws Exception {
 
         String idFieldName = mf.getIdFieldName(className);
         String idFieldType = mf.getIdFieldType(className);
@@ -133,6 +134,7 @@ public class QueryableV3Builder {
         String entityQualifiedName = mf.getQualifiedClassName(className);
 
         Data data = Data.with("packageName", groupId + "." + artefactId)
+                .and("servicePackageName", serviceLocation.getPackageName())
                 .and("groupId", groupId)
                 .and("className", className)
             .and("entityQualifiedName", entityQualifiedName)
@@ -168,11 +170,12 @@ public class QueryableV3Builder {
         MethodSource<JavaClassSource> getDefaultOrderByTemplateMethod = getMethodByName(javaClassTemplate, "getDefaultOrderBy");
         getSearchTemplateMethod.setBody(getSearchMethodV3.create(preservedFilters, hooks));
 
-        String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
-        File pd = new File(parameters.outputDirectory, packagePath);
-        File filePath = new File(pd, className + "ServiceRs.java");
-        if (filePath.exists()) {
-            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
+        File filePath = serviceLocation.getTarget();
+        Files.createDirectories(filePath.toPath().getParent());
+        File existingFile = serviceLocation.getExisting();
+        if (existingFile.exists()) {
+            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, existingFile);
+            javaClassOriginal.setPackage(serviceLocation.getPackageName());
             String legacyEntityQualifiedName = groupId + "." + artefactId + ".model." + className;
             if (!legacyEntityQualifiedName.equals(entityQualifiedName)) {
                 javaClassOriginal.removeImport(legacyEntityQualifiedName);
@@ -215,11 +218,11 @@ public class QueryableV3Builder {
                 out.append(javaClassOriginal.toString());
             }
         } else {
-            pd.mkdirs();
             try (FileWriter out = new FileWriter(filePath)) {
                 out.append(javaClassTemplate.toString());
             }
         }
+        serviceLocation.removeRelocatedSource();
     }
 
     private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterDefBase> fd, String groupId) {

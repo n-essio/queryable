@@ -23,6 +23,7 @@ public class Parameters {
     public boolean logging;
     public boolean overrideAnnotations;
     public boolean overrideSearchMethod;
+    public boolean useModelSubPackage;
     private Set<String> classes = new LinkedHashSet<>();
     private Set<String> excludedClasses = new LinkedHashSet<>();
 

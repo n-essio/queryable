@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.0.12
+
+### Mirror Model Subpackages In REST Services
+
+- Added the opt-in Maven parameter `useModelSubPackage` for `queryable:source` (V3) and `queryable:sourcev4` (V4), defaulting to `false`.
+- When enabled, REST packages and source paths mirror the full relative model subdirectory, including arbitrary names, multiple levels and custom model/REST roots. Root entities and service class names are unchanged.
+- Automatically relocate existing services when switching between flat and mirrored packages, preserving manual methods, exclusions and V3 preserved-filter hooks. Conflicting copies fail explicitly without being overwritten.
+- Keep application constant imports and HTTP resource paths unchanged; V4 services now import the entity's declared package. OpenAPI source lookup uses the same service-location rules.
+- V4 generation failures now propagate to the Maven goal rather than reporting success after logging an exception.
+- Added regression tests for both versions, default behavior, relocation in both directions, repeat generation, conflicts, custom roots and generated Maven parameter descriptors.
+- Added real Quarkus/H2 HTTP and CDI checks for relocated V3 services (with and without OIDC) and V4 services with custom roots and nested entity packages.
+- Updated README, agent guide and GitHub Pages to 3.0.12, including configuration and migration notes.
+
+**Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.11...3.0.12
+
 ## 3.0.11
 
 ### Preserve Manual V3 Filters

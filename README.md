@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.11:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.12:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.11</version>
+    <version>3.0.12</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.11</version>
+            <version>3.0.12</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.11</version>
+            <version>3.0.12</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -190,6 +190,8 @@ Some avaliable options in the configuration:
                 <sourceModelDirectory>model</sourceModelDirectory>
                 <!-- default is {groupId}/service/rs -->
                 <sourceRestDirectory>service/rs</sourceRestDirectory>
+                <!-- default is false; applies to source and sourcev4 -->
+                <useModelSubPackage>false</useModelSubPackage>
                 <!-- default is src/main/java-->
                 <outputDirectory>src/main/java</outputDirectory>
                 <!-- default is true -->
@@ -239,6 +241,55 @@ To process all eligible model classes except specific ones:
 ```
 
 `classes` and `excludeClasses` accept comma-separated simple class names. Explicitly excluded classes are not parsed or regenerated. Exclusions take precedence over explicit inclusions and `@QInclude`. Classes annotated with `@QExclude` remain excluded.
+
+### Mirror Model Subpackages In REST Services (V3 And V4, Since 3.0.12)
+
+Enable this option in the plugin configuration of the consuming project's `pom.xml`:
+
+```xml
+<plugin>
+    <groupId>it.n-ess.queryable</groupId>
+    <artifactId>queryable-maven-plugin</artifactId>
+    <version>3.0.12</version>
+    <configuration>
+        <useModelSubPackage>true</useModelSubPackage>
+    </configuration>
+</plugin>
+```
+
+Run `./mvnw queryable:source` for V3, or `./mvnw queryable:sourcev4` for V4.
+The optional command-line equivalent is `-DuseModelSubPackage=true`.
+
+| Entity | Option omitted / `false` | `true` |
+| --- | --- | --- |
+| `xxx.model.Report` | `xxx.service.rs.ReportServiceRs` | `xxx.service.rs.ReportServiceRs` |
+| `xxx.model.personale.Report` | `xxx.service.rs.ReportServiceRs` | `xxx.service.rs.personale.ReportServiceRs` |
+| `xxx.model.finance.monthly.Report` | `xxx.service.rs.ReportServiceRs` | `xxx.service.rs.finance.monthly.ReportServiceRs` |
+
+The suffix is the **complete relative directory of the discovered entity under
+the configured model root**; no subpackage name is hard-coded. Model sources must
+follow the usual Java package/directory layout. The generated class name remains
+`{EntityName}ServiceRs`; only its package and source path change. REST URLs,
+application constants and entity packages do not change.
+
+Custom roots are supported: with `sourceModelDirectory=domain/entities` and
+`sourceRestDirectory=web/rest`, an entity under
+`xxx.domain.entities.archive.annual` produces a service under
+`xxx.web.rest.archive.annual` when enabled.
+
+Existing services are automatically relocated between the flat and mirrored
+locations when switching the option. The generator updates the package, preserves
+manual methods and existing `@QExclude` controls, and removes the previous source
+only after successfully writing the destination. V3 `@QPreservedFilter` hooks are
+also discovered in the previous location and retained. If both locations contain a
+service, generation fails explicitly instead of overwriting either copy.
+
+**Migration:** review the diff before committing. Imports or fully qualified
+references to the moved service in other classes, and dependencies on its old
+package-local helpers, must be updated by the consuming project; this option
+relocates the service, not arbitrary application code. The existing discovery and
+selection rules based on simple entity names are unchanged; this option does not
+add support for duplicate entity simple names.
 
 ### Preserve Manual Filters (V3, Since 3.0.11)
 
@@ -1039,7 +1090,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.11</version>
+                <version>3.0.12</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

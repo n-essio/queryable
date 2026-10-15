@@ -1,4 +1,4 @@
-package ${packageName}.service.rs;
+package ${servicePackageName};
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;

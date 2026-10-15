@@ -9,6 +9,7 @@ import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.GetSearchMethodV4;
 import it.ness.queryable.util.ModelFilesV4;
 import it.ness.queryable.util.StringUtil;
+import it.ness.queryable.util.ServiceRsLocation;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -17,6 +18,7 @@ import org.jboss.forge.roaster.model.source.MethodSource;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.*;
 
 public class QueryableV4Builder {
@@ -28,13 +30,17 @@ public class QueryableV4Builder {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
-                    log.info(mf.toString());
+                    if (log != null) log.info(mf.toString());
+                    ServiceRsLocation serviceLocation = new ServiceRsLocation(parameters, modelFileName);
+                    serviceLocation.getExisting();
                     createModel(log, mf, modelFileName, parameters);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId, orderBy, rsPath, parameters, log);
+                    createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId,
+                            orderBy, rsPath, parameters, log, serviceLocation);
                 } catch (Exception e) {
-                    log.error(e);
+                    if (log != null) log.error(e);
+                    throw e;
                 }
             }
         }
@@ -77,13 +83,15 @@ public class QueryableV4Builder {
     }
 
     private static void createRsService(String version, ModelFilesV4 mf, String className, String groupId, String artefactId, String
-            orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
+            orderBy, String rsPath, Parameters parameters, Log log, ServiceRsLocation serviceLocation) throws Exception {
 
         String idFieldName = mf.getIdFieldName(className);
         String idFieldType = mf.getIdFieldType(className);
         String tableName = mf.getTableName(className);
 
         Data data = Data.with("packageName", groupId + "." + artefactId)
+                .and("servicePackageName", serviceLocation.getPackageName())
+                .and("entityQualifiedName", mf.getQualifiedClassName(className))
                 .and("groupId", groupId)
                 .and("className", className)
                 .and("idFieldName", idFieldName)
@@ -117,11 +125,18 @@ public class QueryableV4Builder {
         MethodSource<JavaClassSource> getDefaultOrderByTemplateMethod = getMethodByName(javaClassTemplate, "getDefaultOrderBy");
         getSearchTemplateMethod.setBody(getSearchMethodV4.create());
 
-        String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
-        File pd = new File(parameters.outputDirectory, packagePath);
-        File filePath = new File(pd, className + "ServiceRs.java");
-        if (filePath.exists()) {
-            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, filePath);
+        File filePath = serviceLocation.getTarget();
+        Files.createDirectories(filePath.toPath().getParent());
+        File existingFile = serviceLocation.getExisting();
+        if (existingFile.exists()) {
+            JavaClassSource javaClassOriginal = Roaster.parse(JavaClassSource.class, existingFile);
+            javaClassOriginal.setPackage(serviceLocation.getPackageName());
+            String entityQualifiedName = mf.getQualifiedClassName(className);
+            String legacyEntityQualifiedName = groupId + "." + artefactId + ".model." + className;
+            if (!legacyEntityQualifiedName.equals(entityQualifiedName)) {
+                javaClassOriginal.removeImport(legacyEntityQualifiedName);
+            }
+            javaClassOriginal.addImport(entityQualifiedName);
             // add imports to original
             addImportsToClass(javaClassOriginal, preQueryFilters, groupId);
             addImportsToClass(javaClassOriginal, postQueryFilters, groupId);
@@ -159,11 +174,11 @@ public class QueryableV4Builder {
                 out.append(javaClassOriginal.toString());
             }
         } else {
-            pd.mkdirs();
             try (FileWriter out = new FileWriter(filePath)) {
                 out.append(javaClassTemplate.toString());
             }
         }
+        serviceLocation.removeRelocatedSource();
     }
 
     private static void addImportsToClass(JavaClassSource javaClassSource, Collection<FilterBase> fd, String groupId) {
@@ -193,10 +208,6 @@ public class QueryableV4Builder {
                 javaClassSource.addImport("java.util.Map");
             }
         }
-    }
-
-    private static String getPathFromPackage(String packageName) {
-        return packageName.replace(".", "/");
     }
 
     private static MethodSource<JavaClassSource> getMethodByName(JavaClassSource javaClassSource, String name) {

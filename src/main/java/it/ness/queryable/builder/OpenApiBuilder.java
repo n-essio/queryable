@@ -6,6 +6,7 @@ import it.ness.queryable.model.api.ApiDataPojo;
 import it.ness.queryable.model.api.Parameters;
 import it.ness.queryable.util.ModelFilesV3;
 import it.ness.queryable.util.StringUtil;
+import it.ness.queryable.util.ServiceRsLocation;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.Annotation;
@@ -465,9 +466,8 @@ public class OpenApiBuilder {
             }
         }
 
-        String serviceFileName = modelFileName.substring(0, modelFileName.length() - ".java".length()) +
-                "ServiceRs.java";
-        JavaClassSource javaServiceRsClass = Roaster.parse(JavaClassSource.class, new File(parameters.serviceRsPath, serviceFileName));
+        JavaClassSource javaServiceRsClass = Roaster.parse(JavaClassSource.class,
+                new ServiceRsLocation(parameters, modelFileName).getTarget());
 
 
         apiDataPojo.apiMethodList = new ArrayList<>();

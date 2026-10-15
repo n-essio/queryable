@@ -1,7 +1,7 @@
-package ${packageName}.service.rs;
+package ${servicePackageName};
 
 import ${groupId}.api.service.RsRepositoryServiceV4;
-import ${packageName}.model.${className};
+import ${entityQualifiedName};
 
 import jakarta.inject.Singleton;
 import jakarta.persistence.criteria.CriteriaBuilder;

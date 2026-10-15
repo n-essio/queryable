@@ -26,6 +26,12 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
     @Parameter(property = "sourceRestDirectory", defaultValue = "service/rs")
     String sourceRestDirectory;
 
+    /**
+     * Mirror model subpackages below the REST service package in V3 and V4.
+     */
+    @Parameter(property = "useModelSubPackage", defaultValue = "false")
+    boolean useModelSubPackage;
+
     @Parameter(property = "sourceExceptionDirectory", defaultValue = "service/exception")
     String sourceExceptionDirectory;
 
@@ -52,5 +58,6 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
         this.parameters = new Parameters(log, groupId, artifactId, removeAnnotations, sourceModelDirectory, sourceRestDirectory,
                 outputDirectory, sourceExceptionDirectory, logging,
                 overrideAnnotations, overrideSearchMethod, google_translate_apikey);
+        this.parameters.useModelSubPackage = useModelSubPackage;
     }
 }
