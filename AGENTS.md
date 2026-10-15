@@ -4,7 +4,7 @@ This file is the machine-oriented entry point for agents working on Queryable or
 
 ## Supported baseline
 
-- Queryable Maven plugin: `3.0.10`
+- Queryable Maven plugin: `3.0.11`
 - Quarkus examples: `3.39.5`
 - Java: `21`
 - Maven coordinates: `it.n-ess.queryable:queryable-maven-plugin`
@@ -40,7 +40,7 @@ Add the plugin to the consuming project's `pom.xml`:
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.10</version>
+    <version>3.0.11</version>
 </plugin>
 ```
 
@@ -117,6 +117,12 @@ Use annotations from `it.ness.queryable.annotations` and verify exact attributes
 - Field filters: `@Q`, `@QLike`, `@QLikeList`, `@QList`, `@QLogicalDelete`, `@QNil`, `@QNotNil`.
 - Class controls: `@QInclude`, `@QExclude`, `@QOrderBy`, `@QRs`.
 - Generated test values: `@QT`.
+- V3 manual filters: `@QPreserveFilters({"Entity.filter.name"})` protects existing
+  `@FilterDef` / `@Filter` pairs by exact literal name. `@QPreservedFilter("Entity.filter.name")`
+  binds a concrete non-static `void` service method taking `PanacheQuery<Entity>`;
+  regenerated `getSearch` invokes it after automatic filters. Move inline custom
+  blocks to these methods before regenerating; missing hooks warn and do not activate
+  filters. Invalid definitions or bindings fail generation. V4 is unchanged.
 
 Do not infer generated filter names or HTTP parameters from annotation names alone. Consult [https://queryable.dev/docs/#annotation-reference](https://queryable.dev/docs/#annotation-reference), [API.MD](https://github.com/n-essio/queryable/blob/main/API.MD), and the corresponding builder implementation.
 

@@ -94,14 +94,14 @@
                 It is also available in <a href="/AGENTS.md">AGENTS.md format</a> on this website.
               </p>
               <h3>Add the plugin</h3>
-              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.10:add</code></pre>
+              <pre><code class="hljs bash">./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.11:add</code></pre>
               <p>Or add it directly to the build section of <code>pom.xml</code>:</p>
               <pre><code class="hljs xml">&lt;build&gt;
   &lt;plugins&gt;
     &lt;plugin&gt;
     &lt;groupId&gt;it.n-ess.queryable&lt;/groupId&gt;
     &lt;artifactId&gt;queryable-maven-plugin&lt;/artifactId&gt;
-    &lt;version&gt;3.0.10&lt;/version&gt;
+    &lt;version&gt;3.0.11&lt;/version&gt;
     &lt;/plugin&gt;
   &lt;/plugins&gt;
 &lt;/build&gt;</code></pre>
@@ -146,7 +146,7 @@
               Since 3.0.10, REST V3 entity imports use the package declared in the entity source, including model subpackages
               and custom model packages. Upgrade the plugin and rerun <code>./mvnw queryable:source</code> to repair legacy
               entity imports in existing services. REST resource packages and application constant imports remain unchanged.
-              See the <a href="https://github.com/n-essio/queryable/releases/tag/3.0.10">3.0.10 release notes</a>.
+              See the <a href="https://github.com/n-essio/queryable/releases/tag/3.0.11">3.0.11 release notes</a>.
             </p>
             <h3>Process selected model classes</h3>
             <p>Pass one or more simple class names separated by commas:</p>
@@ -425,6 +425,55 @@ public boolean active = true;</code></pre>
               <strong>@QInclude</strong> — used on class level to select a class for FilterDef generation. If used, all other classes are ignored.<br/>
               <strong>@QExclude</strong> — used on class level to deselect a class from FilterDef generation.
             </p>
+
+            <hr class="my-5" />
+
+            <h3 id="preserve-filters">@QPreserveFilters / @QPreservedFilter (V3, since 3.0.11)</h3>
+            <p>Import both annotations from <code>it.ness.queryable.annotations</code>.
+              Protect manual Hibernate definitions by listing complete, exact, case-sensitive literal names on the entity:</p>
+            <pre><code class="hljs java">@Entity
+@QPreserveFilters({"Customer.obj.name"})
+@FilterDef(name = "Customer.obj.name",
+    parameters = @ParamDef(name = "manualName", type = String.class))
+@Filter(name = "Customer.obj.name", condition = "lower(name) = :manualName")
+public class Customer extends PanacheEntityBase {
+    @Id public String uuid;
+    @Q public String name;
+    @Q public String code;
+}</code></pre>
+            <p>Before regenerating, move the corresponding inline custom block from
+              <code>CustomerServiceRs.getSearch()</code> into a manual service method:</p>
+            <pre><code class="hljs java">@QPreservedFilter("Customer.obj.name")
+private void applyManualName(PanacheQuery&lt;Customer&gt; search) {
+    if (nn("obj.name")) {
+        String name = get("obj.name").toLowerCase(java.util.Locale.ROOT);
+        search.filter("Customer.obj.name", Map.of("manualName", name));
+    }
+}</code></pre>
+            <p>Run <code>./mvnw queryable:source</code>. The generator preserves the named
+              <code>@FilterDef</code> and <code>@Filter</code>, skips their automatic REST block,
+              regenerates other filters, and calls <code>applyManualName(search)</code> after
+              automatic filters and before returning the query. It does not rewrite the manual method.</p>
+            <ul>
+              <li>Use literal names, not constants or expressions. Duplicate entity entries are deduplicated;
+                blank names are rejected. Source formatting may be normalized.</li>
+              <li>Both Hibernate annotations must already exist on the entity. Repeated annotations and
+                <code>@FilterDefs</code> / <code>@Filters</code> containers are supported for protected definitions.</li>
+              <li>Protection wins over field and class-level Queryable annotations. List filters use their
+                plural names. Temporal bounds are independent: preserving <code>Customer.from.createdAt</code>
+                does not suppress <code>Customer.to.createdAt</code> or <code>Customer.obj.createdAt</code>.</li>
+              <li>A hook must be a concrete non-static <code>void</code> method declared in the service,
+                taking exactly one <code>PanacheQuery&lt;Customer&gt;</code> parameter. Checked exceptions
+                are allowed. Hooks run in source declaration order, with at most one per filter.</li>
+              <li>Unknown hook names, duplicate bindings, invalid signatures and missing definitions fail
+                generation before rewriting that entity or service. V3 generation errors fail the Maven goal.</li>
+              <li>Without a hook the definition remains, but the filter is not automatically activated;
+                generation warns. New services do not receive invented manual logic.</li>
+              <li>Existing inline blocks are not automatically extracted. Move them into annotated methods
+                first, or use <code>@QExclude</code> on <code>getSearch()</code> to preserve the entire method.</li>
+              <li>Hooks apply Hibernate filters after query creation, not pre-query HQL transformations.
+                V4 generation is unchanged.</li>
+            </ul>
 
             <hr class="my-5" />
 
