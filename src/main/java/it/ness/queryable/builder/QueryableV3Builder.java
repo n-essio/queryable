@@ -8,6 +8,7 @@ import it.ness.queryable.model.api.Parameters;
 import it.ness.queryable.templates.FreeMarkerTemplates;
 import it.ness.queryable.util.GetSearchMethodV3;
 import it.ness.queryable.util.ModelFilesV3;
+import it.ness.queryable.util.PreservedFilters;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.Roaster;
@@ -30,12 +31,29 @@ public class QueryableV3Builder {
             String className = StringUtil.getClassNameFromFileName(modelFileName);
             if (!mf.excludeClass(className)) {
                 try {
+                    JavaClassSource entity = Roaster.parse(JavaClassSource.class,
+                            new File(parameters.modelPath, modelFileName));
+                    Set<String> preservedFilters = PreservedFilters.names(entity);
+                    PreservedFilters.validateDefinitions(entity, preservedFilters);
+                    File serviceFile = new File(parameters.outputDirectory,
+                            getPathFromPackage(parameters.groupId + "." + parameters.artifactId)
+                                    + "/service/rs/" + className + "ServiceRs.java");
+                    List<String> hooks = serviceFile.exists()
+                            ? PreservedFilters.hooks(Roaster.parse(JavaClassSource.class, serviceFile),
+                                    preservedFilters, mf.getQualifiedClassName(className))
+                            : List.of();
+                    if (log != null && !preservedFilters.isEmpty() && hooks.size() < preservedFilters.size()) {
+                        log.warn("Preserved filters without a @QPreservedFilter method are not automatically applied: "
+                                + className);
+                    }
                     createModel(log, mf, modelFileName, parameters);
                     String orderBy = mf.getDefaultOrderBy(className);
                     String rsPath = mf.getRsPath(className);
-                    createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId, orderBy, rsPath, parameters, log);
+                    createRsService(parameters.sourceVersion, mf, className, parameters.groupId, parameters.artifactId,
+                            orderBy, rsPath, parameters, log, preservedFilters, hooks);
                 } catch (Exception e) {
-                    log.error(e);
+                    if (log != null) log.error(e);
+                    throw e;
                 }
             }
         }
@@ -57,7 +75,7 @@ public class QueryableV3Builder {
             allFilderDefs.addAll(postQueryDefs);
         }
 
-        if (allFilderDefs.size() == 0) {
+        if (allFilderDefs.size() == 0 && PreservedFilters.names(javaClass).isEmpty()) {
             if (log != null) log.debug("Not defined Q filterdefs for class : " + className);
             return;
         }
@@ -106,7 +124,8 @@ public class QueryableV3Builder {
     }
 
     private static void createRsService(String version, ModelFilesV3 mf, String className, String groupId, String artefactId, String
-            orderBy, String rsPath, Parameters parameters, Log log) throws Exception {
+            orderBy, String rsPath, Parameters parameters, Log log, Set<String> preservedFilters,
+                                        List<String> hooks) throws Exception {
 
         String idFieldName = mf.getIdFieldName(className);
         String idFieldType = mf.getIdFieldType(className);
@@ -147,7 +166,7 @@ public class QueryableV3Builder {
         addImportsToClass(javaClassTemplate, postQueryFilters, groupId);
         MethodSource<JavaClassSource> getSearchTemplateMethod = getMethodByName(javaClassTemplate, "getSearch");
         MethodSource<JavaClassSource> getDefaultOrderByTemplateMethod = getMethodByName(javaClassTemplate, "getDefaultOrderBy");
-        getSearchTemplateMethod.setBody(getSearchMethodV3.create());
+        getSearchTemplateMethod.setBody(getSearchMethodV3.create(preservedFilters, hooks));
 
         String packagePath = getPathFromPackage(javaClassTemplate.getPackage());
         File pd = new File(parameters.outputDirectory, packagePath);
@@ -218,6 +237,9 @@ public class QueryableV3Builder {
             }
             if ("LocalDate".equals(f.fieldType)) {
                 javaClassSource.addImport("java.time.LocalDate");
+            }
+            if ("Instant".equals(f.fieldType)) {
+                javaClassSource.addImport("java.time.Instant");
             }
             if ("BigDecimal".equals(f.fieldType) || "big_decimal".equals(f.fieldType)) {
                 javaClassSource.addImport("java.math.BigDecimal");

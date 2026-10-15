@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.0.11
+
+### Preserve Manual V3 Filters
+
+- Added entity-level `@QPreserveFilters` to protect named Hibernate `@FilterDef` and `@Filter` annotations, including custom parameters and conditions.
+- Added service-method `@QPreservedFilter` hooks, called by regenerated `getSearch()` after automatic filters without rewriting manual methods.
+- Protected names suppress their automatic REST blocks; plural list names and individual temporal bounds are supported. Other filters continue to regenerate.
+- Added explicit validation of filter definitions, literal names, hook signatures and duplicate bindings. Missing hooks emit a warning instead of inventing filter behavior. Existing whole-method `@QExclude` and V4 behavior are unchanged.
+- V3 generation errors now fail the Maven goal instead of only printing a stack trace and reporting success.
+- Added repeat-generation regression tests and real Quarkus/H2 HTTP coverage combining a preserved case-insensitive filter with an automatically generated filter, with and without OIDC.
+- Updated README and GitHub Pages installation and annotation documentation to 3.0.11.
+
+**Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.10...3.0.11
+
 ## 3.0.10
 
 ### V3 Entity Imports In Subpackages

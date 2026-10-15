@@ -4,6 +4,8 @@ import it.ness.queryable.model.v3.FilterDefBase;
 import org.apache.maven.plugin.logging.Log;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class GetSearchMethodV3 {
     protected Log log;
@@ -50,20 +52,27 @@ public class GetSearchMethodV3 {
     }
 
     public String create() {
+        return create(Set.of(), List.of());
+    }
+
+    public String create(Set<String> preservedFilters, List<String> hooks) {
         StringBuilder sb = new StringBuilder();
         boolean existsPreQueryFilters = preQueryFilters != null && preQueryFilters.size() > 0;
         boolean existsPostQueryFilters = postQueryFilters != null && postQueryFilters.size() > 0;
         sb.append(getPreQuery(existsPreQueryFilters));
         if (existsPreQueryFilters) {
             for (FilterDefBase f : preQueryFilters) {
-                sb.append(f.getSearchMethod());
+                sb.append(f.getSearchMethod(preservedFilters));
             }
         }
         sb.append(getQuery(className, existsPreQueryFilters));
         if (existsPostQueryFilters) {
             for (FilterDefBase f : postQueryFilters) {
-                sb.append(f.getSearchMethod());
+                sb.append(f.getSearchMethod(preservedFilters));
             }
+        }
+        for (String hook : hooks) {
+            sb.append(hook).append("(search);");
         }
         sb.append("return search;");
         return sb.toString();

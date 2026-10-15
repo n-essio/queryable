@@ -3,6 +3,7 @@ package it.ness.queryable.model.v3;
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.util.FilterUtils;
+import it.ness.queryable.util.PreservedFilters;
 import it.ness.queryable.util.StringUtil;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
@@ -33,6 +34,9 @@ public class QListFilterDef extends FilterDefBase {
         }
         filterName = entityName + "." + prefix + "." + nameInPlural;
         queryName = prefix + "." + nameInPlural;
+        if (PreservedFilters.contains(javaClass, filterName)) {
+            return;
+        }
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
         AnnotationSource<JavaClassSource> filterDefAnnotation = FilterUtils.addFilterDef(javaClass, filterName);

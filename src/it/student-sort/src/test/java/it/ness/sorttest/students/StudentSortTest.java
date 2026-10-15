@@ -65,6 +65,21 @@ class StudentSortTest {
     }
 
     @Test
+    void preservedManualFilterUsesCustomParameterAndCombinesWithGeneratedFilter() {
+        given().queryParam("obj.name", "ANNA").when().get("/api/students")
+                .then().statusCode(200).header("listSize", "2")
+                .body("uuid", contains("4", "3"));
+        given().queryParam("obj.name", "ANNA").queryParam("obj.surname", "Rossi")
+                .when().get("/api/students")
+                .then().statusCode(200).header("listSize", "1")
+                .body("uuid", contains("3"));
+        given().queryParam("obj.name", "unknown").when().get("/api/students")
+                .then().statusCode(200).body("size()", equalTo(0));
+        long count = QuarkusTransaction.requiringNew().call(() -> Student.count());
+        assertEquals(4L, count);
+    }
+
+    @Test
     void getStudentsUsesMultipleDefaultSortProperties() {
         given().when().get("/api/students")
                 .then().statusCode(200)

@@ -3,6 +3,7 @@ package it.ness.queryable.model.v3;
 import it.ness.queryable.annotations.QOption;
 import it.ness.queryable.model.enums.FilterType;
 import it.ness.queryable.util.FilterUtils;
+import it.ness.queryable.util.PreservedFilters;
 import org.apache.maven.plugin.logging.Log;
 import org.jboss.forge.roaster.model.source.AnnotationSource;
 import org.jboss.forge.roaster.model.source.FieldSource;
@@ -31,6 +32,9 @@ public class QFilterDef extends FilterDefBase {
     }
 
     public void addAnnotationToModelClass_obj(JavaClassSource javaClass) {
+        if (PreservedFilters.contains(javaClass, filterName)) {
+            return;
+        }
         // remove existing annotation with same filtername
         removeFilterDef(javaClass, filterName);
 
@@ -43,21 +47,19 @@ public class QFilterDef extends FilterDefBase {
         String filterNameFrom = entityName + ".from." + name;
         String filterNameTo = entityName + ".to." + name;
         String filterNameObj = entityName + ".obj." + name;
-        removeFilterDef(javaClass, filterNameFrom);
-        removeFilterDef(javaClass, filterNameTo);
-        removeFilterDef(javaClass, filterNameObj);
+        addDateFilter(javaClass, filterNameObj, "=");
+        addDateFilter(javaClass, filterNameFrom, ">=");
+        addDateFilter(javaClass, filterNameTo, "<=");
+    }
 
-        AnnotationSource<JavaClassSource> filterDefAnnotationObj = FilterUtils.addFilterDef(javaClass, filterNameObj);
-        FilterUtils.addParamDef(filterDefAnnotationObj, name, type);
-        FilterUtils.addFilter(javaClass, filterNameObj, String.format("%s = :%s", name, name));
-
-        AnnotationSource<JavaClassSource> filterDefAnnotationFrom = FilterUtils.addFilterDef(javaClass, filterNameFrom);
-        FilterUtils.addParamDef(filterDefAnnotationFrom, name, type);
-        FilterUtils.addFilter(javaClass, filterNameFrom, String.format("%s >= :%s", name, name));
-
-        AnnotationSource<JavaClassSource> filterDefAnnotationTo = FilterUtils.addFilterDef(javaClass, filterNameTo);
-        FilterUtils.addParamDef(filterDefAnnotationTo, name, type);
-        FilterUtils.addFilter(javaClass, filterNameTo, String.format("%s <= :%s", name, name));
+    private void addDateFilter(JavaClassSource javaClass, String filterName, String operator) {
+        if (PreservedFilters.contains(javaClass, filterName)) {
+            return;
+        }
+        removeFilterDef(javaClass, filterName);
+        AnnotationSource<JavaClassSource> annotation = FilterUtils.addFilterDef(javaClass, filterName);
+        FilterUtils.addParamDef(annotation, name, type);
+        FilterUtils.addFilter(javaClass, filterName, String.format("%s %s :%s", name, operator, name));
     }
 
     @Override
@@ -158,97 +160,37 @@ public class QFilterDef extends FilterDefBase {
         return String.format(formatBody, queryName, queryName, filterName, name);
     }
 
-    private String getLocalDateSearchMethod() {
+    private String getTemporalSearchMethod(Set<String> preservedFilters) {
         StringBuilder sb = new StringBuilder();
-        String formatBody = "if (nn(\"%s\")) {" +
-                "LocalDate date = LocalDate.parse(get(\"%s\"));" +
-            "search.filter(\"%s\", Map.of(\"%s\", date));" +
-                "}";
-        String filterName = entityName + ".from." + name;
-        String queryName = "from." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".to." + name;
-        queryName = "to." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".obj." + name;
-        queryName = "obj." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        return sb.toString();
-    }
-
-    private String getLocalDateTimeSearchMethod() {
-        StringBuilder sb = new StringBuilder();
-        String formatBody = "if (nn(\"%s\")) {" +
-                "LocalDateTime date = LocalDateTime.parse(get(\"%s\"));" +
-            "search.filter(\"%s\", Map.of(\"%s\", date));" +
-                "}";
-        String filterName = entityName + ".from." + name;
-        String queryName = "from." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".to." + name;
-        queryName = "to." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".obj." + name;
-        queryName = "obj." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        return sb.toString();
-    }
-    private String getZonedDateTimeSearchMethod() {
-        StringBuilder sb = new StringBuilder();
-        String formatBody = "if (nn(\"%s\")) {" +
-                "ZonedDateTime date = ZonedDateTime.parse(get(\"%s\"));" +
-            "search.filter(\"%s\", Map.of(\"%s\", date));" +
-                "}";
-        String filterName = entityName + ".from." + name;
-        String queryName = "from." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".to." + name;
-        queryName = "to." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".obj." + name;
-        queryName = "obj." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        return sb.toString();
-    }
-
-    private String getDateSearchMethod() {
-        StringBuilder sb = new StringBuilder();
-        String formatBody = "if (nn(\"%s\")) {" +
-                "Date date = DateUtils.parseDate(get(\"%s\"));" +
-            "search.filter(\"%s\", Map.of(\"%s\", date));" +
-                "}";
-        String filterName = entityName + ".from." + name;
-        queryName = "from." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".to." + name;
-        queryName = "to." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".obj." + name;
-        queryName = "obj." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        return sb.toString();
-    }
-
-    private String getInstantSearchMethod() {
-        StringBuilder sb = new StringBuilder();
-        String formatBody = "if (nn(\"%s\")) {" +
-                "Instant date = Instant.parse(get(\"%s\"));" +
-            "search.filter(\"%s\", Map.of(\"%s\", date));" +
-                "}";
-        String filterName = entityName + ".from." + name;
-        queryName = "from." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".to." + name;
-        queryName = "to." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
-        filterName = entityName + ".obj." + name;
-        queryName = "obj." + name;
-        sb.append(String.format(formatBody, queryName, queryName, filterName, name));
+        String dateType = "java.util.Date".equals(fieldType) ? "Date" : fieldType;
+        String parser = "java.util.Date".equals(fieldType) ? "DateUtils.parseDate" : fieldType + ".parse";
+        for (String prefix : new String[]{"from", "to", "obj"}) {
+            String filterName = entityName + "." + prefix + "." + name;
+            String queryName = prefix + "." + name;
+            if (!preservedFilters.contains(filterName)) {
+                sb.append(String.format("if (nn(\"%s\")) {%s date = %s(get(\"%s\"));"
+                                + "search.filter(\"%s\", Map.of(\"%s\", date));}",
+                        queryName, dateType, parser, queryName, filterName, name));
+            }
+        }
         return sb.toString();
     }
 
     @Override
     public String getSearchMethod() {
+        return getSearchMethod(Set.of());
+    }
+
+    @Override
+    public String getSearchMethod(Set<String> preservedFilters) {
+        boolean temporal = Set.of("LocalDateTime", "ZonedDateTime", "LocalDate", "Instant", "java.util.Date")
+                .contains(fieldType);
+        if (temporal && !containsOption(QOption.EXECUTE_ALWAYS) && !containsOption(QOption.WITHOUT_PARAMETERS)) {
+            return getTemporalSearchMethod(preservedFilters);
+        }
+        if (preservedFilters.contains(filterName)) {
+            return "";
+        }
         if (containsOption(QOption.EXECUTE_ALWAYS)) {
             switch (fieldType) {
                 case "boolean":
@@ -266,16 +208,6 @@ public class QFilterDef extends FilterDefBase {
         switch (fieldType) {
             case "string":
                 return getStringSearchMethod();
-            case "LocalDateTime":
-                return getLocalDateTimeSearchMethod();
-            case "ZonedDateTime":
-                return getZonedDateTimeSearchMethod();
-            case "LocalDate":
-                return getLocalDateSearchMethod();
-            case "Instant":
-                return getInstantSearchMethod();
-            case "java.util.Date":
-                return getDateSearchMethod();
             case "boolean":
                 return getBooleanSearchMethod();
             case "big_decimal":

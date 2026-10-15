@@ -68,8 +68,7 @@ public class MojoUtils {
         try {
             QueryableV3Builder.generateSources(mf, parameters.logging ? log : null, parameters);
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new IllegalStateException("Cannot generate V3 sources", e);
         }
     }
 

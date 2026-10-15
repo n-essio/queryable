@@ -10,6 +10,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class FilterDefBase implements Comparable<FilterDefBase> {
 
@@ -31,6 +32,10 @@ public abstract class FilterDefBase implements Comparable<FilterDefBase> {
     public abstract FilterDefBase parseQFilterDef(String entityName, FieldSource<JavaClassSource> f, boolean qClassLevelAnnotation);
 
     public abstract String getSearchMethod();
+
+    public String getSearchMethod(Set<String> preservedFilters) {
+        return preservedFilters.contains(filterName) ? "" : getSearchMethod();
+    }
 
     public abstract FilterType getFilterType();
 
