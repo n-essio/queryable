@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.12:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.13:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.12</version>
+            <version>3.0.13</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.12</version>
+            <version>3.0.13</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -250,7 +250,7 @@ Enable this option in the plugin configuration of the consuming project's `pom.x
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
     <configuration>
         <useModelSubPackage>true</useModelSubPackage>
     </configuration>
@@ -279,8 +279,9 @@ Custom roots are supported: with `sourceModelDirectory=domain/entities` and
 
 Existing services are automatically relocated between the flat and mirrored
 locations when switching the option. The generator updates the package, preserves
-manual methods and existing `@QExclude` controls, and removes the previous source
-only after successfully writing the destination. V3 `@QPreservedFilter` hooks are
+manual methods and existing `@QExclude` controls, removes the previous source
+only after successfully writing the destination, and deletes empty leftover
+REST subdirectories (since 3.0.13). V3 `@QPreservedFilter` hooks are
 also discovered in the previous location and retained. If both locations contain a
 service, generation fails explicitly instead of overwriting either copy.
 
@@ -1090,7 +1091,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.12</version>
+                <version>3.0.13</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

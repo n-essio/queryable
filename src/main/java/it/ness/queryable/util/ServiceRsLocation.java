@@ -4,12 +4,15 @@ import it.ness.queryable.model.api.Parameters;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class ServiceRsLocation {
     private final String packageName;
     private final File target;
     private final File legacy;
+    private final Path restBaseDirectory;
 
     public ServiceRsLocation(Parameters parameters, String modelFileName) {
         String relativeName = modelFileName.replace('\\', '/');
@@ -25,6 +28,7 @@ public final class ServiceRsLocation {
         String previousPackage = basePackage + (parameters.useModelSubPackage ? "" : suffix);
         legacy = new File(parameters.outputDirectory,
                 previousPackage.replace('.', '/') + "/" + className + "ServiceRs.java");
+        restBaseDirectory = new File(parameters.outputDirectory, basePackage.replace('.', '/')).toPath();
     }
 
     public String getPackageName() {
@@ -44,8 +48,28 @@ public final class ServiceRsLocation {
     }
 
     public void removeRelocatedSource() throws IOException {
-        if (!target.equals(legacy) && legacy.exists()) {
-            Files.delete(legacy.toPath());
+        if (target.equals(legacy) || !legacy.exists()) {
+            return;
+        }
+        Path legacyPath = legacy.toPath();
+        Files.delete(legacyPath);
+        pruneEmptyAncestors(legacyPath.getParent());
+    }
+
+    private void pruneEmptyAncestors(Path directory) throws IOException {
+        Path current = directory;
+        while (current != null && !current.equals(restBaseDirectory) && Files.isDirectory(current)) {
+            if (!isEmptyDirectory(current)) {
+                return;
+            }
+            Files.delete(current);
+            current = current.getParent();
+        }
+    }
+
+    private static boolean isEmptyDirectory(Path directory) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            return !stream.iterator().hasNext();
         }
     }
 }

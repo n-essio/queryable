@@ -59,5 +59,6 @@ public abstract class QuerableBaseMojo extends AbstractMojo {
                 outputDirectory, sourceExceptionDirectory, logging,
                 overrideAnnotations, overrideSearchMethod, google_translate_apikey);
         this.parameters.useModelSubPackage = useModelSubPackage;
+        log.info("useModelSubPackage:" + this.parameters.useModelSubPackage);
     }
 }

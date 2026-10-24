@@ -4,7 +4,7 @@ This file is the machine-oriented entry point for agents working on Queryable or
 
 ## Supported baseline
 
-- Queryable Maven plugin: `3.0.12`
+- Queryable Maven plugin: `3.0.13`
 - Quarkus examples: `3.39.5`
 - Java: `21`
 - Maven coordinates: `it.n-ess.queryable:queryable-maven-plugin`
@@ -40,7 +40,7 @@ Add the plugin to the consuming project's `pom.xml`:
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
 </plugin>
 ```
 
@@ -91,7 +91,8 @@ Rules for `classes` and `excludeClasses`:
 `false` (flat REST package). Class names remain `{EntityName}ServiceRs`.
 Custom roots and multiple levels are supported. Root entities stay flat.
 Switching the option relocates existing services and preserves manual methods,
-`@QExclude` and V3 preserved-filter hooks; both locations existing is an error.
+`@QExclude` and V3 preserved-filter hooks; empty leftover REST directories are
+removed (since 3.0.13); both locations existing is an error.
 Update consuming-code imports and package-local dependencies when services move.
 REST URLs, constants and entity packages are unchanged. Duplicate simple entity
 names remain unsupported by discovery.

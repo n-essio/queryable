@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.0.13
+
+### Fix Empty REST Subpackages After Relocation
+
+- After relocating a REST service between flat and mirrored packages, delete empty leftover directories under the configured REST root (for example `service/rs/finance/monthly` when flattening).
+- Those empty folders could look like unintended `service.rs` subpackages even when `useModelSubPackage` was omitted or `false`.
+- Log the resolved `useModelSubPackage` value during Mojo initialization so consumers can confirm the opt-in flag in Maven output.
+- Default generation without the flag remains flat; nested REST packages are still created only when `useModelSubPackage=true`.
+
+**Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.12...3.0.13
+
 ## 3.0.12
 
 ### Mirror Model Subpackages In REST Services

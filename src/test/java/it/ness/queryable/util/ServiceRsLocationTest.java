@@ -90,6 +90,7 @@ public class ServiceRsLocationTest {
             File nested = new ServiceRsLocation(parameters, relative).getTarget();
             JavaClassSource relocated = Roaster.parse(JavaClassSource.class, nested);
             assertFalse(flat.exists());
+            assertTrue(flat.getParentFile().isDirectory());
             assertEquals("example.application.service.rs.finance.monthly", relocated.getPackage());
             assertEquals("return \"keep\";", relocated.getMethod("manual").getBody().trim());
             assertEquals("return \"custom asc\";", relocated.getMethod("getDefaultOrderBy").getBody().trim());
@@ -103,6 +104,8 @@ public class ServiceRsLocationTest {
             generate(parameters, v4);
             assertTrue(flat.exists());
             assertFalse(nested.exists());
+            assertFalse(nested.getParentFile().exists());
+            assertFalse(nested.getParentFile().getParentFile().exists());
             JavaClassSource flattened = Roaster.parse(JavaClassSource.class, flat);
             assertEquals("example.application.service.rs", flattened.getPackage());
             assertEquals("return \"keep\";", flattened.getMethod("manual").getBody().trim());
