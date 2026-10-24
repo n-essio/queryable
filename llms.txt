@@ -3,7 +3,7 @@
 > Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controller code for Quarkus applications using Hibernate Panache.
 
 Current supported examples:
-- Queryable: 3.0.12
+- Queryable: 3.0.13
 - Quarkus: 3.39.5
 - Java: 21
 
@@ -51,7 +51,7 @@ Custom sourceModelDirectory and sourceRestDirectory are supported. Root entities
 HTTP URLs, entity packages and application constants remain unchanged.
 Switching the option relocates existing services in either direction, preserving
 manual methods, QExclude and V3 preserved-filter hooks. Two existing copies cause an
-error. Update consuming-code imports and package-local dependencies yourself.
+error. Since 3.0.13 empty leftover REST directories are removed after relocation. Update consuming-code imports and package-local dependencies yourself.
 Duplicate simple entity names remain unsupported.
 Guide: https://queryable.dev/docs/#model-subpackages
 

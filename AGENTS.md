@@ -4,12 +4,12 @@ This file is the machine-oriented entry point for agents working on Queryable or
 
 ## Supported baseline
 
-- Queryable Maven plugin: `3.0.12`
+- Queryable Maven plugin: `3.0.13`
 - Quarkus examples: `3.39.5`
 - Java: `21`
 - Maven coordinates: `it.n-ess.queryable:queryable-maven-plugin`
 
-Use [https://queryable.dev/docs/](https://queryable.dev/docs/) for the human-readable installation guide and annotation reference. Use [API.MD](https://github.com/n-essio/queryable/blob/main/API.MD) for generated HTTP query parameter rules.
+Use [https://queryable.dev/docs/](https://queryable.dev/docs/) for the human-readable installation guide and annotation reference. Use `API.MD` for generated HTTP query parameter rules.
 
 ## Repository map
 
@@ -40,7 +40,7 @@ Add the plugin to the consuming project's `pom.xml`:
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.12</version>
+    <version>3.0.13</version>
 </plugin>
 ```
 
@@ -91,14 +91,15 @@ Rules for `classes` and `excludeClasses`:
 `false` (flat REST package). Class names remain `{EntityName}ServiceRs`.
 Custom roots and multiple levels are supported. Root entities stay flat.
 Switching the option relocates existing services and preserves manual methods,
-`@QExclude` and V3 preserved-filter hooks; both locations existing is an error.
+`@QExclude` and V3 preserved-filter hooks; empty leftover REST directories are
+removed (since 3.0.13); both locations existing is an error.
 Update consuming-code imports and package-local dependencies when services move.
 REST URLs, constants and entity packages are unchanged. Duplicate simple entity
 names remain unsupported by discovery.
 
 ## Optional QEEX error catalog
 
-QEEX generates REST exception catalogs, independently of entity filters. See the [website example](https://queryable.dev/docs/getting-started.html#qeex) and [QEEX reference](https://queryable.dev/docs/#qeex).
+QEEX generates REST exception catalogs, independently of entity filters. See the [README example](README.md#optional-qeex-rest-error-catalog) and [website guide](https://queryable.dev/docs/getting-started.html#qeex).
 
 After `queryable:install`, install QEEX support:
 
@@ -121,7 +122,7 @@ Define an interface using the generated `{groupId}.api.qeex.annotations.QeexExce
 - The custom `language` header is not `Accept-Language`. Its application-scoped filter retains mutable state between requests and is unsafe for per-request language isolation.
 - The exception mapper concatenates JSON without escaping message values. Do not treat arbitrary user-supplied message arguments as safely serialized.
 - The catch-all mapper uses default configuration but leaves the error ID at 0; `qeex.default.id` is not assigned there.
-- Authoritative code on the plugin's `main` branch: `src/main/java/it/ness/queryable/plugin/qeex/`, `src/main/java/it/ness/queryable/builder/QeexBuilder.java`, `src/main/resources/templates/qeex/` and `src/main/resources/templates/qeex-bundle/`.
+- Authoritative code: `src/main/java/it/ness/queryable/plugin/qeex/`, `src/main/java/it/ness/queryable/builder/QeexBuilder.java`, `src/main/resources/templates/qeex/` and `src/main/resources/templates/qeex-bundle/`.
 
 ## Annotation selection
 
@@ -137,7 +138,7 @@ Use annotations from `it.ness.queryable.annotations` and verify exact attributes
   blocks to these methods before regenerating; missing hooks warn and do not activate
   filters. Invalid definitions or bindings fail generation. V4 is unchanged.
 
-Do not infer generated filter names or HTTP parameters from annotation names alone. Consult [https://queryable.dev/docs/#annotation-reference](https://queryable.dev/docs/#annotation-reference), [API.MD](https://github.com/n-essio/queryable/blob/main/API.MD), and the corresponding builder implementation.
+Do not infer generated filter names or HTTP parameters from annotation names alone. Consult [https://queryable.dev/docs/#annotation-reference](https://queryable.dev/docs/#annotation-reference), `API.MD`, and the corresponding builder implementation.
 
 ## Change discipline
 
