@@ -4,7 +4,7 @@ This file is the machine-oriented entry point for agents working on Queryable or
 
 ## Supported baseline
 
-- Queryable Maven plugin: `3.0.13`
+- Queryable Maven plugin: `3.0.14`
 - Quarkus examples: `3.39.5`
 - Java: `21`
 - Maven coordinates: `it.n-ess.queryable:queryable-maven-plugin`
@@ -40,7 +40,7 @@ Add the plugin to the consuming project's `pom.xml`:
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.13</version>
+    <version>3.0.14</version>
 </plugin>
 ```
 
@@ -129,6 +129,7 @@ Define an interface using the generated `{groupId}.api.qeex.annotations.QeexExce
 Use annotations from `it.ness.queryable.annotations` and verify exact attributes in their Java definitions.
 
 - Field filters: `@Q`, `@QLike`, `@QLikeList`, `@QList`, `@QLogicalDelete`, `@QNil`, `@QNotNil`.
+- `@QList` supports `String`, `Integer`, `Long`, `BigInteger` and `BigDecimal` fields in V3 and V4.
 - Class controls: `@QInclude`, `@QExclude`, `@QOrderBy`, `@QRs`.
 - Generated test values: `@QT`.
 - V3 manual filters: `@QPreserveFilters({"Entity.filter.name"})` protects existing

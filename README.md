@@ -144,7 +144,7 @@ We will have inside the pom.xml:
 
 Add queryable to your project:
 ```
-./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.13:add
+./mvnw it.n-ess.queryable:queryable-maven-plugin:3.0.14:add
 ```
 
 or directly on the pom.xml:
@@ -154,7 +154,7 @@ or directly on the pom.xml:
 <dependency>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.13</version>
+    <version>3.0.14</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ In build section add plugin:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.13</version>
+            <version>3.0.14</version>
         </plugin>
     </plugins>
 </build>
@@ -182,7 +182,7 @@ Some avaliable options in the configuration:
         <plugin>
             <groupId>it.n-ess.queryable</groupId>
             <artifactId>queryable-maven-plugin</artifactId>
-            <version>3.0.13</version>
+            <version>3.0.14</version>
             <configuration>
                 <!-- default is false -->
                 <removeAnnotations>false</removeAnnotations>
@@ -250,7 +250,7 @@ Enable this option in the plugin configuration of the consuming project's `pom.x
 <plugin>
     <groupId>it.n-ess.queryable</groupId>
     <artifactId>queryable-maven-plugin</artifactId>
-    <version>3.0.13</version>
+    <version>3.0.14</version>
     <configuration>
         <useModelSubPackage>true</useModelSubPackage>
     </configuration>
@@ -773,6 +773,10 @@ if (nn("notNil.executor")) {
 
 ### QList annotation
 
+`@QList` supports `String`, `Integer`, `Long`, `BigInteger`, and `BigDecimal` fields.
+Comma-separated query values are converted to the field's Java type before the `IN`
+predicate is evaluated.
+
 on String field:
 
 ```
@@ -1091,7 +1095,7 @@ To build qeex messages in app properties, setup plugin as
             <plugin>
                 <groupId>it.n-ess.queryable</groupId>
                 <artifactId>queryable-maven-plugin</artifactId>
-                <version>3.0.13</version>
+                <version>3.0.14</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>

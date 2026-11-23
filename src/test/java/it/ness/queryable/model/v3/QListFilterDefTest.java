@@ -35,11 +35,19 @@ public class QListFilterDefTest {
         assertParamDefType("BigInteger", "big_integer", "java.math.BigInteger");
     }
 
+    @Test
+    public void usesBigDecimalParamDefForBigDecimalField() {
+        QListFilterDef filterDef = assertParamDefType("BigDecimal", "big_decimal", "java.math.BigDecimal");
+
+        assertTrue(filterDef.getSearchMethod().contains("asBigDecimalList"));
+    }
+
     private QListFilterDef assertParamDefType(String fieldType, String expectedType, String generatedType) {
         JavaClassSource javaClass = Roaster.parse(
                 JavaClassSource.class,
                 "package example; import it.ness.queryable.annotations.QList; " +
-                        "import java.math.BigInteger; public class Customer { @QList public " + fieldType + " id; }"
+                        "import java.math.BigDecimal; import java.math.BigInteger; public class Customer { @QList public " +
+                        fieldType + " id; }"
         );
         QListFilterDef filterDef = new QListFilterDef(new SystemStreamLog())
                 .parseQFilterDef("Customer", javaClass.getField("id"), false);

@@ -62,6 +62,8 @@ public class QListFilter extends FilterBase {
                 return getIntegerSearchMethod();
             case "Long":
                 return getLongSearchMethod();
+            case "BigDecimal":
+                return getBigDecimalSearchMethod();
             case "BigInteger":
                 return getBigIntegerSearchMethod();
         }
@@ -96,7 +98,7 @@ public class QListFilter extends FilterBase {
         if (null == condition) {
             String formatBody = """
                     if (nn("%s")) {
-                        CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                        CriteriaBuilder.In<Long> inClause = criteriaBuilder.in(root.get("%s"));
                         for (Long uuid : asLongList("%s")) {
                             inClause.value(uuid);
                         }
@@ -107,7 +109,7 @@ public class QListFilter extends FilterBase {
         }
         String formatBody = """
                 if (nn("%s")) {
-                    CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                    CriteriaBuilder.In<Long> inClause = criteriaBuilder.in(root.get("%s"));
                     inClause.value(%s);
                     predicates.add(inClause);
                 }
@@ -119,7 +121,7 @@ public class QListFilter extends FilterBase {
         if (null == condition) {
             String formatBody = """
                     if (nn("%s")) {
-                        CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                        CriteriaBuilder.In<Integer> inClause = criteriaBuilder.in(root.get("%s"));
                         for (Integer uuid : asIntegerList("%s")) {
                             inClause.value(uuid);
                         }
@@ -130,7 +132,7 @@ public class QListFilter extends FilterBase {
         }
         String formatBody = """
                 if (nn("%s")) {
-                    CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                    CriteriaBuilder.In<Integer> inClause = criteriaBuilder.in(root.get("%s"));
                     inClause.value(%s);
                     predicates.add(inClause);
                 }
@@ -142,7 +144,7 @@ public class QListFilter extends FilterBase {
         if (null == condition) {
             String formatBody = """
                     if (nn("%s")) {
-                        CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                        CriteriaBuilder.In<BigInteger> inClause = criteriaBuilder.in(root.get("%s"));
                         for (BigInteger uuid : asBigIntegerList("%s")) {
                             inClause.value(uuid);
                         }
@@ -153,7 +155,30 @@ public class QListFilter extends FilterBase {
         }
         String formatBody = """
                 if (nn("%s")) {
-                    CriteriaBuilder.In<String> inClause = criteriaBuilder.in(root.get("%s"));
+                    CriteriaBuilder.In<BigInteger> inClause = criteriaBuilder.in(root.get("%s"));
+                    inClause.value(%s);
+                    predicates.add(inClause);
+                }
+                """;
+        return String.format(formatBody, queryName, name, condition);
+    }
+
+    private String getBigDecimalSearchMethod() {
+        if (null == condition) {
+            String formatBody = """
+                    if (nn("%s")) {
+                        CriteriaBuilder.In<BigDecimal> inClause = criteriaBuilder.in(root.get("%s"));
+                        for (BigDecimal uuid : asBigDecimalList("%s")) {
+                            inClause.value(uuid);
+                        }
+                        predicates.add(inClause);
+                    }
+                    """;
+            return String.format(formatBody, queryName, name, queryName);
+        }
+        String formatBody = """
+                if (nn("%s")) {
+                    CriteriaBuilder.In<BigDecimal> inClause = criteriaBuilder.in(root.get("%s"));
                     inClause.value(%s);
                     predicates.add(inClause);
                 }
@@ -176,6 +201,7 @@ public class QListFilter extends FilterBase {
         supported.add("String");
         supported.add("Integer");
         supported.add("Long");
+        supported.add("BigDecimal");
         supported.add("BigInteger");
         return supported;
     }

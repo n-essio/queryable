@@ -120,6 +120,14 @@ public abstract class RsResponseService implements Serializable {
                 .collect(Collectors.toList());
     }
 
+    public List<BigDecimal> asBigDecimalList(String key) {
+        String value = get(key);
+        return Stream.of(value.split(","))
+                .map(String::trim)
+                .map(BigDecimal::new)
+                .toList();
+    }
+
     public List<BigInteger> asBigIntegerList(String key) {
         String value = get(key);
         return Stream.of(value.split(","))

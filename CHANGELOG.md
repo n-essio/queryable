@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.0.14
+
+### BigDecimal List Filters
+
+- Added `@QList` support for `BigDecimal` fields in both V3 and V4 source generation.
+- V3 now generates `big_decimal` Hibernate parameters and V4 generates typed `CriteriaBuilder.In<BigDecimal>` predicates.
+- Generated REST services, including the QEEX-aware template, convert comma-separated values with `asBigDecimalList`.
+- Added focused V3 and V4 regression tests for parsing, parameter types, and generated search methods.
+
+**Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.13...3.0.14
+
 ## 3.0.13
 
 ### Fix Empty REST Subpackages After Relocation

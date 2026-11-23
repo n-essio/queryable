@@ -102,6 +102,8 @@ public class QListFilterDef extends FilterDefBase {
                 return getIntegerSearchMethod();
             case "long":
                 return getLongSearchMethod();
+            case "big_decimal":
+                return getBigDecimalSearchMethod();
             case "big_integer":
                 return getBigIntegerSearchMethod();
         }
@@ -167,6 +169,19 @@ public class QListFilterDef extends FilterDefBase {
         return String.format(formatBody, queryName, filterName, nameInPlural, condition);
     }
 
+    private String getBigDecimalSearchMethod() {
+        if (null == condition) {
+            String formatBody = "if (nn(\"%s\")) {" +
+                    "search.filter(\"%s\", Map.of(\"%s\", asBigDecimalList(\"%s\")));" +
+                    "}";
+            return String.format(formatBody, queryName, filterName, nameInPlural, queryName);
+        }
+        String formatBody = "if (nn(\"%s\")) {" +
+                "search.filter(\"%s\", Map.of(\"%s\", \"%s\"));" +
+                "}";
+        return String.format(formatBody, queryName, filterName, nameInPlural, condition);
+    }
+
     @Override
     public FilterType getFilterType() {
         return FilterType.POSTQUERY;
@@ -185,6 +200,8 @@ public class QListFilterDef extends FilterDefBase {
                 return "int";
             case "Long":
                 return "long";
+            case "BigDecimal":
+                return "big_decimal";
             case "BigInteger":
                 return "big_integer";
         }
@@ -197,6 +214,7 @@ public class QListFilterDef extends FilterDefBase {
         supported.add("String");
         supported.add("Integer");
         supported.add("Long");
+        supported.add("BigDecimal");
         supported.add("BigInteger");
         return supported;
     }
