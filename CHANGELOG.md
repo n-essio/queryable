@@ -2,11 +2,26 @@
 
 ## 3.0.15
 
-### Windows Paths And Regeneration Fixes
+### Fixed Bugs
 
-- Fixed OpenAPI `AppConstants` resolution on Windows: constant source files are now located with OS-portable separators and the configured `sourceRestDirectory` instead of a hardcoded unix-style `/service/rs` ([#61](https://github.com/n-essio/queryable/issues/61)).
-- Regenerating an existing REST service after adding `@QRs` now adds the missing static `AppConstants` import in both V3 and V4 ([#49](https://github.com/n-essio/queryable/issues/49)); `@QOrderBy` added after the first generation was already applied on regeneration and is now covered by a regression test ([#51](https://github.com/n-essio/queryable/issues/51)).
-- Packaged machine-readable documentation (README, AGENTS.md, API.MD, llms.txt, llms-full.txt) under `META-INF/queryable` in the plugin JAR, published `llms.txt`/`llms-full.txt` on the website, and documented the public annotations with Javadoc.
+**OpenAPI constant resolution failed on Windows ([#61](https://github.com/n-essio/queryable/issues/61))**
+
+- Symptom: `queryable:openapi` could not locate the `AppConstants` source file on Windows checkouts, so `@QRs` constants imported by REST services were not resolved to their path values.
+- Cause: the builder sliced `serviceRsPath` assuming unix-style `/` separators and a hardcoded `/service/rs` suffix, which also broke projects using a custom REST directory.
+- Fix: constant source files are now located with OS-portable separators and the configured `sourceRestDirectory`. Unit tests cover unix-style paths, windows-style paths, and custom REST directories.
+
+**`@QRs` added after the first generation produced non-compiling services ([#49](https://github.com/n-essio/queryable/issues/49))**
+
+- Symptom: adding `@QRs("CONSTANT")` to an entity whose REST service already existed updated the `@Path` annotation on regeneration but left out the static `AppConstants` import, so the regenerated service did not compile.
+- Fix: V3 and V4 regeneration now add the missing static import whenever the path is an application constant, covered by a repeat-generation regression test.
+
+**`@QOrderBy` added after the first generation ([#51](https://github.com/n-essio/queryable/issues/51))**
+
+- Verified no longer reproducible: regenerating sources updates `getDefaultOrderBy()` with the annotation value in both V3 and V4 unless the method is excluded with `@QExclude`. The behavior is now guarded by the same repeat-generation regression test.
+
+### Other Changes
+
+- Packaged machine-readable documentation (README, AGENTS.md, API.MD, llms.txt, llms-full.txt) under `META-INF/queryable` in the plugin JAR, published `llms.txt` and `llms-full.txt` on the website, and documented the public annotations with Javadoc.
 - The release-notes workflow now skips changelog sections whose GitHub release does not exist yet instead of failing.
 
 **Full Changelog**: https://github.com/n-essio/queryable/compare/3.0.14...3.0.15
