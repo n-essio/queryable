@@ -696,23 +696,11 @@ public class OpenApiBuilder {
             String constantImport = imp.getQualifiedName();
             if (constantImport.endsWith(constantName)) {
 
-                String filePath = parameters.serviceRsPath;
-                String constantPath = filePath.substring("src/main/java/".length(), filePath.length() - "/service/rs".length())
-                        .replaceAll("/", "\\.");
-
-                String subConstantPath = constantImport.replaceAll(constantPath, "").substring(1);
-
-                String[] tokens = subConstantPath.split("\\.");
-                StringBuilder appConstantFilePath = new StringBuilder(parameters.serviceRsPath.substring(0,
-                        parameters.serviceRsPath.length() - "/service/rs".length()));
-                for (int i=0; i<tokens.length-1; i++) {
-                    appConstantFilePath.append("/").append(tokens[i]);
-                }
-                appConstantFilePath.append(".java");
+                String appConstantFilePath = appConstantsFilePath(parameters, constantImport);
 
                 try {
                     JavaClassSource javaAppContantsClass = Roaster.parse(JavaClassSource.class,
-                            new File(appConstantFilePath.toString()));
+                            new File(appConstantFilePath));
 
                     Map<String, String> constantsMap = new HashMap<>();
 
@@ -766,6 +754,26 @@ public class OpenApiBuilder {
             }
         }
         return null;
+    }
+
+    // Resolves the source file declaring an imported constant, using OS-portable separators
+    // and the configured REST directory rather than a hardcoded unix-style "/service/rs".
+    static String appConstantsFilePath(Parameters parameters, String constantImport) {
+        String serviceRsPath = parameters.serviceRsPath.replace('\\', '/');
+        String restDirectory = parameters.sourceRestDirectory.replace('\\', '/');
+        String basePath = serviceRsPath.substring(0, serviceRsPath.length() - restDirectory.length() - 1);
+        String basePackage = basePath.startsWith(Constants.JAVA_FOLDER)
+                ? basePath.substring(Constants.JAVA_FOLDER.length()).replace('/', '.')
+                : basePath.replace('/', '.');
+        String subConstantPath = constantImport.startsWith(basePackage + ".")
+                ? constantImport.substring(basePackage.length() + 1)
+                : constantImport;
+        String[] tokens = subConstantPath.split("\\.");
+        StringBuilder appConstantFilePath = new StringBuilder(basePath);
+        for (int i = 0; i < tokens.length - 1; i++) {
+            appConstantFilePath.append('/').append(tokens[i]);
+        }
+        return appConstantFilePath.append(".java").toString();
     }
 
 }

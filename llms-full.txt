@@ -10,7 +10,7 @@ Coordinates:
 ```xml
 <groupId>it.n-ess.queryable</groupId>
 <artifactId>queryable-maven-plugin</artifactId>
-<version>3.0.14</version>
+<version>3.0.15</version>
 ```
 
 Initialize the minimal API and sample entity once:
