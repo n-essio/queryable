@@ -1,6 +1,6 @@
 # @Queryable
 
-<img src="https://badgen.net/maven/v/maven-central/it.n-ess.queryable/queryable-maven-plugin"><br/>
+<a href="https://central.sonatype.com/artifact/it.n-ess.queryable/queryable-maven-plugin"><img src="https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo1.maven.org%2Fmaven2%2Fit%2Fn-ess%2Fqueryable%2Fqueryable-maven-plugin%2Fmaven-metadata.xml&label=maven%20central"></a><br/>
 
 
 <img src="docs/queryable.png"><br/>
