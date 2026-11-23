@@ -34,10 +34,20 @@ jobs:
               if (!/^\d+\.\d+\.\d+$/.test(tag) || !body) {
                 throw new Error(`Invalid release notes section: ${tag}`);
               }
-              const { data: release } = await github.rest.repos.getReleaseByTag({
-                ...context.repo,
-                tag
-              });
+              let release;
+              try {
+                const response = await github.rest.repos.getReleaseByTag({
+                  ...context.repo,
+                  tag
+                });
+                release = response.data;
+              } catch (error) {
+                if (error.status === 404) {
+                  console.log(`Release ${tag} does not exist yet; skipping until the tag workflow creates it.`);
+                  continue;
+                }
+                throw error;
+              }
               if ((release.body || '').trim() === body) {
                 console.log(`Release ${tag} already has the expected notes.`);
                 continue;

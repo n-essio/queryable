@@ -1,0 +1,107 @@
+# Queryable agent reference
+
+Queryable is a Maven plugin for Quarkus and Hibernate Panache. It generates editable
+JAX-RS source code and query filters from annotations on entity fields.
+
+## Installation
+
+Coordinates:
+
+```xml
+<groupId>it.n-ess.queryable</groupId>
+<artifactId>queryable-maven-plugin</artifactId>
+<version>3.0.14</version>
+```
+
+Initialize the minimal API and sample entity once:
+
+```bash
+./mvnw queryable:install
+```
+
+Generate V3 sources:
+
+```bash
+./mvnw queryable:source
+```
+
+Generate V4 criteria sources:
+
+```bash
+./mvnw queryable:sourcev4
+```
+
+Select or exclude model classes with comma-separated simple class names:
+
+```bash
+./mvnw queryable:source -Dclasses=Customer,Order
+./mvnw queryable:source -DexcludeClasses=Customer,Order
+```
+
+Whitespace and duplicate names are ignored. Exclusions take precedence over
+selections and `@QInclude`. `@QExclude` is always respected.
+
+## Filter annotations
+
+- `@Q`: equality, temporal range, and type-aware scalar filtering.
+- `@QLike`: case-insensitive partial matching.
+- `@QLikeList`: OR-like matching for comma-separated values.
+- `@QList`: `IN` filtering for `String`, `Integer`, `Long`, `BigInteger`, or `BigDecimal`.
+- `@QLogicalDelete`: logical-delete controls.
+- `@QNil` and `@QNotNil`: null and non-null filters.
+- `@QInclude`, `@QExclude`: model generation selection.
+- `@QOrderBy`: default ordering.
+- `@QRs`: REST service controls.
+- `@QT`: generated test values.
+
+For `@QList` on a `BigDecimal` field:
+
+```java
+@QList
+public BigDecimal amount;
+```
+
+V3 generates a pluralized Hibernate parameter and parses comma-separated values
+with `asBigDecimalList`. V4 generates a typed
+`CriteriaBuilder.In<BigDecimal>` predicate. Invalid numeric input follows normal
+Java numeric parsing failure behavior.
+
+## Model subpackages
+
+`<useModelSubPackage>true</useModelSubPackage>` mirrors an entity's full relative
+directory below `sourceModelDirectory` into the REST package below
+`sourceRestDirectory`. The default is `false`. Switching locations preserves
+manual methods, `@QExclude`, and V3 preserved-filter hooks. Conflicting old and
+new service copies cause generation to fail.
+
+## V3 preserved filters
+
+Use `@QPreserveFilters({"Entity.filter.name"})` to retain named Hibernate
+`@FilterDef`/`@Filter` pairs. Bind activation methods with
+`@QPreservedFilter("Entity.filter.name")`; the method must be concrete,
+non-static, return `void`, and accept `PanacheQuery<Entity>`. Invalid definitions
+or bindings fail generation. Missing hooks warn. V4 is unchanged.
+
+## QEEX
+
+QEEX is optional and independent of entity filters. Generate its support with:
+
+```bash
+./mvnw queryable:qeexinstall
+./mvnw queryable:qeexsource
+```
+
+`qeexinstall` destructively replaces the generated
+`{groupId}.api.service.RsResponseService`; preserve customizations first. Generated
+implementations do not call the corresponding `QeexConfig` override methods.
+The `language` header is not `Accept-Language`. Do not use the current mutable
+application-scoped language filter as request isolation. Exception JSON currently
+concatenates unescaped message values.
+
+## Authoritative references
+
+- Human documentation: https://queryable.dev/docs/
+- Installation and examples: README.md
+- Agent workflow and invariants: AGENTS.md
+- Generated HTTP query rules: API.MD
+- Source: https://github.com/n-essio/queryable

@@ -213,6 +213,10 @@ public class QueryableV3Builder {
                 AnnotationSource<JavaClassSource> pathAnno = javaClassOriginal.addAnnotation("Path");
                 pathAnno.setLiteralValue((String)map.get("rsPath"));
             }
+            if (Boolean.TRUE.equals(map.get("rsPathIsAppConstant"))) {
+                javaClassOriginal.addImport(groupId + "." + artefactId + ".management.AppConstants."
+                        + map.get("rsPath")).setStatic(true);
+            }
 
             try (FileWriter out = new FileWriter(filePath)) {
                 out.append(javaClassOriginal.toString());

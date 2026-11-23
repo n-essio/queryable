@@ -182,6 +182,49 @@ public class ServiceRsLocationTest {
         assertTrue(service.getSyntaxErrors().toString(), service.getSyntaxErrors().isEmpty());
     }
 
+    @Test
+    public void regeneratesQrAndOrderByOnExistingServices() throws Exception {
+        assertRegeneratesQrAndOrderBy(false);
+        assertRegeneratesQrAndOrderBy(true);
+    }
+
+    private void assertRegeneratesQrAndOrderBy(boolean v4) throws Exception {
+        Parameters parameters = parameters("model", "service/rs");
+        Files.createDirectories(new File(parameters.modelPath).toPath());
+        File model = new File(parameters.modelPath, "Report.java");
+        Files.writeString(model.toPath(), """
+                package example.application.model;
+                import jakarta.persistence.*;
+                import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+                @Entity
+                public class Report extends PanacheEntityBase {
+                    @Id public String uuid;
+                }
+                """);
+        generate(parameters, v4);
+
+        Files.writeString(model.toPath(), """
+                package example.application.model;
+                import jakarta.persistence.*;
+                import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+                import it.ness.queryable.annotations.*;
+                @Entity
+                @QRs("REPORTS")
+                @QOrderBy("uuid desc")
+                public class Report extends PanacheEntityBase {
+                    @Id public String uuid;
+                }
+                """);
+        generate(parameters, v4);
+
+        JavaClassSource service = Roaster.parse(JavaClassSource.class,
+                new File(parameters.serviceRsPath, "ReportServiceRs.java"));
+        assertEquals("return \"uuid desc\";", service.getMethod("getDefaultOrderBy").getBody().trim());
+        assertTrue(service.getAnnotation("Path").getLiteralValue().contains("REPORTS"));
+        assertTrue(Files.readString(new File(parameters.serviceRsPath, "ReportServiceRs.java").toPath())
+                .contains("import static example.application.management.AppConstants.REPORTS;"));
+    }
+
     private void generate(Parameters parameters, boolean v4) throws Exception {
         SystemStreamLog log = new SystemStreamLog();
         if (v4) {

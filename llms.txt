@@ -1,0 +1,13 @@
+# Queryable
+
+> Queryable is a Maven plugin that generates Hibernate filters and JAX-RS controllers for Quarkus applications using Hibernate Panache.
+
+- Documentation: https://queryable.dev/docs/
+- Getting started: https://queryable.dev/docs/getting-started.html
+- Full agent-oriented reference: https://queryable.dev/llms-full.txt
+- Source: https://github.com/n-essio/queryable
+- Maven coordinates: it.n-ess.queryable:queryable-maven-plugin
+- Supported Java: 21
+
+The plugin exposes `queryable:install`, `queryable:source`, and `queryable:sourcev4`.
+Use the repository README, AGENTS.md, and API.MD for authoritative usage details.
